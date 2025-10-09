@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: ennov
+
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+
+  profiles:
+    active: @spring.profiles.active@
+  security:
+    authentication:
+      jwt:
+        # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
+        base64-secret: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0cC1waGFybWEuYmYiLCJuYW1lIjoiUk9MRV9BRE1JTixST0xFX1JPT1QsIiwiaWF0IjoxNzA0NzYyMTMzfQ.kKzYqTFCf8ZL3wmw2qdQNKF_G3Y7_q2DlO1iP9Oq38B-COZ34l2OhZ72XbudY3lftuDXnPYInrCfI9wzkKFKyw
+        # Token is valid 24 hours
+        token-validity-in-seconds: 86400
+        token-validity-in-seconds-for-remember-me: 2592000
+        refresh-token-validity-in-seconds: 2592000
+
+springdoc:
+  packages-to-scan: test.projects.ennov.controller
+  paths-to-match: ["/api/**"]
+  api-docs:
+    path: /test-ennov-api-docs
+  swagger-ui:
+    filter: true
+    try-it-out-enabled: false
+    operations-sorter: method
+    tags-sorter: alpha
+
+logging:
+  level:
+    org.springframework.web: ERROR
+    test.test.projects.ennov: DEBUG
+    org.hibernate: ERROR
+    org: INFO
+    root: WARN
