@@ -17,6 +17,8 @@ public enum ObjetEntity {
     FOURNISSEUR("Fournisseur"),
     PROFIL("Profil"),
     PROFORMA("Proforma"),
+    COMPAGNIE("Compagine"),
+    PAYS("Pays"),
     ENTETE("Entete");
 
 

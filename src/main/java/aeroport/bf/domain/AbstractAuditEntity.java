@@ -54,6 +54,6 @@ public abstract class AbstractAuditEntity implements Serializable {
     private Instant lastModifiedDate;
 
     @Column(name = "deleted")
-    private Boolean deleted; 
+    private Boolean deleted =Boolean.FALSE;
 
 }
