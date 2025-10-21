@@ -158,7 +158,7 @@ public class ExerciceService {
         exerciceRepository.findTop1ByDeletedFalseAndId(id).ifPresentOrElse(exercice -> {
             exercice.setDeleted(Boolean.TRUE);
             exerciceRepository.save(exercice);
-            traceService.writeAuditEvent( EntityAuditAction.DELETE, ObjetEntity.FOURNISSEUR);
+          traceService.writeAuditEvent( EntityAuditAction.DELETE, ObjetEntity.FOURNISSEUR);
         }, () -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Cannot remove exercice with ID : %d", id));
         });
