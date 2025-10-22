@@ -1,5 +1,7 @@
-package aeroport.bf.domain;
+package aeroport.bf.dto;
 
+import aeroport.bf.domain.AbstractAuditEntity;
+import aeroport.bf.domain.Voyage;
 import aeroport.bf.domain.enums.Statut;
 import aeroport.bf.domain.enums.StatutVol;
 import aeroport.bf.domain.enums.StatutVoyageur;
@@ -39,51 +41,28 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-@Entity
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "enregistrements")
-@ToString(callSuper = true)
+@ToString(callSuper = true,exclude = {"utilisateur","voyage"})
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
-public class Enregistrement extends AbstractAuditEntity  implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    @EqualsAndHashCode.Include
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "enregistrement_seq_generator")
-    @SequenceGenerator(name = "enregistrement_seq_generator", sequenceName = "enregistrement_sequence",
-            initialValue = 1001, allocationSize = 1)
+public class EnregistrementDto extends AbstractAuditEntityDto implements Serializable {
+    
     private Long id;
 
    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "utilisateur_id", nullable = false)
-    private User utilisateur;
+   
+    private UserDto utilisateur;
 
-    /* @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "information_personnel_id", nullable = false)
-    private InformationPersonnel informationPersonnel;
-*/
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "voyage_id", nullable = false)
-    private Voyage voyage; 
+   
+    private VoyageDto voyage; 
 
-    @Column(name = "adresse_etranger", length = 255)
     private String adresseEtranger;
 
-    @Column(name = "date_Saisie")
-    @Builder.Default
-    private LocalDate dateSaisie = LocalDate.now();
-    
-    @Column(name = "telephone_etranger", length = 20)
     private String telephoneEtranger;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "statut", nullable = false, length = 50)
+
     @Builder.Default
     private StatutVoyageur statut = StatutVoyageur.EN_ATTENTE;
-
     
 }

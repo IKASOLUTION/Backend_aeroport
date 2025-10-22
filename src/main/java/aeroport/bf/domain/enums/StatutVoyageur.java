@@ -8,3 +8,4 @@ public enum StatutVoyageur {
     EN_ATTENTE,VALIDE,REJETE,ANNULE
     
 }
+

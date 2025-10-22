@@ -11,15 +11,15 @@ import org.springframework.web.server.ResponseStatusException;
 import aeroport.bf.config.audit.EntityAuditAction;
 import aeroport.bf.config.audit.ObjetEntity;
 import aeroport.bf.domain.Ville;
-import aeroport.bf.domain.Vol;
-import aeroport.bf.domain.enums.StatutVol;
+import aeroport.bf.domain.Voyage;
+import aeroport.bf.domain.enums.StatutVoyage;
 import aeroport.bf.dto.MenuActionDto;
 import aeroport.bf.dto.VilleDto;
-import aeroport.bf.dto.VolDto;
+import aeroport.bf.dto.VoyageDto;
 import aeroport.bf.dto.mapper.VilleMapper;
-import aeroport.bf.dto.mapper.VolMapper;
+import aeroport.bf.dto.mapper.VoyageMapper;
 import aeroport.bf.repository.VilleRepository;
-import aeroport.bf.repository.VolRepository;
+import aeroport.bf.repository.VoyageRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,36 +29,30 @@ import java.util.Optional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class VolService {
-    private final VolRepository volRepository;
-    private final VolMapper volMapper;
+public class VoyageService {
+    private final VoyageRepository volRepository;
+    private final VoyageMapper volMapper;
     private final TraceService traceService;
     private final VilleRepository villeRepository;
-    private final VilleMapper villeMapper;
 
     /**
      * Save compagine.
      *
-     * @param dto {@link VolDto}
-     * @return saved Vol object
+     * @param dto {@link VoyageDto}
+     * @return saved Voyage object
      */
-    public VolDto create(final VolDto dto) {
+    public VoyageDto create(final VoyageDto dto) {
 
-        LocalDate date = LocalDate.now();
-        String numero = generateProformaNumber(date);
-        dto.setNumero(numero);
-        dto.setDateSaisie(date);
-        Vol vol = volMapper.toEntity(dto);
+        Voyage vol = volMapper.toEntity(dto);
         if (dto.getVilleNomA() != null) {
             if (!isExisteByNom(dto.getVilleNomA())) {
                 Ville villeA = new Ville();
                 villeA.setNom(dto.getVilleNomA());
                 villeA = villeRepository.save(villeA);
-                vol.setVilleArrivee(villeA);
+                vol.setVilleDestination(villeA);
             } else {
                 villeRepository.findByNomIgnoreCaseAndDeletedFalse(dto.getVilleNomA())
-                        .ifPresent(ville -> vol.setVilleArrivee(ville));
-                ;
+                        .ifPresent(ville -> vol.setVilleDestination(ville));
 
             }
 
@@ -72,7 +66,6 @@ public class VolService {
             } else {
                 villeRepository.findByNomIgnoreCaseAndDeletedFalse(dto.getVilleNomA())
                         .ifPresent(ville -> vol.setVilleDepart(ville));
-                ;
 
             }
         }
@@ -80,33 +73,31 @@ public class VolService {
     }
 
     /**
-     * Update existing Vol.
+     * Update existing Voyage.
      *
-     * @param dto {@link VolDto}
+     * @param dto {@link VoyageDto}
      * @param id
-     * @return updated Vol object
+     * @return updated Voyage object
      */
-    public VolDto update(final VolDto dto, final long id) {
+    public VoyageDto update(final VoyageDto dto, final long id) {
 
         if (!volRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    String.format("No Vol exists with this ID : %d", id));
+                    String.format("No Voyage exists with this ID : %d", id));
         }
         if (Objects.isNull(dto.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already created Vol cannot have null ID.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already created Voyage cannot have null ID.");
         }
-        Vol vol = volMapper.toEntity(dto);
+        Voyage vol = volMapper.toEntity(dto);
         if (dto.getVilleNomA() != null) {
             if (!isExisteByNom(dto.getVilleNomA())) {
                 Ville villeA = new Ville();
                 villeA.setNom(dto.getVilleNomA());
                 villeA = villeRepository.save(villeA);
-                vol.setVilleArrivee(villeA);
+                vol.setVilleDestination(villeA);
             } else {
                 villeRepository.findByNomIgnoreCaseAndDeletedFalse(dto.getVilleNomA())
-                        .ifPresent(ville -> vol.setVilleArrivee(ville));
-                ;
-
+                        .ifPresent(ville -> vol.setVilleDestination(ville));
             }
 
         }
@@ -127,48 +118,46 @@ public class VolService {
     }
 
     /**
-     * Get Vol by id.
+     * Get Voyage by id.
      *
      * @param id searched Hotel id
-     * @return found VolDto object
+     * @return found VoyageDto object
      */
-    public VolDto findOne(final long id) {
+    public VoyageDto findOne(final long id) {
         if (!volRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    String.format("No Vol exists with this ID : %d", id));
+                    String.format("No Voyage exists with this ID : %d", id));
         }
         return volMapper.toDto(Objects.requireNonNull(volRepository.findById(id).orElse(null)));
     }
 
     /**
-     * Fetch page Vol stored in DB.
+     * Fetch page Voyage stored in DB.
      * 
-     * @param dto of {@link VolDto}
-     * @return page of {@link VolDto}
+     * @param dto of {@link VoyageDto}
+     * @return page of {@link VoyageDto}
      */
 
     /**
-     * Fetch all Vol stored in DB.
+     * Fetch all Voyage stored in DB.
      * 
-     * @return list of {@link VolDto}
+     * @return list of {@link VoyageDto}
      */
-    public List<VolDto> findAll() {
+    public List<VoyageDto> findAll() {
         return volMapper.toDto(volRepository.findAllByDeletedFalse());
 
     }
 
-    public Page<VolDto> findAllPeriodeAndStatut(LocalDate startDate, LocalDate endDate, Pageable pageable,
-            List<StatutVol> statutVols) {
-        Page<Vol> vols = volRepository.findByDeletedFalseAndStatutInAndDateDepartBetween(
-                statutVols,
-                startDate.atStartOfDay(),
-                endDate.atTime(23, 59, 59),
+    public Page<VoyageDto> findAllPeriodeAndStatut(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        Page<Voyage> vols = volRepository.findByDeletedFalseAndDateVoyageBetween(
+                startDate,
+                endDate,
                 pageable);
         return vols.map(vol -> volMapper.toDto(vol));
     }
 
     /**
-     * Remove a Vol by id if exists.
+     * Remove a Voyage by id if exists.
      *
      * @param id removed hotel id.
      */
@@ -179,41 +168,8 @@ public class VolService {
             traceService.writeAuditEvent(EntityAuditAction.VOL, ObjetEntity.VOL);
         }, () -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    String.format("Cannot remove Vol with ID : %d", id));
+                    String.format("Cannot remove Voyage with ID : %d", id));
         });
-    }
-
-    public String generateProformaNumber(LocalDate now) {
-        if (now == null) {
-            now = LocalDate.now();
-        }
-        int year = now.getYear();
-        int month = now.getMonthValue();
-        int day = now.getDayOfMonth();
-
-        // Compter les proformas du jour courant basé sur dateSaisie
-        int sequenceNumber = volRepository.countByDateSaisie(now) + 1;
-
-        // Générer la lettre de séquence
-        String sequenceLetter = generateSequenceLetter(sequenceNumber);
-
-        // Format final: PROF-YYYY-MM-DD-X
-        String numero = sequenceLetter + String.format("%02d", day) + String.format("%02d", month)
-                + String.format("%02d", year % 100);
-
-        return numero;
-    }
-
-    private static String generateSequenceLetter(int sequenceNumber) {
-        StringBuilder result = new StringBuilder();
-
-        while (sequenceNumber > 0) {
-            sequenceNumber--;
-            result.insert(0, (char) ('A' + (sequenceNumber % 26)));
-            sequenceNumber /= 26;
-        }
-
-        return result.toString();
     }
 
     public Boolean isExisteByNom(final String nom) {
@@ -222,11 +178,4 @@ public class VolService {
         return isExiste;
     }
 
-    public List<VilleDto> findVilleByPays(Long paysId) {
-        return villeMapper.toDto(villeRepository.findAllByPaysIdAndDeletedFalse(paysId));
-    }
-
-    public List<VilleDto> findVille() {
-        return villeMapper.toDto(villeRepository.findAllByDeletedFalse());
-    }
 }
