@@ -30,5 +30,5 @@ public abstract class AbstractAuditEntityDto implements Serializable {
     private Instant dateLastModification;
 
     @ReadOnlyProperty
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;  
 }

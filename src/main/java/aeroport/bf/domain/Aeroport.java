@@ -35,29 +35,32 @@ import java.io.Serializable;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "compagnie")
+@Table(name = "aeroport")
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
-public class Compagnie extends AbstractAuditEntity  implements Serializable {
+public class Aeroport extends AbstractAuditEntity  implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
     @EqualsAndHashCode.Include
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "compagnie_seq_generator")
-    @SequenceGenerator(name = "compagnie_seq_generator", sequenceName = "compagnie_sequence",
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "aeroport_seq_generator")
+    @SequenceGenerator(name = "aeroport_seq_generator", sequenceName = "aeroport_sequence",
             initialValue = 1001, allocationSize = 1)
     private Long id;
 
-    @Column(name = "nom_compagnie", nullable = false)
+    @Column(name = "nom_aeroport", nullable = false, unique = true)
     @NotNull
-    private String nomCompagine;
+    private String nomAeroport;
 
     @Column(name = "statut")
     @Enumerated(EnumType.STRING)
     private Statut statut;
 
+
+    private String ville;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("compagnie")
+    @JsonIgnoreProperties("aeroport")
     private Pays pays;
 }

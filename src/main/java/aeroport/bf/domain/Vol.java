@@ -1,6 +1,7 @@
 package aeroport.bf.domain;
 
 import aeroport.bf.domain.enums.Statut;
+import aeroport.bf.domain.enums.StatutVol;
 import aeroport.bf.domain.enums.TypeVol;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -26,6 +27,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 /**
@@ -57,21 +60,33 @@ public class Vol extends AbstractAuditEntity  implements Serializable {
     @Column(name = "numero_vol")
     @NotNull
     private String numero;
-    @Column(name = "ville_depart")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("vol")
+    private Ville villeDepart;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("vol")
+    private Ville villeArrivee;
+    @Column(name = "date_depart")
     @NotNull
-    private String villeDepart;
-    @Column(name = "ville_arrivee")
+    private LocalDateTime dateDepart;
+    @Column(name = "date_arrivee")
     @NotNull
-    private String villeArrivee;
+    private LocalDateTime dateArrivee;
+    private LocalDate dateSaisie;
     @Column(name = "type_vol")
     @Enumerated(EnumType.STRING)
     @NotNull
     private TypeVol typeVol;
+    @Column(name = "statut")
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private StatutVol statut = StatutVol.PROGRAMME;
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("vol")
     private Compagnie compagnie;
 
-    /* @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("vol")
-    private Aeroport aeroport; */
+    private Aeroport aeroport; 
+    
 }

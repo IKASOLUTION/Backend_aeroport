@@ -1,4 +1,6 @@
 package aeroport.bf.service;
+import aeroport.bf.config.audit.EntityAuditAction;
+import aeroport.bf.config.audit.ObjetEntity;
 import aeroport.bf.domain.Exercice;
 import aeroport.bf.dto.ExerciceDto;
 import aeroport.bf.dto.mapper.ExerciceMapper;
@@ -158,7 +160,7 @@ public class ExerciceService {
         exerciceRepository.findTop1ByDeletedFalseAndId(id).ifPresentOrElse(exercice -> {
             exercice.setDeleted(Boolean.TRUE);
             exerciceRepository.save(exercice);
-          traceService.writeAuditEvent( EntityAuditAction.DELETE, ObjetEntity.FOURNISSEUR);
+            traceService.writeAuditEvent( EntityAuditAction.DELETE, ObjetEntity.EXERCICE);
         }, () -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Cannot remove exercice with ID : %d", id));
         });

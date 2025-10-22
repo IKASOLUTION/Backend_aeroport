@@ -9,5 +9,5 @@ import org.mapstruct.Mapper;
  * Mapper for the entity Site and its DTO PaysDto.
  */
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {CompagnieMapper.class, AeroportMapper.class, VilleMapper.class})
 public interface VolMapper extends EntityMapper<VolDto, Vol> {}

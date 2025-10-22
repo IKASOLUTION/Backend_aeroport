@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import aeroport.bf.domain.enums.StatutVol;
 import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
@@ -31,6 +32,11 @@ public class SearchDto {
   
     private LocalDate dateDebut;
     private LocalDate dateFin;
+     private Integer page;
+    private Integer size;
+    private String sortBy;
+    private String sortDirection;
+    private List<StatutVol> statutVols;
 
     
 }

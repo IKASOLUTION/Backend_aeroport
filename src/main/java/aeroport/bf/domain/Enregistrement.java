@@ -1,6 +1,10 @@
 package aeroport.bf.domain;
 
 import aeroport.bf.domain.enums.Statut;
+import aeroport.bf.domain.enums.StatutVol;
+import aeroport.bf.domain.enums.StatutVoyageur;
+import aeroport.bf.domain.enums.TypeVol;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,6 +14,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -24,6 +29,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 /**
@@ -35,29 +42,41 @@ import java.io.Serializable;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "compagnie")
+@Table(name = "enregistrements")
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
-public class Compagnie extends AbstractAuditEntity  implements Serializable {
+public class Enregistrement extends AbstractAuditEntity  implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
     @EqualsAndHashCode.Include
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "compagnie_seq_generator")
-    @SequenceGenerator(name = "compagnie_seq_generator", sequenceName = "compagnie_sequence",
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "enregistrement_seq_generator")
+    @SequenceGenerator(name = "enregistrement_seq_generator", sequenceName = "enregistrement_sequence",
             initialValue = 1001, allocationSize = 1)
     private Long id;
 
-    @Column(name = "nom_compagnie", nullable = false)
-    @NotNull
-    private String nomCompagine;
+   
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "utilisateur_id", nullable = false)
+    private User utilisateur;
 
-    @Column(name = "statut")
-    @Enumerated(EnumType.STRING)
-    private Statut statut;
+    /* @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "information_personnel_id", nullable = false)
+    private InformationPersonnel informationPersonnel;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("compagnie")
-    private Pays pays;
+    @JoinColumn(name = "voyage_id", nullable = false)
+    private Voyage voyage; */
+
+    @Column(name = "adresse_etranger", length = 255)
+    private String adresseEtranger;
+
+    @Column(name = "telephone_etranger", length = 20)
+    private String telephoneEtranger;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "statut", nullable = false, length = 50)
+    private StatutVoyageur statut = StatutVoyageur.EN_ATTENTE;
+    
 }

@@ -18,8 +18,13 @@ public enum ObjetEntity {
     PROFIL("Profil"),
     PROFORMA("Proforma"),
     COMPAGNIE("Compagine"),
+    Aeroport("Aeroport"),
     PAYS("Pays"),
+    EXERCICE("Exercice"),
+    VOL("Vol"),
     ENTETE("Entete");
+    
+
 
 
     private String value;

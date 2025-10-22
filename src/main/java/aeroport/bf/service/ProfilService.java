@@ -14,7 +14,6 @@ import aeroport.bf.domain.MenuAction;
 import aeroport.bf.domain.Profil;
 import aeroport.bf.domain.Trace;
 import aeroport.bf.domain.User;
-import aeroport.bf.domain.enums.TicketStatus;
 import aeroport.bf.dto.MenuActionDto;
 import aeroport.bf.dto.ProfilDto;
 import aeroport.bf.dto.mapper.ProfilMapper;

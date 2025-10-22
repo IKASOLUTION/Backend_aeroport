@@ -1,6 +1,9 @@
 package aeroport.bf.domain;
 
 import aeroport.bf.domain.enums.Statut;
+import aeroport.bf.domain.enums.StatutVol;
+import aeroport.bf.domain.enums.TypeVol;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,6 +27,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 /**
@@ -35,29 +40,26 @@ import java.io.Serializable;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "compagnie")
+@Table(name = "villes")
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
-public class Compagnie extends AbstractAuditEntity  implements Serializable {
+public class Ville extends AbstractAuditEntity  implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
     @EqualsAndHashCode.Include
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "compagnie_seq_generator")
-    @SequenceGenerator(name = "compagnie_seq_generator", sequenceName = "compagnie_sequence",
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ville_seq_generator")
+    @SequenceGenerator(name = "ville_seq_generator", sequenceName = "ville_sequence",
             initialValue = 1001, allocationSize = 1)
     private Long id;
 
-    @Column(name = "nom_compagnie", nullable = false)
+    @Column(name = "nom")
     @NotNull
-    private String nomCompagine;
-
-    @Column(name = "statut")
-    @Enumerated(EnumType.STRING)
-    private Statut statut;
-
+    private String nom;
+   
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("compagnie")
-    private Pays pays;
+    @JsonIgnoreProperties("ville")
+    private Pays pays; 
+    
 }

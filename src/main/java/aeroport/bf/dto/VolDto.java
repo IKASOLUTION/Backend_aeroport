@@ -1,6 +1,10 @@
 package aeroport.bf.dto;
 
+import aeroport.bf.domain.enums.StatutVol;
 import aeroport.bf.domain.enums.TypeVol;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -9,29 +13,42 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-import java.io.Serializable;
-
-
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(callSuper = true)
+@ToString(callSuper = true,exclude = {"aeroport","compagnie"})
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+
 public class VolDto extends AbstractAuditEntityDto  implements Serializable {
    
     private Long id;
     
     private String numero;
    
-    private String villeDepart;
+    private VilleDto villeDepart;
    
-    private String villeArrivee;
+    private VilleDto villeArrivee;
    
     private TypeVol typeVol;
    
     private CompagnieDto compagnie;
 
+    private AeroportDto aeroport;
+
+    private LocalDateTime dateDepart;
+
+    private LocalDateTime dateArrivee;
+
+    private StatutVol statut;
+
+    private LocalDate dateSaisie;
+
+    private String villeNomD;
+    
+    private String villeNomA;
    
-}
+
+   
+} 

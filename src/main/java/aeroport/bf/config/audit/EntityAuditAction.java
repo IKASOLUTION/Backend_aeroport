@@ -10,6 +10,7 @@ public enum EntityAuditAction {
     REUNITIALISATION("Réunitialisation"),
     ACTIVATION("Activation"),
     DESACTIVATION("Désactivation"),
+    VOL("Vol"),
     CONNEXION("Connexion");
 
     private String value;
