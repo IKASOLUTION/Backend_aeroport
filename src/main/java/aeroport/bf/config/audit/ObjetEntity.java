@@ -23,6 +23,7 @@ public enum ObjetEntity {
     EXERCICE("Exercice"),
     VOL("Vol"),
     LISTE_NOIRE("Liste noire"),
+    RESPONSABLE("Responsable"),
     ENTETE("Entete");
     
 

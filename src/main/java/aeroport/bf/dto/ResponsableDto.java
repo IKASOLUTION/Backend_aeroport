@@ -1,6 +1,6 @@
 package aeroport.bf.dto;
 
-import aeroport.bf.domain.enums.Statut;
+import aeroport.bf.domain.AbstractAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -18,25 +18,18 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
-public class CompagnieDto extends AbstractAuditEntityDto implements Serializable{
+@SuppressWarnings("common-java:DuplicatedBlocks")
+public class ResponsableDto extends AbstractAuditEntity implements Serializable {
+
     private Long id;
 
-    private String nomCompagine;
+    private String nom;
 
-    private Statut statut;
+    private String prenom;
 
-    private String groupe;
+    private String nationalite;
 
-    private String siege;
-
-    private String contact;
+    private String telephone;
 
     private String email;
-
-    private String adresseSiege;
-
-    private PaysDto pays;
-
-    private ResponsableDto responsable;
-
 }

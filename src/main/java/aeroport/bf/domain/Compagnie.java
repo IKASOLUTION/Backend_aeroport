@@ -10,10 +10,14 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -57,7 +61,28 @@ public class Compagnie extends AbstractAuditEntity  implements Serializable {
     @Enumerated(EnumType.STRING)
     private Statut statut;
 
+    @Column(name = "groupe")
+    private String groupe;
+
+    @Column(name = "siege")
+    private String siege;
+
+    @Column(name = "contact")
+    private String contact;
+
+    @Email
+    @Size(min = 4, max = 254)
+    @Column(name="email", length = 254, unique = true)
+    private String email;
+
+    @Column(name = "adresse_siege")
+    private String adresseSiege;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("compagnie")
     private Pays pays;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "responsable_id", referencedColumnName = "id")
+    private Responsable responsable;
 }
