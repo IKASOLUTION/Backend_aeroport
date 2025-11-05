@@ -2,8 +2,10 @@ package aeroport.bf.dto.mapper;
 
 import aeroport.bf.domain.Aeroport;
 import aeroport.bf.domain.Pays;
+import aeroport.bf.domain.Ville ;
 import aeroport.bf.dto.AeroportDto;
 import aeroport.bf.dto.PaysDto;
+import aeroport.bf.dto.VilleDto;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -31,5 +33,5 @@ public interface AeroportMapper extends EntityMapper<AeroportDto, Aeroport> {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "nom", source = "nom")
    
-    PaysDto toDtoVilleId(Ville ville);
+    VilleDto toDtoVilleId(Ville ville);
 }
