@@ -44,25 +44,53 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(callSuper = true,exclude = {"utilisateur","voyage"})
+@ToString(callSuper = true,exclude = {"voyage"})
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 public class EnregistrementDto extends AbstractAuditEntityDto implements Serializable {
     
     private Long id;
-
-   
-   
-    private UserDto utilisateur;
-
    
     private VoyageDto voyage; 
-
-    private String adresseEtranger;
-
-    private String telephoneEtranger;
+    private InformationPersonnelleDto informationPersonnelle;
 
 
     @Builder.Default
     private StatutVoyageur statut = StatutVoyageur.EN_ATTENTE;
+     // === Document ===
+    private String typeDocument; // 'PASSEPORT' | 'CNI' | 'PERMIS_CONDUIRE'
+    private String numeroDocument;
+    private String numeroNip;
+    private LocalDate dateDelivrance;
+    private String lieuDelivrance;
+    private String photoProfil;
+    private String imageRecto;
+    private String imageVerso;
+
+    // === Personal Info ===
+    private String nomFamille;
+    private String prenom;
+    private LocalDate dateNaissance;
+    private String lieuNaissance;
+    private String nationalite;
+    private String profession;
+
+    // === Coordonnees ===
+    private String paysResidence;
+    private String emailContact;
+    private String telephoneBurkina;
+    private String telephoneEtranger;
+    private String adresseBurkina;
+    private String adresseEtranger;
+
+    // === Voyage ===
+    private Long volId;
+    private String villeDepart;
+    private String villeDestination;
+    private LocalDate dateVoyage;
+    private String heureVoyage;
+    private String motifVoyage;
+    private String etatVoyage; // 'ALLER' | 'RETOUR' | 'ALLER_RETOUR'
+    private Integer dureeSejour;
+    private String photoEnregistrement;
     
 }

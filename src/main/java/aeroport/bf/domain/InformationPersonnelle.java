@@ -3,6 +3,7 @@ package aeroport.bf.domain;
 import aeroport.bf.domain.enums.Statut;
 import aeroport.bf.domain.enums.StatutVol;
 import aeroport.bf.domain.enums.StatutVoyageur;
+import aeroport.bf.domain.enums.TypeDocument;
 import aeroport.bf.domain.enums.TypeVol;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -107,6 +108,10 @@ public class InformationPersonnelle extends AbstractAuditEntity  implements Seri
     @Enumerated(EnumType.STRING)
     @Column(name = "statut", length = 20)
     private Statut statut = Statut.ACTIF;
+    @Column(name = "date_Saisie")
+    @Builder.Default
+    private LocalDate dateSaisie = LocalDate.now();
+
 
    
     

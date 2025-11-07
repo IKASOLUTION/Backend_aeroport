@@ -10,8 +10,8 @@ import org.mapstruct.Mapping;
  * Mapper for the entity Site and its DTO PaysDto.
  */
 
-@Mapper(componentModel = "spring", uses = {VoyageMapper.class, UserMapper.class})
+@Mapper(componentModel = "spring", uses = {VoyageMapper.class, InformationPersonnelleMapper.class})
 public interface EnregistrementMapper extends EntityMapper<EnregistrementDto, Enregistrement> {
-    @Mapping(target = "utilisateur", expression = "java(userMapper.toDto(entity.getUtilisateur()))")
-    EnregistrementDto toDto(Enregistrement entity);
+/*     @Mapping(target = "utilisateur", expression = "java(userMapper.toDto(entity.getUtilisateur()))")
+ */    EnregistrementDto toDto(Enregistrement entity);
 }
