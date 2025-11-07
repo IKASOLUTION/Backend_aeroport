@@ -25,9 +25,9 @@ public class AeroportDto extends AbstractAuditEntityDto implements Serializable{
 
     private Statut statut;
 
-    private Ville ville;
+    private VilleDto ville;
 
-    private Pays pays;
+    private PaysDto pays;
 
     
 }

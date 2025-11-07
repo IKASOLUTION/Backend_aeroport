@@ -62,10 +62,10 @@ public class Enregistrement extends AbstractAuditEntity  implements Serializable
     @JoinColumn(name = "utilisateur_id", nullable = false)
     private User utilisateur;
 
-    /* @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "information_personnel_id", nullable = false)
     private InformationPersonnel informationPersonnel;
-*/
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "voyage_id", nullable = false)
     private Voyage voyage; 
