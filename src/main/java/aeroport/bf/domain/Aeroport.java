@@ -58,7 +58,7 @@ public class Aeroport extends AbstractAuditEntity  implements Serializable {
     private Statut statut;
 
 
-    private String ville;
+    private Ville ville;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("aeroport")

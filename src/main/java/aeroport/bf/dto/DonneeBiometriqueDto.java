@@ -1,6 +1,5 @@
 package aeroport.bf.dto;
-
-import aeroport.bf.domain.enums.Statut;
+import aeroport.bf.domain.AbstractAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,6 +10,10 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 
+
+/**
+ * A donnee_biometrique.
+ */
 @Getter
 @Setter
 @SuperBuilder
@@ -18,16 +21,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
-public class AeroportDto extends AbstractAuditEntityDto implements Serializable{
+public class DonneeBiometriqueDto extends AbstractAuditEntity implements Serializable {
     private Long id;
-
-    private String nomAeroport;
-
-    private Statut statut;
-
-    private VilleDto ville;
-
-    private PaysDto pays;
-
-    
 }

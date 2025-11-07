@@ -5,6 +5,6 @@ package aeroport.bf.domain.enums;
  */
 public enum Statut {
     
-    ACTIF,INACTIF,SUSPENDU
+    ACTIF,INACTIF,SUSPENDU, LEVEE
     
 }

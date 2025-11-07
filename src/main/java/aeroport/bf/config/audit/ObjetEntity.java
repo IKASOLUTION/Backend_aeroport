@@ -22,6 +22,8 @@ public enum ObjetEntity {
     PAYS("Pays"),
     EXERCICE("Exercice"),
     VOL("Vol"),
+    LISTE_NOIRE("Liste noire"),
+    RESPONSABLE("Responsable"),
     ENTETE("Entete");
     
 

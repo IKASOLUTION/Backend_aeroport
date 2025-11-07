@@ -5,7 +5,9 @@ import aeroport.bf.config.audit.ObjetEntity;
 import aeroport.bf.domain.Compagnie;
 import aeroport.bf.domain.enums.Statut;
 import aeroport.bf.dto.CompagnieDto;
+import aeroport.bf.dto.ResponsableDto;
 import aeroport.bf.dto.mapper.CompagnieMapper;
+import aeroport.bf.dto.mapper.ResponsableMapper;
 import aeroport.bf.repository.CompagnieRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,8 @@ import java.util.Objects;
 public class CompagnieService {
     private final CompagnieRepository compagnieRepository;
     private final CompagnieMapper compagnieMapper;
+    private final ResponsableService responsableService;
+    private final ResponsableMapper responsableMapper;
     private final TraceService traceService;
 
     /**
@@ -35,6 +39,10 @@ public class CompagnieService {
     public CompagnieDto create(final CompagnieDto dto) {
         Compagnie compagnie = compagnieMapper.toEntity(dto);
         compagnie.setStatut(Statut.ACTIF);
+        if(dto.getResponsable()!=null) {
+            ResponsableDto responsable = responsableService.create( dto.getResponsable());
+            compagnie.setResponsable(responsableMapper.toEntity(responsable));
+        }
         compagnie= compagnieRepository.save(compagnie);
         return compagnieMapper.toDto(compagnie);
     }
@@ -55,6 +63,15 @@ public class CompagnieService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already created compagnie cannot have null ID.");
         }
         Compagnie compagnie = compagnieMapper.toEntity(dto);
+        if(dto.getResponsable()!=null) {
+            ResponsableDto responsable;
+            if(compagnie.getResponsable().getId()!=null) {
+                responsable = responsableService.update(dto.getResponsable(), compagnie.getResponsable().getId());
+            }else {
+                responsable = responsableService.create(dto.getResponsable());
+            }
+            compagnie.setResponsable(responsableMapper.toEntity(responsable));
+        }
         return compagnieMapper.toDto(compagnieRepository.save(compagnie));
     }
 
