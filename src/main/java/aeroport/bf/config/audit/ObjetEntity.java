@@ -24,6 +24,7 @@ public enum ObjetEntity {
     VOL("Vol"),
     LISTE_NOIRE("Liste noire"),
     RESPONSABLE("Responsable"),
+    NOTIFICATION("Notification"),
     ENTETE("Entete");
     
 
