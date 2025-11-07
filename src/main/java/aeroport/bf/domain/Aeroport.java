@@ -1,6 +1,8 @@
 package aeroport.bf.domain;
 
 import aeroport.bf.domain.enums.Statut;
+import aeroport.bf.domain.enums.StatutAeroport;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,7 +57,7 @@ public class Aeroport extends AbstractAuditEntity  implements Serializable {
 
     @Column(name = "statut")
     @Enumerated(EnumType.STRING)
-    private Statut statut;
+    private StatutAeroport statutAeroport;
 
 
     private Ville ville;

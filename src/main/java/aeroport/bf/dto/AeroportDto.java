@@ -1,6 +1,9 @@
 package aeroport.bf.dto;
 
+import aeroport.bf.domain.Pays;
+import aeroport.bf.domain.Ville;
 import aeroport.bf.domain.enums.Statut;
+import aeroport.bf.domain.enums.StatutAeroport;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,11 +26,11 @@ public class AeroportDto extends AbstractAuditEntityDto implements Serializable{
 
     private String nomAeroport;
 
-    private Statut statut;
+    private StatutAeroport statutAeroport;
 
-    private VilleDto ville;
+    private Ville ville;
 
-    private PaysDto pays;
+    private Pays pays;
 
     
 }

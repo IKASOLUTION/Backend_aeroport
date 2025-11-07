@@ -5,33 +5,64 @@ import aeroport.bf.domain.Pays;
 import aeroport.bf.domain.Ville ;
 import aeroport.bf.dto.AeroportDto;
 import aeroport.bf.dto.PaysDto;
+import aeroport.bf.dto.UserDto;
 import aeroport.bf.dto.VilleDto;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Mapper for the entity Site and its DTO CompagnieDto.
  */
 
-@Mapper(componentModel = "spring")
-public interface AeroportMapper extends EntityMapper<AeroportDto, Aeroport> {
-    @Mapping(target = "pays", source = "pays", qualifiedByName = "paysId")
-    @Mapping(target= "ville", source = "ville", qualifiedByName = "villeId")
-    AeroportDto toDto(Aeroport s);
+@Component
+public class AeroportMapper {
+    @Autowired
+    PaysMapper paysMapper;
+    VilleMapper villeMapper ;
+    public AeroportDto toDto(Aeroport aeroport) {
+        return AeroportDto.builder()
+                .id(aeroport.getId())
+                .nomAeroport(aeroport.getNomAeroport())
+                .statutAeroport(aeroport.getStatutAeroport())
+                .isDeleted(aeroport.getDeleted())
+                .pays(aeroport.getPays())
+                .ville(aeroport.getVille())
+                .build();
+    }
 
-    @Named("paysId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "nom", source = "nom")
-    @Mapping(target = "code", source = "code")
-    PaysDto toDtoPaysId(Pays pays);
+    public Aeroport toEntity(AeroportDto aeroportDto) {
+        return Aeroport.builder()
+                .id(aeroportDto.getId())
+                .nomAeroport(aeroportDto.getNomAeroport())
+                .statutAeroport(aeroportDto.getStatutAeroport())
+                .pays(aeroportDto.getPays())
+                .ville(aeroportDto.getVille())
 
-    @Named("villeId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "nom", source = "nom")
-   
-    VilleDto toDtoVilleId(Ville ville);
+                .build();
+    }
+
+    public AeroportDto toTrace(Aeroport aeroport) {
+        return AeroportDto.builder()
+                .id(aeroport.getId())
+                .nomAeroport(aeroport.getNomAeroport())
+                .statutAeroport(aeroport.getStatutAeroport())
+                .isDeleted(aeroport.getDeleted())
+                .pays(aeroport.getPays())
+                .ville(aeroport.getVille())
+                .build();
+    }
+
+    public List<AeroportDto> toDtos(List<Aeroport> aeroports) {
+        return aeroports.stream().map(this::toDto).toList();
+    }
+
+    public List<Aeroport> toEntities(List<AeroportDto> aeroportDtos) {
+        return aeroportDtos.stream().map(this::toEntity).toList();
+    }
 }
