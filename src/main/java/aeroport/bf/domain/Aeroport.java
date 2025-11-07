@@ -57,7 +57,7 @@ public class Aeroport extends AbstractAuditEntity  implements Serializable {
     @Enumerated(EnumType.STRING)
     private Statut statut;
 
-
+    @ManyToOne(fetch = FetchType.LAZY)
     private Ville ville;
 
     @ManyToOne(fetch = FetchType.LAZY)
