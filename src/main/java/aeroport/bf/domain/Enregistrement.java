@@ -80,6 +80,9 @@ public class Enregistrement extends AbstractAuditEntity  implements Serializable
     @Column(name = "telephone_etranger", length = 20)
     private String telephoneEtranger;
 
+    @Column(name = "exercice", length = 255)
+    private Long exercice;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "statut", nullable = false, length = 50)
     @Builder.Default

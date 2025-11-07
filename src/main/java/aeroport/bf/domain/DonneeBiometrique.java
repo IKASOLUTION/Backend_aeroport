@@ -1,4 +1,5 @@
 package aeroport.bf.domain;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -42,10 +43,16 @@ public class DonneeBiometrique extends AbstractAuditEntity  implements Serializa
     @SequenceGenerator(name = "donnee_biometrique_seq_generator", sequenceName = "donnee_biometrique_sequence",
             initialValue = 1001, allocationSize = 1)
     private Long id;
+    @Column(name = "empreinte_gauche")
     private Boolean empreinteGauche;
+    @Column(name = "empreinte_droite")
     private Boolean empreinteDroite;
+    @Column(name = "empreinte_pouces")
     private Boolean empreintePouces;
+    @Column(name = "photo_biometrique_path")
     private String photoBiometriquePath;
+    @Column(name = "exercice")
+    private Long exercice;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "enregistrement_id", nullable = false)
     private Enregistrement enregistrement;

@@ -29,6 +29,7 @@ public class DonneeBiometriqueDto extends AbstractAuditEntity implements Seriali
     private Boolean empreinteDroite;
     private Boolean empreintePouces;
     private Long enregistrementId;
+    private Long exercice;;
     private MultipartFile photoBiometrique;
      private String photoBiometriquePath;
 }
