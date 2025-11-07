@@ -2,6 +2,7 @@ package aeroport.bf.dto;
 
 import aeroport.bf.domain.AbstractAuditEntity;
 import aeroport.bf.domain.enums.Statut;
+import aeroport.bf.domain.enums.TypeDocument;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

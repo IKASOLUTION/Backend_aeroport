@@ -72,8 +72,7 @@ public class VoyageDto extends AbstractAuditEntityDto  implements Serializable {
     private Long dureeSejour;
     @Builder.Default
     private StatutVoyage statut = StatutVoyage.ACTIF;
-     private String villeNomD;
-    
+    private String villeNomD;
     private String villeNomA;
 
     
