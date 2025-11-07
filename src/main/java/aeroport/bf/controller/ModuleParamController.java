@@ -50,6 +50,8 @@ public class ModuleParamController {
         @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
 })
 public ResponseEntity<ModuleParamDto> createModuleParam(@Valid @RequestBody final ModuleParamDto dto) {
+    System.out.println("dto ==============================");
+    log.debug("REST request to save ModuleParam : {}", dto);
     return ResponseEntity.ok(moduleParamService.createModuleParam(dto));
 }
 

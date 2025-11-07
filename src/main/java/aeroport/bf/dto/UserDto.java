@@ -39,7 +39,7 @@ public class UserDto extends AbstractAuditEntityDto {
     @Size(max = 100)
     @NotEmpty(message = "Email is mandatory")
     @NotNull(message = "Email cannot be null")
-    private String emailAddress;
+    private String email;
 
     private String password;
     private String nom;

@@ -77,7 +77,7 @@ public class UserService {
      * @return saved user object
      */
     private UserDto saveUser(final UserDto userDto) {
-        String[] parts = userDto.getEmailAddress().split("@");
+        String[] parts = userDto.getEmail().split("@");
         userDto.setLogin(parts[0]);
         
         User user = mapper.toEntity(userDto);
@@ -98,7 +98,7 @@ public class UserService {
         user.setNom(userDto.getNom());
         user.setUsername(userDto.getLogin());
         user.setPrenom(userDto.getPrenom());
-        user.setEmail(userDto.getEmailAddress().toLowerCase());
+        user.setEmail(userDto.getEmail().toLowerCase());
         String token = UUID.randomUUID().toString();
         user.setVerificationToken(token);
         user.setExpiryDate(calculateExpiryDate());
@@ -114,7 +114,7 @@ public class UserService {
            // user.setProfil(userDto.getProfil());
             user.setNom(userDto.getNom());
             user.setPrenom(userDto.getPrenom());
-            user.setEmail(userDto.getEmailAddress().toLowerCase());
+            user.setEmail(userDto.getEmail().toLowerCase());
             
            
         }
@@ -183,7 +183,7 @@ public class UserService {
      * @return created user object
      */
     public UserDto createUser(final UserDto userDto) {
-        if (userRepository.existsByDeletedFalseAndEmailOrUsername(userDto.getEmailAddress(), userDto.getLogin())) {
+        if (userRepository.existsByDeletedFalseAndEmailOrUsername(userDto.getEmail(), userDto.getLogin())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User exists");
         }
 

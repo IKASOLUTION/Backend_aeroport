@@ -2,9 +2,10 @@ package aeroport.bf.service;
 
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collector;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import aeroport.bf.config.audit.EntityAuditAction;
-import aeroport.bf.config.security.SecurityUtils;
+
 import aeroport.bf.domain.MenuAction;
 import aeroport.bf.domain.ModuleParam;
 import aeroport.bf.domain.Trace;
@@ -25,7 +26,6 @@ import aeroport.bf.dto.mapper.ModuleParamMapper;
 import aeroport.bf.repository.MenuActionRepository;
 import aeroport.bf.repository.ModuleParamRepository;
 import aeroport.bf.repository.TraceRepository;
-import aeroport.bf.repository.UserRepository;
 
 
 
@@ -38,8 +38,6 @@ public class ModuleParamService {
     private final MenuActionRepository menuActionRepository;
     private final MenuActionMapper menuActionMapper;
     private final TraceRepository traceRepository;
-    private final UserRepository userRepository;
-    private final TraceService traceService;
 
 
 /**
@@ -52,24 +50,65 @@ private ModuleParamDto saveModuleParam(final ModuleParamDto moduleParamDto) {
     ModuleParam moduleParam = moduleParamMapper.toEntity(moduleParamDto);
     moduleParam.setDeleted(Boolean.FALSE);
 
-
     ModuleParam savedModuleParam = moduleParamRepository.save(moduleParam);
-    
-    if(!moduleParamDto.getMenuActions().isEmpty()) {
-        for(MenuActionDto dto: moduleParamDto.getMenuActions()) {
-            MenuAction action = menuActionMapper.toEntity(dto);
-            if (isExisteMenuByCode(dto)) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Le code de  existe déjà.");
+
+    // synchronize menu actions: create new ones, update existing, mark deleted removed ones
+    List<MenuAction> existingMenus = menuActionRepository.findByModuleParamIdAndDeletedFalse(savedModuleParam.getId());
+    Set<Long> processedIds = new HashSet<>();
+
+    if (moduleParamDto.getMenuActions() != null && !moduleParamDto.getMenuActions().isEmpty()) {
+        for (MenuActionDto dto : moduleParamDto.getMenuActions()) {
+
+            // If DTO has id => try update existing
+            if (dto.getId() != null) {
+                menuActionRepository.findTop1ByDeletedFalseAndId(dto.getId()).ifPresentOrElse(existing -> {
+                    // validate code uniqueness (will throw if conflict)
+                    if (isExisteMenuByCode(dto)) {
+                        throw new ResponseStatusException(HttpStatus.CONFLICT, "Le code de  existe déjà.");
+                    }
+                    existing.setMenuActionLibelle(dto.getMenuActionLibelle());
+                    existing.setMenuActionCode(dto.getMenuActionCode());
+                    existing.setDeleted(Boolean.FALSE);
+                    existing.setModuleParam(savedModuleParam);
+                    menuActionRepository.save(existing);
+                    processedIds.add(existing.getId());
+                }, () -> {
+                    // not found (maybe previously deleted) -> create new
+                    MenuAction action = menuActionMapper.toEntity(dto);
+                    if (isExisteMenuByCode(dto)) {
+                        throw new ResponseStatusException(HttpStatus.CONFLICT, "Le code de  existe déjà.");
+                    }
+                    action.setDeleted(false);
+                    action.setModuleParam(savedModuleParam);
+                    MenuAction saved = menuActionRepository.save(action);
+                    processedIds.add(saved.getId());
+                });
+            } else {
+                // new menu action -> create
+                MenuAction action = menuActionMapper.toEntity(dto);
+                if (isExisteMenuByCode(dto)) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Le code de  existe déjà.");
+                }
+                action.setDeleted(false);
+                action.setModuleParam(savedModuleParam);
+                MenuAction saved = menuActionRepository.save(action);
+                processedIds.add(saved.getId());
             }
-            action.setDeleted(false);
-            action.setModuleParam(savedModuleParam);
-            MenuAction menu= menuActionRepository.save(action);
-           
-                // traceService.writeAuditEvent(menu, EntityAuditAction.CREATE);
         }
     }
 
-    return moduleParamMapper.toDto(savedModuleParam);
+    // mark as deleted any existing menus that were not sent in the DTO
+    for (MenuAction existing : existingMenus) {
+        if (!processedIds.contains(existing.getId())) {
+            existing.setDeleted(Boolean.TRUE);
+            menuActionRepository.save(existing);
+        }
+    }
+
+    // Return DTO enriched with persisted menu actions
+    moduleParamDto.setId(savedModuleParam.getId());
+    moduleParamDto.setMenuActions(menuActionMapper.toDtos(menuActionRepository.findByModuleParamIdAndDeletedFalse(savedModuleParam.getId())));
+    return moduleParamDto;
 }
 
 /**
