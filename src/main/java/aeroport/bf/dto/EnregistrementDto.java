@@ -35,6 +35,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.springframework.web.multipart.MultipartFile;
+
 
 /**
  * A compagnie.
@@ -44,7 +46,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(callSuper = true,exclude = {"voyage"})
+@ToString(callSuper = true,exclude = {"voyage","informationPersonnelle", "photoProfil", "imageRecto", "imageVerso"})
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 public class EnregistrementDto extends AbstractAuditEntityDto implements Serializable {
     
@@ -62,9 +64,9 @@ public class EnregistrementDto extends AbstractAuditEntityDto implements Seriali
     private String numeroNip;
     private LocalDate dateDelivrance;
     private String lieuDelivrance;
-    private String photoProfil;
-    private String imageRecto;
-    private String imageVerso;
+    private MultipartFile  photoProfil;
+    private MultipartFile  imageRecto;
+    private MultipartFile  imageVerso;
 
     // === Personal Info ===
     private String nomFamille;
@@ -91,6 +93,5 @@ public class EnregistrementDto extends AbstractAuditEntityDto implements Seriali
     private String motifVoyage;
     private String etatVoyage; // 'ALLER' | 'RETOUR' | 'ALLER_RETOUR'
     private Integer dureeSejour;
-    private String photoEnregistrement;
     
 }

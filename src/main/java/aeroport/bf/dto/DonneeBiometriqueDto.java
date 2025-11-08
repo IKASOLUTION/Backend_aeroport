@@ -10,6 +10,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 
+import org.springframework.web.multipart.MultipartFile;
+
 
 /**
  * A donnee_biometrique.
@@ -19,8 +21,14 @@ import java.io.Serializable;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = {"photoBiometrique"})
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 public class DonneeBiometriqueDto extends AbstractAuditEntity implements Serializable {
     private Long id;
+    private Boolean empreinteGauche;
+    private Boolean empreinteDroite;
+    private Boolean empreintePouces;
+    private Long enregistrementId;
+    private MultipartFile photoBiometrique;
+     private String photoBiometriquePath;
 }
