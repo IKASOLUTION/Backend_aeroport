@@ -96,6 +96,12 @@ public class ListeNoire extends AbstractAuditEntity  implements Serializable {
      @Enumerated(EnumType.STRING)
      private Statut statut;
 
+    @Column(name = "numero_nip", length = 50)
+    private String numeroNip;
+
+    @Column(name = "numero_cnib")
+    private String numeroCnib;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "donnee_biometrique_id", nullable = false)
     private DonneeBiometrique donneeBiometrique;

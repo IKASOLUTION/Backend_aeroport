@@ -2,7 +2,10 @@ package aeroport.bf.service;
 
 import aeroport.bf.config.audit.EntityAuditAction;
 import aeroport.bf.config.audit.ObjetEntity;
+import aeroport.bf.domain.ListeNoire;
 import aeroport.bf.domain.Notification;
+import aeroport.bf.domain.enums.Statut;
+import aeroport.bf.dto.ListeNoireDto;
 import aeroport.bf.dto.NotificationDto;
 import aeroport.bf.dto.mapper.NotificationMapper;
 import aeroport.bf.repository.NotificationRepository;
@@ -22,6 +25,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final NotificationMapper notificationMapper;
     private final TraceService traceService;
+    private final ListeNoireService listeNoireService;
 
 
     /**
@@ -31,9 +35,14 @@ public class NotificationService {
      * @return saved Pays object
      */
     public NotificationDto create(final NotificationDto dto) {
-        Notification notification = notificationMapper.toEntity(dto);
-        notification= notificationRepository.save(notification);
-        return notificationMapper.toDto(notification);
+        ListeNoireDto listeNoire = listeNoireService.findPersonneExisteListeNoire(dto.getNom(), dto.getPrenom(), dto.getNumeroNip());
+        if (listeNoire != null) {
+            Notification notification = notificationMapper.toEntity(dto);
+            notification.setStatut(Statut.ACTIF);
+            notification= notificationRepository.save(notification);
+            return notificationMapper.toDto(notification);
+        }
+        return null;
     }
 
     /**

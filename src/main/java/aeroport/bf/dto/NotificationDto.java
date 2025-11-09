@@ -1,5 +1,6 @@
 package aeroport.bf.dto;
 
+import aeroport.bf.domain.enums.Statut;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -22,5 +24,19 @@ public class NotificationDto extends AbstractAuditEntityDto implements Serializa
 
     private String libelle;
 
-    
+    private String nom;
+
+    private String prenom;
+    /**
+     * Statut
+     */
+    private Statut statut;
+
+    private String numeroNip;
+
+    private String numeroCnib;
+
+    private LocalDate dateNaissance;
+
+    private String lieuNaissance;
 }
