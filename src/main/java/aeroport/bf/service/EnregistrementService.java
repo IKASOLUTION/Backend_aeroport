@@ -76,7 +76,7 @@ public EnregistrementDto create(final EnregistrementDto dto) {
     infoPerso.setDateNaissance(dto.getDateNaissance());
     infoPerso.setLieuNaissance(dto.getLieuNaissance());
     infoPerso.setNationalite(dto.getNationalite());
-    infoPerso.setTypeDocument(TypeDocument.CNI);
+    infoPerso.setTypeDocument(dto.getTypeDocument());
     infoPerso.setNumeroDocument(dto.getNumeroDocument());
     infoPerso.setDateDelivrance(dto.getDateDelivrance());
     infoPerso.setLieuDelivrance(dto.getLieuDelivrance());
@@ -96,7 +96,7 @@ public EnregistrementDto create(final EnregistrementDto dto) {
     voyage.setVol(volRepository.getReferenceById(1019L)); // Assurez-vous que le vol existe
     voyage.setVilleDepart(villeRepository.getReferenceById(1L));
     voyage.setVilleDestination(villeRepository.getReferenceById(2L));
-    voyage.setMotifVoyage(MotifVoyage.AFFAIRES);
+    voyage.setMotifVoyage(dto.getMotifVoyage());
     voyage.setDateVoyage(dto.getDateVoyage());
     voyage.setHeureVoyage(LocalTime.now());
     voyage.setEtatVoyage(EtatVoyage.ALLER);

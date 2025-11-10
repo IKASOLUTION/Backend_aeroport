@@ -2,9 +2,11 @@ package aeroport.bf.dto;
 
 import aeroport.bf.domain.AbstractAuditEntity;
 import aeroport.bf.domain.Voyage;
+import aeroport.bf.domain.enums.MotifVoyage;
 import aeroport.bf.domain.enums.Statut;
 import aeroport.bf.domain.enums.StatutVol;
 import aeroport.bf.domain.enums.StatutVoyageur;
+import aeroport.bf.domain.enums.TypeDocument;
 import aeroport.bf.domain.enums.TypeVol;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -59,7 +61,7 @@ public class EnregistrementDto extends AbstractAuditEntityDto implements Seriali
     @Builder.Default
     private StatutVoyageur statut = StatutVoyageur.EN_ATTENTE;
      // === Document ===
-    private String typeDocument; // 'PASSEPORT' | 'CNI' | 'PERMIS_CONDUIRE'
+    private TypeDocument typeDocument; // 'PASSEPORT' | 'CNI' | 'PERMIS_CONDUIRE'
     private String numeroDocument;
     private String numeroNip;
     private LocalDate dateDelivrance;
@@ -90,7 +92,7 @@ public class EnregistrementDto extends AbstractAuditEntityDto implements Seriali
     private String villeDestination;
     private LocalDate dateVoyage;
     private String heureVoyage;
-    private String motifVoyage;
+    private MotifVoyage motifVoyage;
     private String etatVoyage; // 'ALLER' | 'RETOUR' | 'ALLER_RETOUR'
     private Integer dureeSejour;
     

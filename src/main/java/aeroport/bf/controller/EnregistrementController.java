@@ -1,6 +1,8 @@
 package aeroport.bf.controller;
 
 import aeroport.bf.config.util.PageableUtil;
+import aeroport.bf.domain.enums.MotifVoyage;
+import aeroport.bf.domain.enums.TypeDocument;
 import aeroport.bf.dto.SearchDto;
 import aeroport.bf.dto.UserDto;
 import aeroport.bf.dto.VilleDto;
@@ -96,13 +98,14 @@ public class EnregistrementController {
             @RequestParam(value = "etatVoyage", required = false) String etatVoyage,
             @RequestParam(value = "dureeSejour", required = false) Integer dureeSejour
     ) {
+        System.out.println("Creating Enregistrement for: " + typeDocument + " " + motifVoyage);
         
         // Construire le DTO
         EnregistrementDto dto = EnregistrementDto.builder()
                 .photoProfil(photoProfil)
                 .imageRecto(imageRecto)
                 .imageVerso(imageVerso)
-                .typeDocument(typeDocument)
+                .typeDocument(TypeDocument.valueOf( typeDocument.toUpperCase()))
                 .numeroDocument(numeroDocument)
                 .numeroNip(numeroNip)
                 .dateDelivrance(dateDelivrance)
@@ -124,12 +127,13 @@ public class EnregistrementController {
                 .villeDestination(villeDestination)
                 .dateVoyage(dateVoyage)
                 .heureVoyage(heureVoyage)
-                .motifVoyage(motifVoyage)
+                .motifVoyage(MotifVoyage.valueOf(motifVoyage.toUpperCase()))
                 .etatVoyage(etatVoyage)
                 .dureeSejour(dureeSejour)
                 .build();
-        
+         System.out.println("Creating EnregistrementDto for: " + dto);
         EnregistrementDto saved = enregistrementService.create(dto);
+        
         return ResponseEntity.ok(saved);
     }
 
