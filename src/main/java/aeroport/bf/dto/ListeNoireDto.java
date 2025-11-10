@@ -2,6 +2,7 @@ package aeroport.bf.dto;
 
 import aeroport.bf.domain.AbstractAuditEntity;
 import aeroport.bf.domain.enums.Statut;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -62,6 +63,10 @@ public class ListeNoireDto extends AbstractAuditEntity implements Serializable {
      * Statut
      */
      private Statut statut;
+
+    private String numeroNip;
+
+    private String numeroCnib;
 
     private DonneeBiometriqueDto donneeBiometrique;
 

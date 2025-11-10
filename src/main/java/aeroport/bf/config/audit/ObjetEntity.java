@@ -24,8 +24,13 @@ public enum ObjetEntity {
     VOL("Vol"),
     LISTE_NOIRE("Liste noire"),
     RESPONSABLE("Responsable"),
+<<<<<<< HEAD
     ENTETE("Entete"),
     VILLE("Ville");
+=======
+    NOTIFICATION("Notification"),
+    ENTETE("Entete");
+>>>>>>> b03a1e927f636bc1cd0609c8180aade55d88d82b
     
 
 

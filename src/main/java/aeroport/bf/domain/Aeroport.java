@@ -56,11 +56,13 @@ public class Aeroport extends AbstractAuditEntity  implements Serializable {
     @NotNull
     private String nomAeroport;
 
+
      @Enumerated(EnumType.STRING)
     private StatutAeroport statutAeroport;
 
     @ManyToOne
     @JoinColumn(name = "ville_id")
+
     private Ville ville;
     private String pays;
 

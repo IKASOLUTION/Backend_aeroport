@@ -104,6 +104,7 @@ public class InformationPersonnelle extends AbstractAuditEntity  implements Seri
 
     @Column(name = "email_contact", length = 255)
     private String emailContact;
+    
 
     @Enumerated(EnumType.STRING)
     @Column(name = "statut", length = 20)

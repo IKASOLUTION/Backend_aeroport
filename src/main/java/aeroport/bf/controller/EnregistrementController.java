@@ -18,7 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,8 +30,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -46,17 +51,91 @@ public class EnregistrementController {
      * @param dto
      * @return {@link EnregistrementDto}
      */
-    @PostMapping("/enregistrements")
+    @PostMapping(path = "/enregistrements",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Creating a new Enregistrement.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
             @ApiResponse(responseCode = "404", description = "${swagger.http-status.404}"),
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
-    public ResponseEntity<EnregistrementDto> create(@Valid @RequestBody final EnregistrementDto dto) {
-
-        return ResponseEntity.ok(enregistrementService.create(dto));
+    public ResponseEntity<EnregistrementDto> create( // Fichiers
+            @RequestPart(value = "photoProfil", required = false) MultipartFile photoProfil,
+            @RequestPart(value = "imageRecto", required = false) MultipartFile imageRecto,
+            @RequestPart(value = "imageVerso", required = false) MultipartFile imageVerso,
+            
+            // Champs simples
+            @RequestParam(value = "typeDocument", required = false) String typeDocument,
+            @RequestParam(value = "numeroDocument", required = false) String numeroDocument,
+            @RequestParam(value = "numeroNip", required = false) String numeroNip,
+            @RequestParam(value = "dateDelivrance", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDelivrance,
+            @RequestParam(value = "lieuDelivrance", required = false) String lieuDelivrance,
+            
+            // Personal Info
+            @RequestParam(value = "nomFamille", required = false) String nomFamille,
+            @RequestParam(value = "prenom", required = false) String prenom,
+            @RequestParam(value = "dateNaissance", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateNaissance,
+            @RequestParam(value = "lieuNaissance", required = false) String lieuNaissance,
+            @RequestParam(value = "nationalite", required = false) String nationalite,
+            @RequestParam(value = "profession", required = false) String profession,
+            
+            // Coordonnees
+            @RequestParam(value = "paysResidence", required = false) String paysResidence,
+            @RequestParam(value = "emailContact", required = false) String emailContact,
+            @RequestParam(value = "telephoneBurkina", required = false) String telephoneBurkina,
+            @RequestParam(value = "telephoneEtranger", required = false) String telephoneEtranger,
+            @RequestParam(value = "adresseBurkina", required = false) String adresseBurkina,
+            @RequestParam(value = "adresseEtranger", required = false) String adresseEtranger,
+            
+            // Voyage
+            @RequestParam(value = "volId", required = false) Long volId,
+            @RequestParam(value = "villeDepart", required = false) String villeDepart,
+            @RequestParam(value = "villeDestination", required = false) String villeDestination,
+            @RequestParam(value = "dateVoyage", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateVoyage,
+            @RequestParam(value = "heureVoyage", required = false) String heureVoyage,
+            @RequestParam(value = "motifVoyage", required = false) String motifVoyage,
+            @RequestParam(value = "etatVoyage", required = false) String etatVoyage,
+            @RequestParam(value = "dureeSejour", required = false) Integer dureeSejour
+    ) {
+        
+        // Construire le DTO
+        EnregistrementDto dto = EnregistrementDto.builder()
+                .photoProfil(photoProfil)
+                .imageRecto(imageRecto)
+                .imageVerso(imageVerso)
+                .typeDocument(typeDocument)
+                .numeroDocument(numeroDocument)
+                .numeroNip(numeroNip)
+                .dateDelivrance(dateDelivrance)
+                .lieuDelivrance(lieuDelivrance)
+                .nomFamille(nomFamille)
+                .prenom(prenom)
+                .dateNaissance(dateNaissance)
+                .lieuNaissance(lieuNaissance)
+                .nationalite(nationalite)
+                .profession(profession)
+                .paysResidence(paysResidence)
+                .emailContact(emailContact)
+                .telephoneBurkina(telephoneBurkina)
+                .telephoneEtranger(telephoneEtranger)
+                .adresseBurkina(adresseBurkina)
+                .adresseEtranger(adresseEtranger)
+                .volId(volId)
+                .villeDepart(villeDepart)
+                .villeDestination(villeDestination)
+                .dateVoyage(dateVoyage)
+                .heureVoyage(heureVoyage)
+                .motifVoyage(motifVoyage)
+                .etatVoyage(etatVoyage)
+                .dureeSejour(dureeSejour)
+                .build();
+        
+        EnregistrementDto saved = enregistrementService.create(dto);
+        return ResponseEntity.ok(saved);
     }
+
+
+
+    
 
     /**
      * PUT /enregistrements/:id : Updates an existing enregistrement.

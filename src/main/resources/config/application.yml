@@ -37,4 +37,8 @@ logging:
     org.hibernate: ERROR
     org: INFO
     root: WARN
+
+files:
+  upload:
+    baseDir: C:/Users/USER/Documents
     
