@@ -57,9 +57,6 @@ public class Ville extends AbstractAuditEntity  implements Serializable {
     @Column(name = "nom")
     @NotNull
     private String nom;
-   
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("ville")
-    private Pays pays; 
+    private String pays;
     
 }

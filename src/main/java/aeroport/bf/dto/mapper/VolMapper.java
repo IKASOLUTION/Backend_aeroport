@@ -2,12 +2,15 @@ package aeroport.bf.dto.mapper;
 
 import aeroport.bf.domain.Vol;
 import aeroport.bf.dto.VolDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import org.mapstruct.Mapper;
+import java.util.List;
 
 /**
  * Mapper for the entity Site and its DTO PaysDto.
  */
-
-@Mapper(componentModel = "spring", uses = {CompagnieMapper.class, AeroportMapper.class, VilleMapper.class})
-public interface VolMapper extends EntityMapper<VolDto, Vol> {}
+@Component
+public class VolMapper {
+   
+}

@@ -78,11 +78,22 @@ public class Compagnie extends AbstractAuditEntity  implements Serializable {
     @Column(name = "adresse_siege")
     private String adresseSiege;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("compagnie")
-    private Pays pays;
+     @Column(name = "pays")
+    private String pays;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "responsable_id", referencedColumnName = "id")
-    private Responsable responsable;
+    @Column(name = "nom_responsable")
+    private String nomResponsable;
+    
+     @Column(name = "prenom_responsable")
+    private String prenomResponsable;
+    
+     @Column(name = "nationalite_responsable")
+    private String nationaliteResponsable;
+    
+     @Column(name = "telephone_responsable")
+    private String telephoneResponsable;
+    
+     @Column(name = "mail_responsable")
+    private String mailResponsable;
+
 }

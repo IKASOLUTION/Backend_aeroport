@@ -66,6 +66,7 @@ public class EnregistrementDto extends AbstractAuditEntityDto implements Seriali
     private String numeroNip;
     private LocalDate dateDelivrance;
     private String lieuDelivrance;
+    private Long exercice;;
     private MultipartFile  photoProfil;
     private MultipartFile  imageRecto;
     private MultipartFile  imageVerso;

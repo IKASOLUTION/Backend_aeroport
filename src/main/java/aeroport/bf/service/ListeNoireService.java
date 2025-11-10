@@ -3,6 +3,7 @@ package aeroport.bf.service;
 import aeroport.bf.config.audit.EntityAuditAction;
 import aeroport.bf.config.audit.ObjetEntity;
 import aeroport.bf.domain.ListeNoire;
+import aeroport.bf.domain.enums.Statut;
 import aeroport.bf.dto.ListeNoireDto;
 import aeroport.bf.dto.mapper.ListeNoireMapper;
 import aeroport.bf.repository.ListeNoireRepository;
@@ -102,6 +103,10 @@ public class ListeNoireService {
         }, () -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Cannot remove liste noire with ID : %d", id));
         });
+    }
+
+    public ListeNoireDto findPersonneExisteListeNoire(final String nom, final String prenom ,final String nip) {
+        return listeNoireMapper.toDto(Objects.requireNonNull(listeNoireRepository.findByNomIgnoreCaseAndPrenomIgnoreCaseAndNumeroNipAndStatut(nom,prenom,nip, Statut.ACTIF).orElse(null)));
     }
 
 }

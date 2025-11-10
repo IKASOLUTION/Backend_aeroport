@@ -47,7 +47,7 @@ public class AeroportController {
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
     public ResponseEntity<AeroportDto> create(@Valid @RequestBody final AeroportDto dto) {
-        
+         System.out.println("addddd Aeroport" + dto);
         return ResponseEntity.ok(aeroportService.create(dto));
     }
 

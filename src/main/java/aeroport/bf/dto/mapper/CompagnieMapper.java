@@ -10,31 +10,64 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.springframework.stereotype.Component;
+import java.util.List;
+
 
 /**
  * Mapper for the entity Site and its DTO CompagnieDto.
  */
 
-@Mapper(componentModel = "spring")
-public interface CompagnieMapper extends EntityMapper<CompagnieDto, Compagnie> {
-    @Mapping(target = "pays", source = "pays", qualifiedByName = "paysId")
-    @Mapping(target = "responsable", source = "responsable", qualifiedByName = "responsableId")
-    CompagnieDto toDto(Compagnie s);
 
-    @Named("paysId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "nom", source = "nom")
-    @Mapping(target = "code", source = "code")
-    PaysDto toDtoPaysId(Pays pays);
 
-    @Named("responsableId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "nom", source = "nom")
-    @Mapping(target = "prenom", source = "prenom")
-    @Mapping(target = "telephone", source = "telephone")
-    @Mapping(target = "email", source = "email")
-    @Mapping(target = "nationalite", source = "nationalite")
-    ResponsableDto toDtoResponsableId(Responsable responsable);
+
+@Component
+public class CompagnieMapper {
+
+    public CompagnieDto toDto(Compagnie dt) {
+        return CompagnieDto.builder()
+                .id(dt.getId())
+                .nomCompagine(dt.getNomCompagine())
+                .groupe(dt.getGroupe())
+                .adresseSiege(dt.getAdresseSiege())
+                .contact(dt.getContact())
+                .email(dt.getEmail())
+                .mailResponsable(dt.getMailResponsable())
+                .nationaliteResponsable(dt.getNationaliteResponsable())
+                .nomResponsable(dt.getNomResponsable())
+                .pays(dt.getPays())
+                .prenomResponsable(dt.getPrenomResponsable())
+                .siege(dt.getSiege())
+                .statut(dt.getStatut())
+                .telephoneResponsable(dt.getTelephoneResponsable())
+                .isDeleted(dt.getDeleted())
+                .build();
+    }
+
+    public Compagnie toEntity(CompagnieDto dto) {
+        return Compagnie.builder()
+                .id(dto.getId())
+                .nomCompagine(dto.getNomCompagine())
+                .groupe(dto.getGroupe())
+                .adresseSiege(dto.getAdresseSiege())
+                .contact(dto.getContact())
+                .email(dto.getEmail())
+                .mailResponsable(dto.getMailResponsable())
+                .nationaliteResponsable(dto.getNationaliteResponsable())
+                .nomResponsable(dto.getNomResponsable())
+                .pays(dto.getPays())
+                .prenomResponsable(dto.getPrenomResponsable())
+                .siege(dto.getSiege())
+                .statut(dto.getStatut())
+                .telephoneResponsable(dto.getTelephoneResponsable())
+                .build();
+    }
+
+    public List<CompagnieDto> toDtos(List<Compagnie> dts) {
+        return dts.stream().map(this::toDto).toList();
+    }
+
+    public List<Compagnie> toEntities(List<CompagnieDto> dtos) {
+        return dtos.stream().map(this::toEntity).toList();
+    }
 }

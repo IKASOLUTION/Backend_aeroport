@@ -35,8 +35,16 @@ public class CompagnieDto extends AbstractAuditEntityDto implements Serializable
 
     private String adresseSiege;
 
-    private PaysDto pays;
+    private String pays;
 
-    private ResponsableDto responsable;
+    private String nomResponsable;
+    
+    private String prenomResponsable;
+    
+    private String nationaliteResponsable;
+    
+    private String telephoneResponsable;
+    
+    private String mailResponsable;
 
 }

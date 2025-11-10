@@ -13,7 +13,6 @@ public interface VilleRepository extends AbstractRepository<Ville, Long> {
      boolean existsByDeletedFalseAndNomIgnoreCase(String nom);
     List<Ville> findAllByDeletedFalse();
     Optional<Ville> findByNomIgnoreCaseAndDeletedFalse(String nom);
-    List<Ville> findAllByPaysIdAndDeletedFalse(Long paysId);
 
     
    

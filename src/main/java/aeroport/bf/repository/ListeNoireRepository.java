@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @SuppressWarnings("unused")
 @Repository
@@ -25,5 +26,7 @@ public interface ListeNoireRepository extends JpaRepository<ListeNoire, Long> {
             String nom , String prenom, String lieuNaissance, Statut statut, LocalDate dateNaissance, Pageable pageable);
 
     List<ListeNoire> findAllByDeletedIsFalse();
+
+    Optional<ListeNoire> findByNomIgnoreCaseAndPrenomIgnoreCaseAndNumeroNipAndStatut(String nom, String prenom, String nip, Statut statut);
 
 }

@@ -4,6 +4,7 @@ import aeroport.bf.config.audit.EntityAuditAction;
 import aeroport.bf.config.audit.ObjetEntity;
 import aeroport.bf.domain.Aeroport;
 import aeroport.bf.domain.enums.Statut;
+import aeroport.bf.domain.enums.StatutAeroport;
 import aeroport.bf.dto.AeroportDto;
 import aeroport.bf.dto.mapper.AeroportMapper;
 import aeroport.bf.dto.mapper.AeroportMapper;
@@ -35,8 +36,8 @@ public class AeroportService {
      * @return saved Aeroport object
      */
     public AeroportDto create(final AeroportDto dto) {
+        System.out.println("affiche donnee"+ dto);
         Aeroport Aeroport = aeroportMapper.toEntity(dto);
-        Aeroport.setStatut(Statut.ACTIF);
         Aeroport= aeroportRepository.save(Aeroport);
         return aeroportMapper.toDto(Aeroport);
     }

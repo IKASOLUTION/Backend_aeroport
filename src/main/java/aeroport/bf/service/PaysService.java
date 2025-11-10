@@ -31,6 +31,8 @@ public class PaysService {
      * @return saved Pays object
      */
     public PaysDto create(final PaysDto dto) {
+        System.out.println("addddd" + dto);
+        
         Pays pays = paysMapper.toEntity(dto);
         pays= paysRepository.save(pays);
         return paysMapper.toDto(pays);
