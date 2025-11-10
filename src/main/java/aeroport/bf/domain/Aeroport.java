@@ -12,6 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -55,14 +56,25 @@ public class Aeroport extends AbstractAuditEntity  implements Serializable {
     @NotNull
     private String nomAeroport;
 
-    @Column(name = "statut")
-    @Enumerated(EnumType.STRING)
+     @Enumerated(EnumType.STRING)
     private StatutAeroport statutAeroport;
 
-
+    @ManyToOne
+    @JoinColumn(name = "ville_id")
     private Ville ville;
+    private String pays;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("aeroport")
-    private Pays pays;
+   private String typeAeroport;
+   private String siteWeb;
+   private String adresse;
+   private String Code;
+   private Double latitude;
+   private Double longitude;
+   private String telephone;
+   private String code_oaci;
+   private String nomResponsable;
+   private String prenomResponsable;
+   private String mailResponsable;
+   private String telephoneResponsable;
+
 }

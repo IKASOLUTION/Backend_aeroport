@@ -1,15 +1,10 @@
 package aeroport.bf.dto;
 
-import aeroport.bf.domain.Pays;
 import aeroport.bf.domain.Ville;
-import aeroport.bf.domain.enums.Statut;
 import aeroport.bf.domain.enums.StatutAeroport;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
@@ -21,16 +16,35 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
-public class AeroportDto extends AbstractAuditEntityDto implements Serializable{
-    private Long id;
-
-    private String nomAeroport;
-
-    private StatutAeroport statutAeroport;
-
-    private Ville ville;
-
-    private Pays pays;
-
+public class AeroportDto extends AbstractAuditEntityDto implements Serializable {
     
+    @JsonProperty("id")
+    private Long id;
+    
+    @JsonProperty("nomAeroport")
+    private String nomAeroport;
+    
+    @JsonProperty("statutAeroport")
+    private StatutAeroport statutAeroport;
+    
+    @JsonProperty("villeId")
+    private Long villeId;
+    
+    @JsonIgnore
+    private Ville ville;
+    
+    @JsonProperty("pays")
+    private String pays;
+   private String typeAeroport;
+   private String siteWeb;
+   private String adresse;
+   private String Code;
+   private Double latitude;
+   private Double longitude;
+   private String telephone;
+   private String code_oaci;
+   private String nomResponsable;
+   private String prenomResponsable;
+   private String mailResponsable;
+   private String telephoneResponsable;
 }

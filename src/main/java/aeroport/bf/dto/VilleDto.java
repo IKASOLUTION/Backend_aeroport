@@ -45,9 +45,7 @@ import java.time.LocalDateTime;
 public class VilleDto extends AbstractAuditEntityDto  implements Serializable {
    
     private Long id;
-
     private String nom;
-   
-    private Pays pays; 
+    private String pays;
     
 }

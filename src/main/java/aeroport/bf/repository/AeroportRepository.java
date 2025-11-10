@@ -13,7 +13,5 @@ import java.util.List;
 @SuppressWarnings("unused")
 @Repository
 public interface AeroportRepository extends JpaRepository<Aeroport, Long> {
-   
-
     List<Aeroport> findAllByDeletedIsFalse();
 }

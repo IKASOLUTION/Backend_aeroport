@@ -39,10 +39,6 @@ public class CompagnieService {
     public CompagnieDto create(final CompagnieDto dto) {
         Compagnie compagnie = compagnieMapper.toEntity(dto);
         compagnie.setStatut(Statut.ACTIF);
-        if(dto.getResponsable()!=null) {
-            ResponsableDto responsable = responsableService.create( dto.getResponsable());
-            compagnie.setResponsable(responsableMapper.toEntity(responsable));
-        }
         compagnie= compagnieRepository.save(compagnie);
         return compagnieMapper.toDto(compagnie);
     }
@@ -63,15 +59,6 @@ public class CompagnieService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already created compagnie cannot have null ID.");
         }
         Compagnie compagnie = compagnieMapper.toEntity(dto);
-        if(dto.getResponsable()!=null) {
-            ResponsableDto responsable;
-            if(compagnie.getResponsable().getId()!=null) {
-                responsable = responsableService.update(dto.getResponsable(), compagnie.getResponsable().getId());
-            }else {
-                responsable = responsableService.create(dto.getResponsable());
-            }
-            compagnie.setResponsable(responsableMapper.toEntity(responsable));
-        }
         return compagnieMapper.toDto(compagnieRepository.save(compagnie));
     }
 
@@ -88,17 +75,7 @@ public class CompagnieService {
         return compagnieMapper.toDto(Objects.requireNonNull(compagnieRepository.findById(id).orElse(null)));
     }
 
-    /**
-     * Fetch page compagnie stored in DB.
-     * @param dto of {@link CompagnieDto}
-     * @return page of {@link CompagnieDto}
-     */
-    public Page<CompagnieDto> findByPage(CompagnieDto dto, Pageable pageable) {
-        return compagnieRepository.findWithCriteria(
-                dto.getPays()!=null ? dto.getPays().getId() : null,
-                dto.getNomCompagine(),pageable).map(compagnieMapper::toDto);
-
-    }
+   
 
     /**
      * Fetch all compagnie stored in DB.

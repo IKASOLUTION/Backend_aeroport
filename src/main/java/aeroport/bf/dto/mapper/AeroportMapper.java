@@ -7,6 +7,8 @@ import aeroport.bf.dto.AeroportDto;
 import aeroport.bf.dto.PaysDto;
 import aeroport.bf.dto.UserDto;
 import aeroport.bf.dto.VilleDto;
+import aeroport.bf.repository.VilleRepository;
+
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,9 +24,9 @@ import java.util.List;
 
 @Component
 public class AeroportMapper {
+   
     @Autowired
-    PaysMapper paysMapper;
-    VilleMapper villeMapper ;
+    private VilleRepository villeRepository;
     public AeroportDto toDto(Aeroport aeroport) {
         return AeroportDto.builder()
                 .id(aeroport.getId())
@@ -32,31 +34,51 @@ public class AeroportMapper {
                 .statutAeroport(aeroport.getStatutAeroport())
                 .isDeleted(aeroport.getDeleted())
                 .pays(aeroport.getPays())
-                .ville(aeroport.getVille())
+                .ville(aeroport.getVille())  // ✅ Renvoyer l'objet complet
+                .villeId(aeroport.getVille() != null ? aeroport.getVille().getId() : null)
+                .mailResponsable(aeroport.getMailResponsable())
+                .adresse(aeroport.getAdresse())
+                .nomResponsable(aeroport.getNomResponsable())
+                .prenomResponsable(aeroport.getPrenomResponsable())
+                .code_oaci(aeroport.getCode_oaci())
+                .siteWeb(aeroport.getSiteWeb())
+                .telephone(aeroport.getTelephone())
+                .telephoneResponsable(aeroport.getTelephoneResponsable())
+                .typeAeroport(aeroport.getTypeAeroport())
+                .latitude(aeroport.getLatitude())
+                .longitude(aeroport.getLongitude())
                 .build();
     }
 
-    public Aeroport toEntity(AeroportDto aeroportDto) {
+  public Aeroport toEntity(AeroportDto aeroportDto) {
+        Ville ville = null;
+        if (aeroportDto.getVilleId() != null) {
+            // ✅ Récupérer la ville depuis la base de données
+            ville = villeRepository.findById(aeroportDto.getVilleId())
+                    .orElseThrow(() -> new RuntimeException("Ville non trouvée avec l'ID: " + aeroportDto.getVilleId()));
+        }
+        
         return Aeroport.builder()
                 .id(aeroportDto.getId())
                 .nomAeroport(aeroportDto.getNomAeroport())
                 .statutAeroport(aeroportDto.getStatutAeroport())
                 .pays(aeroportDto.getPays())
-                .ville(aeroportDto.getVille())
-
+                .ville(ville)  // ✅ Assigner la ville récupérée
+                 .mailResponsable(aeroportDto.getMailResponsable())
+                .adresse(aeroportDto.getAdresse())
+                .nomResponsable(aeroportDto.getNomResponsable())
+                .prenomResponsable(aeroportDto.getPrenomResponsable())
+                .code_oaci(aeroportDto.getCode_oaci())
+                .siteWeb(aeroportDto.getSiteWeb())
+                .telephone(aeroportDto.getTelephone())
+                .telephoneResponsable(aeroportDto.getTelephoneResponsable())
+                .typeAeroport(aeroportDto.getTypeAeroport())
+                .latitude(aeroportDto.getLatitude())
+                .longitude(aeroportDto.getLongitude())
                 .build();
     }
 
-    public AeroportDto toTrace(Aeroport aeroport) {
-        return AeroportDto.builder()
-                .id(aeroport.getId())
-                .nomAeroport(aeroport.getNomAeroport())
-                .statutAeroport(aeroport.getStatutAeroport())
-                .isDeleted(aeroport.getDeleted())
-                .pays(aeroport.getPays())
-                .ville(aeroport.getVille())
-                .build();
-    }
+   
 
     public List<AeroportDto> toDtos(List<Aeroport> aeroports) {
         return aeroports.stream().map(this::toDto).toList();
