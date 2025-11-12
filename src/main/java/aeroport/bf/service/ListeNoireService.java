@@ -34,6 +34,7 @@ public class ListeNoireService {
      * @return saved liste noire object
      */
     public ListeNoireDto create(final ListeNoireDto dto) {
+        System.out.println("----Afficher donnee liste noire-------"+dto);
         ListeNoire liste = listeNoireMapper.toEntity(dto);
         liste= listeNoireRepository.save(liste);
         return listeNoireMapper.toDto(liste);

@@ -48,17 +48,41 @@ public class VilleService {
      * @param dto {@link VilleDto}
      * @return updated region object
      */
-    public VilleDto update(final VilleDto dto, final long id) {
-        if (!villeRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No ville exists with this ID : %d", id));
-        }
-
-        if (Objects.isNull(dto.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already created ville cannot have null ID.");
-        }
-        Ville ville = villeMapper.toEntity(dto);
-        return villeMapper.toDto(villeRepository.save(ville));
+   public VilleDto update(final VilleDto dto, final long id) {
+      System.out.println("-------Afficher dto service-----"+dto);
+        System.out.println("------Afficher id service----------"+id);
+    // Vérifier que la ville existe
+    if (!villeRepository.existsById(id)) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, 
+            String.format("No ville exists with this ID : %d", id));
     }
+
+    // Vérifier que l'ID du DTO n'est pas null
+    if (Objects.isNull(dto.getId())) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+            "Already created ville cannot have null ID.");
+    }
+    
+    // Vérifier que l'ID du path correspond à l'ID du DTO
+    if (!dto.getId().equals(id)) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+            String.format("Path ID (%d) does not match DTO ID (%d)", id, dto.getId()));
+    }
+  System.out.println("-------Avant mapping to entity-----");
+    Ville ville = villeMapper.toEntity(dto);
+    System.out.println("-------Après mapping, ville = " + ville);
+    
+    System.out.println("-------Avant save-----");
+    Ville savedVille = villeRepository.save(ville);
+    System.out.println("-------Après save, ville sauvegardée = " + savedVille);
+    
+    System.out.println("-------Avant mapping to DTO-----");
+    VilleDto result = villeMapper.toDto(savedVille);
+    System.out.println("-------Après mapping to DTO, result = " + result);
+    
+    return result;
+
+}
 
     /**
      * Get Pays by id.

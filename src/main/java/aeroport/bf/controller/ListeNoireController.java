@@ -69,6 +69,8 @@ public class ListeNoireController {
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
     public ResponseEntity<ListeNoireDto> update(@Valid @RequestBody final ListeNoireDto dto, @PathVariable Long id) {
+         log.info("=== Mise à jour ListeNoire ID: {} ===", id);
+        log.info("Données reçues: {}", dto);
         return ResponseEntity.ok(listeNoireService.update(dto,id));
     }
 

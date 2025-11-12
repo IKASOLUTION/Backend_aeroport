@@ -37,6 +37,7 @@ public class CompagnieService {
      * @return saved compagnie object
      */
     public CompagnieDto create(final CompagnieDto dto) {
+        System.out.println("-----------Donnee compagnie"+dto);
         Compagnie compagnie = compagnieMapper.toEntity(dto);
         compagnie.setStatut(Statut.ACTIF);
         compagnie= compagnieRepository.save(compagnie);

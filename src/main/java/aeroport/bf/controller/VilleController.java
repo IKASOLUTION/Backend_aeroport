@@ -67,6 +67,8 @@ public class VilleController {
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
     public ResponseEntity<VilleDto> update(@Valid @RequestBody final VilleDto dto, @PathVariable Long id) {
+        System.out.println("-------Afficher dto-----"+dto);
+        System.out.println("------Afficher id----------"+id);
         return ResponseEntity.ok(villeService.update(dto, id));
     }
 
