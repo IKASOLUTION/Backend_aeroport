@@ -26,6 +26,7 @@ public enum ObjetEntity {
     RESPONSABLE("Responsable"),
     ENTETE("Entete"),
     VILLE("Ville"),
+    MOTIF_VOYAGE("Motif_voyage"),
     NOTIFICATION("Notification");
     
 
