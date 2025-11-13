@@ -16,6 +16,7 @@ import aeroport.bf.config.audit.EntityAuditAction;
 import aeroport.bf.config.audit.ObjetEntity;
 import aeroport.bf.config.security.SecurityUtils;
 import aeroport.bf.domain.Ville;
+import aeroport.bf.domain.Vol;
 import aeroport.bf.domain.Voyage;
 import aeroport.bf.domain.enums.EtatVoyage;
 import aeroport.bf.domain.enums.MotifVoyage;
@@ -93,9 +94,12 @@ public EnregistrementDto create(final EnregistrementDto dto) {
     System.out.println("DTO Nom savedInfoPerso: " + savedInfoPerso);
     // === 2. Créer et enregistrer Voyage ===
     Voyage voyage = new Voyage();
-    voyage.setVol(volRepository.getReferenceById(1019L)); // Assurez-vous que le vol existe
-    voyage.setVilleDepart(villeRepository.getReferenceById(1L));
-    voyage.setVilleDestination(villeRepository.getReferenceById(2L));
+    System.out.println("DTO Nom dto.getVolId(): " + dto.getVolId());
+    Vol vol = volRepository.getReferenceById(dto.getVolId());
+    voyage.setVol(vol); 
+    System.out.println("DTO Nom voyage avant setVol: " + villeRepository.getReferenceById(vol.getVilleDepart().getId()));
+    voyage.setVilleDepart(villeRepository.getReferenceById(vol.getVilleDepart().getId()));
+    voyage.setVilleDestination(villeRepository.getReferenceById(vol.getVilleArrivee().getId()));
     voyage.setMotifVoyage(dto.getMotifVoyage());
     voyage.setDateVoyage(dto.getDateVoyage());
     voyage.setHeureVoyage(LocalTime.now());

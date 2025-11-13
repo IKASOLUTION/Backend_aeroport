@@ -72,6 +72,7 @@ public class Vol extends AbstractAuditEntity  implements Serializable {
     @Column(name = "date_arrivee")
     @NotNull
     private LocalDateTime dateArrivee;
+    @Column(name = "date_saisie")
     private LocalDate dateSaisie;
     @Column(name = "type_vol")
     @Enumerated(EnumType.STRING)

@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(callSuper = true,exclude = {"aeroport","compagnie"})
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 
 public class VolDto extends AbstractAuditEntityDto  implements Serializable {
@@ -34,6 +34,11 @@ public class VolDto extends AbstractAuditEntityDto  implements Serializable {
     private TypeVol typeVol;
    
     private CompagnieDto compagnie;
+
+    private Long compagnieId;
+    private Long aeroportId;
+    private Long villeDepartId;
+    private Long villeArriveeId;
 
     private AeroportDto aeroport;
 

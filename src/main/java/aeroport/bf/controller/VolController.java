@@ -1,7 +1,12 @@
 package aeroport.bf.controller;
 
-import aeroport.bf.dto.AeroportDto;
-import aeroport.bf.service.AeroportService;
+import aeroport.bf.config.util.PageableUtil;
+import aeroport.bf.dto.SearchDto;
+import aeroport.bf.dto.UserDto;
+import aeroport.bf.dto.VilleDto;
+import aeroport.bf.dto.VolDto;
+import aeroport.bf.service.VolService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -10,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tags;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -29,37 +35,36 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@Tags(@Tag(name = "Aeroport", description = "Gestion des Aeroports"))
-public class AeroportController {
-    private final AeroportService aeroportService;
+@Tags(@Tag(name = "vol", description = "Gestion des vols"))
+public class VolController {
+    private final VolService volService;
 
     /**
-     * POST  /Aeroports  : Creates a new Aeroports.
+     * POST  /users  : Creates a new user.
      *
-     * @param dto {@link AeroportDto}
-     * @return {@link AeroportDto}
+     * @param dto
+     * @return {@link VolDto}
      */
-    @PostMapping("/aeroports")
-    @Operation(summary = "Creating a new Aeroport.")
+    @PostMapping("/vols")
+    @Operation(summary = "Creating a new Vol.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
             @ApiResponse(responseCode = "404", description = "${swagger.http-status.404}"),
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
-    public ResponseEntity<AeroportDto> create(@Valid @RequestBody final AeroportDto dto) {
-         System.out.println("addddd Aeroport" + dto);
-        return ResponseEntity.ok(aeroportService.create(dto));
+    public ResponseEntity<VolDto> create(@Valid @RequestBody final VolDto dto) {
+        return ResponseEntity.ok(volService.create(dto));
     }
 
     /**
-     * PUT  /Aeroports/:id  : Updates an existing Aeroport.
+     * PUT /vols/:id : Updates an existing vol.
      *
      * @param dto
      * @param id
-     * @return {@link aeroportDto}
+     * @return {@link volDto}
      */
-    @PutMapping("/aeroports/{id}")
-    @Operation(summary = "Update an existing Aeroport.")
+    @PutMapping("/vols/{id}")
+    @Operation(summary = "Update an existing vol.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
             @ApiResponse(responseCode = "400", description = "${swagger.http-status.400}"),
@@ -67,62 +72,87 @@ public class AeroportController {
             @ApiResponse(responseCode = "409", description = "${swagger.http-status.409}"),
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
-    public ResponseEntity<AeroportDto> update(@Valid @RequestBody final AeroportDto dto,
-                                              @PathVariable Long id) {
-        return ResponseEntity.ok(aeroportService.update(dto, id));
+    public ResponseEntity<VolDto> update(@Valid @RequestBody final VolDto dto,
+            @PathVariable Long id) {
+        return ResponseEntity.ok(volService.update(dto, id));
     }
 
     /**
-     * GET / : get all Aeroports.
+     * GET / : get all vols.
      *
-     * @return {@link List<AeroportDto>}
+     * @return {@link List<VolDto>}
      */
-    @GetMapping("/aeroports")
-    @Operation(summary = "Fetch all Aeroports")
+    @GetMapping("/vols")
+    @Operation(summary = "Fetch all vols")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
             @ApiResponse(responseCode = "204", description = "${swagger.http-status.204}"),
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
-    public ResponseEntity<List<AeroportDto>> getAll() {
-        return new ResponseEntity<>(aeroportService.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<VolDto>> getAll() {
+        return new ResponseEntity<>(volService.findAll(), HttpStatus.OK);
     }
 
     /**
-     * GET /:id : get Aeroports.
+     * GET /:id : get vols.
      *
      * @param id
-     * @return {@link List<AeroportDto>}
+     * @return {@link List<VolDto>}
      */
-    @GetMapping("/aeroports/{id}")
+    @GetMapping("/vols/{id}")
     @Operation(summary = "Get Hotel")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
             @ApiResponse(responseCode = "404", description = "${swagger.http-status.404}"),
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
-    public ResponseEntity<AeroportDto> findOne(@PathVariable final Long id) {
-        return ResponseEntity.ok(aeroportService.findOne(id));
+    public ResponseEntity<VolDto> findOne(@PathVariable final Long id) {
+        return ResponseEntity.ok(volService.findOne(id));
     }
 
     /**
-     * DELETE /:id : delete Aeroport.
+     * DELETE /:id : delete vol.
      *
      * @param id
-     * @return {@link List<AeroportDto>}
+     * @return {@link List<VolDto>}
      */
-    @DeleteMapping("/aeroports/{id}")
-    @Operation(summary = "Remove AeroportDto")
+    @DeleteMapping("/vols/{id}")
+    @Operation(summary = "Remove VolDto")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
             @ApiResponse(responseCode = "400", description = "${swagger.http-status.400}"),
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
-        aeroportService.delete(id);
+        volService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-  
+    @PutMapping("/vols/periode")
+    public ResponseEntity<Page<VolDto>> getTachesHistorique(@RequestBody SearchDto search) {
+        System.out.println("Received search request: " + search);
+        // Validation
+        if (search.getDateDebut() == null || search.getDateFin() == null) {
+            throw new IllegalArgumentException("dateDebut et dateFin sont obligatoires");
+        }
+
+        if (search.getDateDebut().isAfter(search.getDateFin())) {
+            throw new IllegalArgumentException("dateDebut doit être avant dateFin");
+        }
+        search.setSortBy("dateDepart");
+
+        // Création du Pageable et récupération des données
+        Pageable pageable = PageableUtil.fromSearchDto(search);
+        System.out.println("Received search pageable: " + search);
+        Page<VolDto> vols = volService.findAllPeriodeAndStatut(
+                
+                search.getDateDebut(),
+                search.getDateFin(),
+                search.getStatutVols(),
+                pageable);
+System.out.println("Received vols request: " + vols);
+        return ResponseEntity.ok(vols);
+    }
+
 
 }
