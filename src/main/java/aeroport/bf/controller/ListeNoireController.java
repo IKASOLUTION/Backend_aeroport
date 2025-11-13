@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -68,6 +69,8 @@ public class ListeNoireController {
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
     public ResponseEntity<ListeNoireDto> update(@Valid @RequestBody final ListeNoireDto dto, @PathVariable Long id) {
+         log.info("=== Mise à jour ListeNoire ID: {} ===", id);
+        log.info("Données reçues: {}", dto);
         return ResponseEntity.ok(listeNoireService.update(dto,id));
     }
 
@@ -134,6 +137,26 @@ public class ListeNoireController {
     public ResponseEntity<List<ListeNoireDto>> getWithCriteria(final ListeNoireDto dto , Pageable pageable) {
         Page<ListeNoireDto> page = listeNoireService.findByPage(dto,pageable);
         return ResponseEntity.ok().body(page.getContent());
+    }
+
+    /**
+     * GET /:id : verifie si un client est dans la liste noire.
+     *
+     * @param nom
+     * @param prenom
+     * @param nip
+     * @return {@link ListeNoireDto}
+     */
+    @GetMapping("/liste-noires/check-verify")
+    @Operation(summary = "Get liste noire")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
+            @ApiResponse(responseCode = "404", description = "${swagger.http-status.404}"),
+            @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
+    })
+    public ResponseEntity<ListeNoireDto> findOne(
+            @RequestParam("nom") final String nom,  @RequestParam("prenom") final String prenom,  @RequestParam("nip") final String nip) {
+        return ResponseEntity.ok(listeNoireService.findPersonneExisteListeNoire(nom,prenom,nip));
     }
 
 }

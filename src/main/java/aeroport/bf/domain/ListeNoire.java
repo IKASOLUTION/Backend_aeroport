@@ -70,6 +70,7 @@ public class ListeNoire extends AbstractAuditEntity  implements Serializable {
     @Column(name = "date_naissance")
     private LocalDate dateNaissance;
 
+   
     /**
      * Lieu de naissance du client
      */
@@ -102,8 +103,5 @@ public class ListeNoire extends AbstractAuditEntity  implements Serializable {
     @Column(name = "numero_cnib")
     private String numeroCnib;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "donnee_biometrique_id", nullable = false)
-    private DonneeBiometrique donneeBiometrique;
 
 }

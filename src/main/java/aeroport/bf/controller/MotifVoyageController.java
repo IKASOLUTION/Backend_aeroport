@@ -1,8 +1,7 @@
 package aeroport.bf.controller;
 
-import aeroport.bf.dto.PaysDto;
-import aeroport.bf.dto.VilleDto;
-import aeroport.bf.service.PaysService;
+import aeroport.bf.dto.MotifVoyageDto;
+import aeroport.bf.service.MotifVoyageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -28,37 +27,37 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@Tags(@Tag(name = "Pays", description = "Gestion des Ville"))
-public class VilleController {
-    private final aeroport.bf.service.VilleService  villeService;
+@Tags(@Tag(name = "Motif", description = "Gestion des motifs"))
+public class MotifVoyageController {
+    private final MotifVoyageService motifVoyageService;
 
     /**
-     * POST  /pays  : Creates a new pays.
+     * POST  /motif-voyages  : Creates a new motif.
      *
-     * @param dto {@link VilleDto}
-     * @return {@link VilleDto}
+     * @param dto {@link MotifVoyageDto}
+     * @return {@link MotifVoyageDto}
      */
-    @PostMapping("/ville")
-    @Operation(summary = "Creating a new Ville.")
+    @PostMapping("/motif-voyages")
+    @Operation(summary = "Creating a new motif.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
             @ApiResponse(responseCode = "404", description = "${swagger.http-status.404}"),
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
-    public ResponseEntity<VilleDto> create(@Valid @RequestBody final VilleDto dto) {
+    public ResponseEntity<MotifVoyageDto> create(@Valid @RequestBody final MotifVoyageDto dto) {
         
-        return ResponseEntity.ok(villeService.create(dto));
+        return ResponseEntity.ok(motifVoyageService.create(dto));
     }
 
     /**
-     * PUT  /ville/:id  : Updates an existing Pays.
+     * PUT  /motif-voyages/:id  : Updates an existing otif.
      *
      * @param dto
      * @param id
-     * @return {@link VilleDto}
+     * @return {@link MotifVoyageDto}
      */
-    @PutMapping("/ville/{id}")
-    @Operation(summary = "Update an existing Ville.")
+    @PutMapping("/motif-voyages/{id}")
+    @Operation(summary = "Update an existing motif.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
             @ApiResponse(responseCode = "400", description = "${swagger.http-status.400}"),
@@ -66,60 +65,58 @@ public class VilleController {
             @ApiResponse(responseCode = "409", description = "${swagger.http-status.409}"),
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
-    public ResponseEntity<VilleDto> update(@Valid @RequestBody final VilleDto dto, @PathVariable Long id) {
-        System.out.println("-------Afficher dto-----"+dto);
-        System.out.println("------Afficher id----------"+id);
-        return ResponseEntity.ok(villeService.update(dto, id));
+    public ResponseEntity<MotifVoyageDto> update(@Valid @RequestBody final MotifVoyageDto dto, @PathVariable Long id) {
+        return ResponseEntity.ok(motifVoyageService.update(dto, id));
     }
 
     /**
-     * GET / : get all Ville.
+     * GET / : get all motifs.
      *
-     * @return {@link List<VilleDto>}
+     * @return {@link List<MotifVoyageDto>}
      */
-    @GetMapping("/ville")
-    @Operation(summary = "Fetch all Ville")
+    @GetMapping("/motif-voyages")
+    @Operation(summary = "Fetch all motifs")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
             @ApiResponse(responseCode = "204", description = "${swagger.http-status.204}"),
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
-    public ResponseEntity<List<VilleDto>> getAll() {
-        return new ResponseEntity<>(villeService.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<MotifVoyageDto>> getAll() {
+        return new ResponseEntity<>(motifVoyageService.findAll(), HttpStatus.OK);
     }
 
     /**
-     * GET /:id : get Pays.
+     * GET /:id : get motif.
      *
      * @param id
-     * @return {@link List<PaysDto>}
+     * @return {@link List<MotifVoyageDto>}
      */
-    @GetMapping("/ville/{id}")
-    @Operation(summary = "Get Pays")
+    @GetMapping("/motif-voyages/{id}")
+    @Operation(summary = "Get motifs")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
             @ApiResponse(responseCode = "404", description = "${swagger.http-status.404}"),
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
-    public ResponseEntity<VilleDto> findOne(@PathVariable final Long id) {
-        return ResponseEntity.ok(villeService.findOne(id));
+    public ResponseEntity<MotifVoyageDto> findOne(@PathVariable final Long id) {
+        return ResponseEntity.ok(motifVoyageService.findOne(id));
     }
 
     /**
-     * DELETE /:id : delete Vile.
+     * DELETE /:id : delete motif.
      *
      * @param id
-     * @return {@link List<VilleDto>}
+     * @return {@link List<MotifVoyageDto>}
      */
-    @DeleteMapping("/ville/{id}")
-    @Operation(summary = "Remove Ville")
+    @DeleteMapping("/motif-voyages/{id}")
+    @Operation(summary = "Remove motif")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
             @ApiResponse(responseCode = "400", description = "${swagger.http-status.400}"),
             @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
     })
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
-        villeService.delete(id);
+        motifVoyageService.delete(id);
         return ResponseEntity.noContent().build();
     }
 

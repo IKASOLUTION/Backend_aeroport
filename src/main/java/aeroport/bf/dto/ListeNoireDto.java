@@ -68,6 +68,5 @@ public class ListeNoireDto extends AbstractAuditEntity implements Serializable {
 
     private String numeroCnib;
 
-    private DonneeBiometriqueDto donneeBiometrique;
 
 }
