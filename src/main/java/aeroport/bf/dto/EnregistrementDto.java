@@ -96,5 +96,8 @@ public class EnregistrementDto extends AbstractAuditEntityDto implements Seriali
     private MotifVoyage motifVoyage;
     private String etatVoyage; // 'ALLER' | 'RETOUR' | 'ALLER_RETOUR'
     private Integer dureeSejour;
+    private LocalDate dateSaisie;
+    private Long nbreVoyage;
+    
     
 }

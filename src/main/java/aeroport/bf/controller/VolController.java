@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -74,6 +75,8 @@ public class VolController {
     })
     public ResponseEntity<VolDto> update(@Valid @RequestBody final VolDto dto,
             @PathVariable Long id) {
+                log.info("Updating vol with id: {}", id);
+                log.info("Vol data: {}", dto);
         return ResponseEntity.ok(volService.update(dto, id));
     }
 
@@ -116,7 +119,7 @@ public class VolController {
      * @param id
      * @return {@link List<VolDto>}
      */
-    @DeleteMapping("/vols/{id}")
+    @PatchMapping("/vols/{id}")
     @Operation(summary = "Remove VolDto")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),

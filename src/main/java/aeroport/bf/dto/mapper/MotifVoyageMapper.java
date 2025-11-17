@@ -17,6 +17,7 @@ public class MotifVoyageMapper {
                 .id(motifVoyage.getId())
                 .code(motifVoyage.getCode())
                 .libelle(motifVoyage.getLibelle())
+                .isDeleted(motifVoyage.getDeleted())
                 .build();
     }
 
@@ -25,6 +26,7 @@ public class MotifVoyageMapper {
                 .id(motifVoyageDto.getId())
                 .code(motifVoyageDto.getCode())
                 .libelle(motifVoyageDto.getLibelle())
+                .deleted(motifVoyageDto.getIsDeleted())
                 .build();
     }
 
