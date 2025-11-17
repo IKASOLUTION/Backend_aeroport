@@ -53,13 +53,9 @@ public abstract class AbstractAuditEntity implements Serializable {
     @Column(name = "last_modified_date")
     private Instant lastModifiedDate;
 
+    @Builder.Default
     @Column(name = "deleted" , nullable = false)
     private Boolean deleted = Boolean.FALSE;
 
-    @PrePersist
-    public void prePersist() {
-        if (this.deleted == null) {
-            this.deleted = Boolean.FALSE;
-        }
-    }
+    
 }

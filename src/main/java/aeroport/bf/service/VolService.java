@@ -2,6 +2,8 @@ package aeroport.bf.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import org.jfree.util.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,8 @@ import aeroport.bf.dto.VilleDto;
 import aeroport.bf.dto.VolDto;
 import aeroport.bf.dto.mapper.VilleMapper;
 import aeroport.bf.dto.mapper.VolMapper;
+import aeroport.bf.repository.AeroportRepository;
+import aeroport.bf.repository.CompagnieRepository;
 import aeroport.bf.repository.VilleRepository;
 import aeroport.bf.repository.VolRepository;
 
@@ -34,6 +38,8 @@ public class VolService {
     private final VolMapper volMapper;
     private final TraceService traceService;
     private final VilleRepository villeRepository;
+    private final AeroportRepository aeroportRepository;
+    private final CompagnieRepository compagnieRepository;
 
     /**
      * Save compagine.
@@ -63,9 +69,9 @@ public class VolService {
         if (Objects.isNull(dto.getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already created Vol cannot have null ID.");
         }
-        Vol vol = volMapper.toEntity(dto);
-        
-        return volMapper.toDto(volRepository.save(vol));
+          // Convertir DTO → Entity
+     Vol vol = volMapper.toEntity(dto);        
+        return volMapper.toDto(volRepository.saveAndFlush(vol));
     }
 
     /**

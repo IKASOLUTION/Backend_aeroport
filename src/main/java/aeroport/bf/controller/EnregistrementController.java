@@ -214,7 +214,7 @@ public class EnregistrementController {
     }
 
     @PutMapping("/enregistrements/periode")
-    public ResponseEntity<Page<EnregistrementDto>> getTachesHistorique(@RequestBody SearchDto search) {
+    public ResponseEntity<Page<EnregistrementDto>> findAllPeriodeAndStatut(@RequestBody SearchDto search) {
         // Validation
         if (search.getDateDebut() == null || search.getDateFin() == null) {
             throw new IllegalArgumentException("dateDebut et dateFin sont obligatoires");
@@ -224,12 +224,15 @@ public class EnregistrementController {
             throw new IllegalArgumentException("dateDebut doit être avant dateFin");
         }
 
+         search.setSortBy("dateSaisie");
         // Création du Pageable et récupération des données
         Pageable pageable = PageableUtil.fromSearchDto(search);
         Page<EnregistrementDto> taches = enregistrementService.findAllPeriodeAndStatut(
                 
                 search.getDateDebut(),
                 search.getDateFin(),
+                search.getAeroportId(),
+                search.getStatus(),
                 pageable
                );
 

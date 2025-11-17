@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,7 +51,9 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -211,13 +215,35 @@ dtoResult.setNumeroDocument(savedEnregistrement.getInformationPersonnel().getNum
 
     }
 
-    public Page<EnregistrementDto> findAllPeriodeAndStatut(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        Page<Enregistrement> enregistrements = enregistrementRepository.findByDeletedFalseAndDateSaisieBetween(
-                startDate,
-                endDate,
-                pageable);
-        return enregistrements.map(enregistrement -> enregistrementMapper.toDto(enregistrement));
-    }
+    public Page<EnregistrementDto> findAllPeriodeAndStatut(LocalDate startDate, LocalDate endDate,Long aeroportId,
+            List<StatutVoyageur> statuts, Pageable pageable) {
+    Page<Enregistrement> enregistrements = enregistrementRepository.findByFilters(
+            startDate.atStartOfDay(),
+            endDate.atTime(23, 59, 59),
+            aeroportId,
+            statuts,
+            pageable);
+    
+            System.out.println("==========================enregistrements.getContent()============"+enregistrements.getContent());
+    // Grouper par numeroDocument et compter les occurrences
+    Map<String, List<EnregistrementDto>> groupedByDocument = enregistrements.getContent()
+            .stream()
+            .map(enregistrement -> enregistrementMapper.toDto(enregistrement))
+            .collect(Collectors.groupingBy(EnregistrementDto::getNumeroDocument));
+    
+    // Créer une liste sans doublons avec le nombre de voyages
+    List<EnregistrementDto> uniqueEnregistrements = groupedByDocument.entrySet()
+            .stream()
+            .map(entry -> {
+                EnregistrementDto dto = entry.getValue().get(0); // Prendre le premier élément
+                dto.setNbreVoyage(Long.valueOf(entry.getValue().size())); // Définir le nombre de voyages
+                return dto;
+            })
+            .collect(Collectors.toList());
+    
+    // Convertir la liste en Page
+    return new PageImpl<>(uniqueEnregistrements, pageable, uniqueEnregistrements.size());
+}
 
     /**
      * Remove a Enregistrement by id if exists.
