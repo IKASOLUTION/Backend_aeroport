@@ -83,7 +83,7 @@ public class UserController {
      * @param id
      * @return {@link UserDto}
      */
-    @PutMapping("/active-desactive-user/{id}")
+    @GetMapping("/active-desactive-user/{id}")
     @Operation(summary = "Update an existing user.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),

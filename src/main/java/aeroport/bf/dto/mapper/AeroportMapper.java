@@ -26,7 +26,7 @@ import java.util.List;
 public class AeroportMapper {
    
     @Autowired
-    private VilleRepository villeRepository;
+    VilleRepository villeRepository;
     public AeroportDto toDto(Aeroport aeroport) {
         return AeroportDto.builder()
                 .id(aeroport.getId())

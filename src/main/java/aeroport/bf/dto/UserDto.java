@@ -23,7 +23,7 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = {"profil", "aeroport"})
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 public class UserDto extends AbstractAuditEntityDto {
 
@@ -48,8 +48,9 @@ public class UserDto extends AbstractAuditEntityDto {
     private String activationKey;
     private String resetKey;
     private String langKey;
-    private Profil profil;
+    private ProfilDto profil;
     private Set<String> authorities;
     private Boolean passChange;
+    private AeroportDto aeroport;
 
 }

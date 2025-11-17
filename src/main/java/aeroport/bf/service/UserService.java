@@ -24,14 +24,17 @@ import aeroport.bf.config.security.SecurityUtils;
 import aeroport.bf.config.security.TestUserDetailsService;
 import aeroport.bf.config.security.jwt.AuthTokenFilter;
 import aeroport.bf.config.security.jwt.TokenProvider;
+import aeroport.bf.domain.Aeroport;
 import aeroport.bf.domain.Authority;
 import aeroport.bf.domain.MenuAction;
 import aeroport.bf.domain.Trace;
 import aeroport.bf.domain.User;
+import aeroport.bf.domain.enums.Statut;
 import aeroport.bf.dto.AccountDto;
 import aeroport.bf.dto.JWTToken;
 import aeroport.bf.dto.LoginResponse;
 import aeroport.bf.dto.UserDto;
+import aeroport.bf.dto.mapper.AeroportMapper;
 import aeroport.bf.dto.mapper.ProfilMapper;
 import aeroport.bf.dto.mapper.UserMapper;
 import aeroport.bf.repository.ProfilRepository;
@@ -67,6 +70,8 @@ public class UserService {
     private final TraceService traceService;
     private final ProfilRepository profilRepository;
     private static final int EXPIRATION = 60 * 24;
+    private final AeroportMapper aeroportMapper;
+    private final ProfilMapper profilMapper;
    
 
     
@@ -90,15 +95,16 @@ public class UserService {
         if(userDto.getId() == null) {
             String encryptedPassword = passwordEncoder.encode(userDto.getLogin());
         user.setPassword(encryptedPassword);
-        user.setActivated(false);
+        user.setActivated(true);
         user.setPassChange(false);
         user.setActivationKey(RandomUtil.generateActivationKey());
-       // user.setAgence(userDto.getAgence());
-       // user.setProfil(userDto.getProfil());
+      
+        user.setAeroport(user.getAeroport());
         user.setNom(userDto.getNom());
         user.setUsername(userDto.getLogin());
         user.setPrenom(userDto.getPrenom());
         user.setEmail(userDto.getEmail().toLowerCase());
+        user.setStatut(Statut.ACTIF);
         String token = UUID.randomUUID().toString();
         user.setVerificationToken(token);
         user.setExpiryDate(calculateExpiryDate());
@@ -110,8 +116,8 @@ public class UserService {
      } else {
 
             user = userRepository.findOneByDeletedFalseAndId(userDto.getId());
-           //  user.setAgence(userDto.getAgence());
-           // user.setProfil(userDto.getProfil());
+            user.setProfil(profilMapper.toEntity(userDto.getProfil()));
+            user.setAeroport(aeroportMapper.toEntity(userDto.getAeroport()));
             user.setNom(userDto.getNom());
             user.setPrenom(userDto.getPrenom());
             user.setEmail(userDto.getEmail().toLowerCase());
@@ -163,10 +169,12 @@ public class UserService {
         User user= userRepository.findOneByDeletedFalseAndId(id);
         if(user.isActivated()) {
             user.setActivated(false);
+            user.setStatut(Statut.INACTIF);
             emailService.sendNewMail(user.getEmail(), "Désactivation du compte", "Bonjour,votre compte a été désactivé. Vous ne pour pouvez plus accéder à la plateforme");
             traceService.writeAuditEvent( EntityAuditAction.DESACTIVATION , ObjetEntity.USER);
         } else {
             user.setActivated(true);
+            user.setStatut(Statut.ACTIF);
             emailService.sendNewMail(user.getEmail(), "Activation du compte", "Bonjour,votre compte a été activé. Voici vos accès"+"\n"+
                            "  Login: " +user.getUsername()+  "\n"+" Password: "+user.getUsername()+  "\n" );
              
@@ -232,16 +240,29 @@ public class UserService {
      *
      * @return list of {@link aeroport.bf.dto.UserDto}
      */
-    public List<UserDto> findAllUser() {
-        System.out.println("========userCurent===================="+SecurityUtils.getCurrentUsername());
-        // emailService.sendNewMail("dambresibiri@gmail.com", "Désactivation du compte", "Bonjour,votre compte a été désactivé. Vous ne pour pouvez plus accéder à la plateforme");
-        List<User> users = userRepository.findAllByDeletedFalse().stream().filter(user->user.getUsername() !=null  &&!user.getUsername().equals(SecurityUtils.getCurrentUsername()) && !user.getUsername().equals("admin"))
-        .collect(Collectors.toList());
-        if (users.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "No data found, Please create at least one user before.");
-        }
-        return mapper.toDtos(users);
+   public List<UserDto> findAllUser() {
+    String currentUsername = SecurityUtils.getCurrentUsername();
+    System.out.println("========userCurent====================" + currentUsername);
+
+    List<User> users = userRepository.findAllByDeletedFalse().stream()
+            // filtrer les utilisateurs valides
+            .filter(user -> user.getUsername() != null)
+            // exclure l'utilisateur courant et "admin"
+            .filter(user -> !user.getUsername().equals(currentUsername) 
+                         && !user.getUsername().equals("admin"))
+            .toList(); // Java 16+, sinon collect(Collectors.toList())
+
+    System.out.println("========users====================" + users);
+
+    if (users.isEmpty()) {
+        throw new ResponseStatusException(HttpStatus.NO_CONTENT, 
+                "No data found. Please create at least one user before.");
     }
+
+    // convertir en DTO avec gestion de null dans le mapper
+    return mapper.toDtos(users);
+}
+
 
 
     /**
@@ -348,9 +369,13 @@ public class UserService {
     
 
     public boolean reunitialise( String email, String newPass) {
-        Optional<User> user = userRepository.findOneWithAuthoritiesByEmail(email);
+        
+        
+        Optional<User> user = userRepository.findByEmailAndDeletedFalse(email);
         if(user.isPresent()) {
            // user.get().
+           System.out.println("==============email========"+email);
+           System.out.println("==============newPass========"+newPass);
            String encryptedPassword = passwordEncoder.encode(newPass);
            user.get().setPassChange(true);
            user.get().setPassword(encryptedPassword);

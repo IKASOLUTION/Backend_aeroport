@@ -22,6 +22,7 @@ public interface UserRepository extends AbstractRepository<User, Long> {
     User findTop1ByDeletedFalseAndUsername(String username);
     Optional<User> findOneByDeletedFalseAndUsername(String login);
     Optional<User> findOneWithAuthoritiesByEmail(String email);
+    Optional<User> findByEmailAndDeletedFalse(String email);
 
     boolean existsByDeletedFalseAndEmailOrUsername(String email, String username);
     boolean existsByDeletedFalseAndUsername(String username);

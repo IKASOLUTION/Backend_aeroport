@@ -1,4 +1,5 @@
 package aeroport.bf.domain;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -57,7 +58,7 @@ import static aeroport.bf.config.AppConstants.LOGIN_REGEX;
 })
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = {"profil", "aeroport"})
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class User extends AbstractAuditEntity implements Serializable {
@@ -128,13 +129,17 @@ public class User extends AbstractAuditEntity implements Serializable {
     @ManyToOne(cascade = CascadeType.MERGE)
     @JsonIgnoreProperties(value = {"users"})
     private Profil profil;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "aeroport_id", nullable = true)
+    @JsonBackReference
+    private Aeroport aeroport;
 
     @Column(name = "deleted")
     private Boolean deleted; 
     
     @Enumerated(EnumType.STRING)
     @Column(name = "statut")
-    private Statut statut = Statut.ACTIF;
+    private Statut statut;
 
     private String verificationToken;
     @NotEmpty

@@ -9,6 +9,8 @@ import java.util.List;
 public class UserMapper {
     @Autowired
     ProfilMapper profilMapper;
+    @Autowired
+    AeroportMapper aeroportMapper;
     public UserDto toDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
@@ -22,10 +24,9 @@ public class UserMapper {
                 .prenom(user.getPrenom())
                 .activated(user.isActivated())
                 .isDeleted(user.getDeleted())
-                // .agence(user.getAgence())
-                .profil(user.getProfil())
+                .profil(profilMapper.toDto(user.getProfil()))
+                .aeroport(user.getAeroport() != null ? aeroportMapper.toDto(user.getAeroport()) : null)
                 .passChange(user.getPassChange())
-               // .filiale(user.getFiliale())
                 .build();
     }
 
@@ -34,9 +35,8 @@ public class UserMapper {
                 .id(userDto.getId())
                 .username(userDto.getLogin())
                 .email(userDto.getEmail())
-               // .agence(userDto.getAgence())
-                .profil(userDto.getProfil())
-                // .filiale(userDto.getFiliale())
+                .profil(profilMapper.toEntity(userDto.getProfil()))
+                .aeroport(userDto.getAeroport() != null ? aeroportMapper.toEntity(userDto.getAeroport()) : null)
                 .build();
     }
 
@@ -44,9 +44,7 @@ public class UserMapper {
         return UserDto.builder()
                 .login(userDto.getUsername())
                 .email(userDto.getEmail())
-              //  .agence(userDto.getAgence())
-                .profil(userDto.getProfil())
-              //  .filiale(userDto.getFiliale())
+                .profil(profilMapper.toDto(userDto.getProfil()))
                 .build();
     }
 
