@@ -78,7 +78,7 @@ private ModuleParamDto saveModuleParam(final ModuleParamDto moduleParamDto) {
                     if (isExisteMenuByCode(dto)) {
                         throw new ResponseStatusException(HttpStatus.CONFLICT, "Le code de  existe déjà.");
                     }
-                    action.setDeleted(false);
+                    action.setDeleted(Boolean.FALSE);
                     action.setModuleParam(savedModuleParam);
                     MenuAction saved = menuActionRepository.save(action);
                     processedIds.add(saved.getId());
@@ -89,7 +89,7 @@ private ModuleParamDto saveModuleParam(final ModuleParamDto moduleParamDto) {
                 if (isExisteMenuByCode(dto)) {
                     throw new ResponseStatusException(HttpStatus.CONFLICT, "Le code de  existe déjà.");
                 }
-                action.setDeleted(false);
+                action.setDeleted(Boolean.FALSE);
                 action.setModuleParam(savedModuleParam);
                 MenuAction saved = menuActionRepository.save(action);
                 processedIds.add(saved.getId());
@@ -106,9 +106,7 @@ private ModuleParamDto saveModuleParam(final ModuleParamDto moduleParamDto) {
     }
 
     // Return DTO enriched with persisted menu actions
-    moduleParamDto.setId(savedModuleParam.getId());
-    moduleParamDto.setMenuActions(menuActionMapper.toDtos(menuActionRepository.findByModuleParamIdAndDeletedFalse(savedModuleParam.getId())));
-    return moduleParamDto;
+   return moduleParamDto;
 }
 
 /**
