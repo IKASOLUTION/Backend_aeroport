@@ -74,6 +74,7 @@ public class AeroportMapper {
                 .telephoneResponsable(aeroportDto.getTelephoneResponsable())
                 .typeAeroport(aeroportDto.getTypeAeroport())
                 .latitude(aeroportDto.getLatitude())
+                .deleted(aeroportDto.getIsDeleted())
                 .longitude(aeroportDto.getLongitude())
                 .build();
     }
