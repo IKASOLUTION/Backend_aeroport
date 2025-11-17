@@ -64,7 +64,7 @@ public class AeroportMapper {
                 .statutAeroport(aeroportDto.getStatutAeroport())
                 .pays(aeroportDto.getPays())
                 .ville(ville)  // ✅ Assigner la ville récupérée
-                 .mailResponsable(aeroportDto.getMailResponsable())
+                .mailResponsable(aeroportDto.getMailResponsable())
                 .adresse(aeroportDto.getAdresse())
                 .nomResponsable(aeroportDto.getNomResponsable())
                 .prenomResponsable(aeroportDto.getPrenomResponsable())

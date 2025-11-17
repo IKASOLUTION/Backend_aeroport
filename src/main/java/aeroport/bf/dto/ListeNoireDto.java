@@ -59,7 +59,6 @@ public class ListeNoireDto extends AbstractAuditEntity implements Serializable {
     /**
      * Chemin du photo du client fourni
      */
-    private MultipartFile  photo;
 
     /**
      * Statut

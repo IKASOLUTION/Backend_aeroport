@@ -46,6 +46,7 @@ public class ListeNoireMapper  {
                 .numeroNip(dto.getNumeroNip())
                 .prenom(dto.getPrenom())
                 .statut(dto.getStatut())
+                .deleted(dto.getDeleted()) 
                 .build();
     }
 
