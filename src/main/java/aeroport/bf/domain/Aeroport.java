@@ -65,11 +65,9 @@ public class Aeroport extends AbstractAuditEntity  implements Serializable {
 
     private Ville ville;
     private String pays;
-
    private String typeAeroport;
    private String siteWeb;
    private String adresse;
-   private String Code;
    private Double latitude;
    private Double longitude;
    private String telephone;

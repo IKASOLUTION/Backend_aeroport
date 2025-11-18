@@ -84,11 +84,7 @@ public class ListeNoire extends AbstractAuditEntity  implements Serializable {
     @Column(name = "motif", nullable = false, columnDefinition = "TEXT")
     private String motif;
 
-    /**
-     * Chemin du photo du client fourni
-     */
-    @Column(name = "photo")
-    private String photo;
+
 
     /**
      * Statut

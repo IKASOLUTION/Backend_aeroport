@@ -96,6 +96,7 @@ public class AeroportService {
      * @param id removed hotel id.
      */
     public void delete(final long id) {
+        System.out.println("---------suppression id aeroport-------"+id);
         aeroportRepository.findById(id).ifPresentOrElse(aeroport -> {
                 aeroport.setDeleted(Boolean.TRUE);
             aeroportRepository.save(aeroport);

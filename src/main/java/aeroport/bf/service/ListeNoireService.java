@@ -47,14 +47,22 @@ public class ListeNoireService {
      * @return updated Liste object
      */
     public ListeNoireDto update(final ListeNoireDto dto, final long id) {
+        System.out.println("----affciher ListeNoireDto"+dto);
+        System.out.println("-----------afficher id listeNoire"+id);
 
         if (!listeNoireRepository.existsById(id)) {
+            
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No data exists with this ID : %d", id));
         }
         if (Objects.isNull(dto.getId())) {
+        System.out.println("----affciher ListeNoireDto1"+dto);
+        System.out.println("-----------afficher id listeNoire1"+dto.getId());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already created liste noir cannot have null ID.");
         }
         ListeNoire liste = listeNoireMapper.toEntity(dto);
+          System.out.println("----affciher ListeNoireDto2"+dto);
+        System.out.println("-----------afficher id listeNoire2"+liste);
+       
         return listeNoireMapper.toDto(listeNoireRepository.save(liste));
     }
 
@@ -97,8 +105,11 @@ public class ListeNoireService {
      * @param id removed liste noire id.
      */
     public void delete(final long id) {
+           System.out.println("----affciher ListeNoireDto deleted"+id);
         listeNoireRepository.findById(id).ifPresentOrElse(liste -> {
+            System.out.println("----affciher liste ListeNoireDto deleted"+liste);
             liste.setDeleted(Boolean.TRUE);
+              System.out.println("----affciher liste aprese mod ListeNoireDto deleted"+liste);
             listeNoireRepository.save(liste);
             traceService.writeAuditEvent( EntityAuditAction.DELETE, ObjetEntity.LISTE_NOIRE);
         }, () -> {

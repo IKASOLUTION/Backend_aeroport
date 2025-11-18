@@ -28,6 +28,7 @@ public class VilleMapper {
                 .id(villeDto.getId())
                 .nom(villeDto.getNom())
                 .pays(villeDto.getPays())
+                .deleted(villeDto.getIsDeleted())
                 .build();
     }
 
