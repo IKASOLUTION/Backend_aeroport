@@ -16,14 +16,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface EnregistrementRepository extends AbstractRepository<Enregistrement, Long> {
-    
-    List<Enregistrement> findAllByDeletedFalse();
+
+    @Query("select e from Enregistrement  e where e.deleted = false and :aeroportId is null or e.aeroport.id=:aeroportId")
+    List<Enregistrement> findAllByDeletedFalse(@Param("aeroportId") Long aeroportId);
     
     @EntityGraph(attributePaths = {"voyage", "voyage.vol", "voyage.vol.aeroport"})
    @Query("SELECT e FROM Enregistrement e " +
        "WHERE e.deleted = false " +
        "AND e.voyage.vol.dateDepart BETWEEN :startDate AND :endDate " +
-      // "AND (:aeroportId IS NULL OR e.voyage.vol.aeroport.id = :aeroportId) " +
+       "AND (:aeroportId IS NULL OR e.aeroport.id = :aeroportId) " +
        "AND (:statuts IS NULL OR e.statut IN :statuts)")
 Page<Enregistrement> findByFilters(
     @Param("startDate") LocalDateTime startDate,

@@ -1,5 +1,7 @@
 package aeroport.bf.service;
 
+import aeroport.bf.domain.Aeroport;
+import aeroport.bf.service.util.CurrentUserAeropert;
 import jakarta.transaction.Transactional;
 import java_cup.runtime.lr_parser;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +75,7 @@ public class EnregistrementService {
 
 
 public EnregistrementDto create(final EnregistrementDto dto) {
-
+     Aeroport aeroport = CurrentUserAeropert.retrieveAeropert();
     // === 1. Créer et enregistrer InformationPersonnelle ===
     InformationPersonnelle infoPerso = new InformationPersonnelle();
     infoPerso.setNomFamille(dto.getNomFamille());
@@ -93,6 +95,7 @@ public EnregistrementDto create(final EnregistrementDto dto) {
     infoPerso.setEmailContact(dto.getEmailContact());
     infoPerso.setStatut(Statut.ACTIF);
     infoPerso.setDateSaisie(LocalDate.now());
+    infoPerso.setAeroport(aeroport);
     System.out.println("DTO Nom Famille: " + infoPerso);
     InformationPersonnelle savedInfoPerso = informationPersonnelleRepository.save(infoPerso);
     System.out.println("DTO Nom savedInfoPerso: " + savedInfoPerso);
@@ -110,6 +113,7 @@ public EnregistrementDto create(final EnregistrementDto dto) {
     voyage.setEtatVoyage(EtatVoyage.ALLER);
     voyage.setDureeSejour(dto.getDureeSejour());
     voyage.setStatut(StatutVoyage.ACTIF);
+    voyage.setAeroport(aeroport);
 System.out.println("DTO Nom voyage: " + voyage);
     Voyage savedVoyage = voyageRepository.save(voyage);
 System.out.println("DTO Nom savedVoyage: " + savedVoyage);
@@ -127,11 +131,13 @@ System.out.println("DTO Nom savedVoyage: " + savedVoyage);
     enregistrement.setTelephoneEtranger(dto.getTelephoneEtranger());
     enregistrement.setStatut(dto.getStatut() != null ? dto.getStatut() : StatutVoyageur.EN_ATTENTE);
     enregistrement.setDateSaisie(LocalDate.now());
+    enregistrement.setAeroport(aeroport);
 System.out.println("DTO Nom enregistrement: " + enregistrement);
     // === 4. Sauvegarder Enregistrement ===
     Enregistrement savedEnregistrement = enregistrementRepository.save(enregistrement);
     PieceJointe jointe = new PieceJointe();
     jointe.setInformationPersonnel(savedInfoPerso);
+    jointe.setAeroport(aeroport);
     if(dto.getImageRecto() !=null) {
 
        jointe= uploadFileMultiple(dto.getImageRecto(), savedInfoPerso, 1, jointe);
@@ -211,7 +217,7 @@ dtoResult.setNumeroDocument(savedEnregistrement.getInformationPersonnel().getNum
      * @return list of {@link EnregistrementDto}
      */
     public List<EnregistrementDto> findAll() {
-        return enregistrementMapper.toDto(enregistrementRepository.findAllByDeletedFalse());
+        return enregistrementMapper.toDto(enregistrementRepository.findAllByDeletedFalse(CurrentUserAeropert.retrieveAeropert().getId()));
 
     }
 
@@ -220,17 +226,13 @@ dtoResult.setNumeroDocument(savedEnregistrement.getInformationPersonnel().getNum
     Page<Enregistrement> enregistrements = enregistrementRepository.findByFilters(
             startDate.atStartOfDay(),
             endDate.atTime(23, 59, 59),
-            aeroportId,
+            aeroportId !=null ? aeroportId : CurrentUserAeropert.retrieveAeropert().getId(),
             statuts,
             pageable);
-    
-            if(aeroportId !=null && aeroportId !=0) {
-
-            }
     // Grouper par numeroDocument et compter les occurrences
     Map<String, List<EnregistrementDto>> groupedByDocument = enregistrements.getContent()
             .stream()
-            .map(enregistrement -> enregistrementMapper.toDto(enregistrement))
+            .map(enregistrementMapper::toDto)
             .collect(Collectors.groupingBy(EnregistrementDto::getNumeroDocument));
     
     // Créer une liste sans doublons avec le nombre de voyages

@@ -46,6 +46,7 @@ public class InformationPersonnelleDto extends AbstractAuditEntityDto implements
     private String telephoneBurkina;
     private String paysResidence;
     private String emailContact;
+    private AeroportDto aeroport;
     @Builder.Default
     private Statut statut = Statut.ACTIF;
     

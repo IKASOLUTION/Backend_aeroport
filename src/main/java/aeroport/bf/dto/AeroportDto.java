@@ -23,23 +23,17 @@ import java.io.Serializable;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 public class AeroportDto extends AbstractAuditEntityDto implements Serializable {
-    
-    @JsonProperty("id")
+
     private Long id;
-    
-    @JsonProperty("nomAeroport")
+
     private String nomAeroport;
-    
-    @JsonProperty("statutAeroport")
+
     private StatutAeroport statutAeroport;
-    
-    @JsonProperty("villeId")
+
     private Long villeId;
-    
-    @JsonIgnore
+
     private Ville ville;
-    
-    @JsonProperty("pays")
+
     private String pays;
    private String typeAeroport;
    private String siteWeb;
