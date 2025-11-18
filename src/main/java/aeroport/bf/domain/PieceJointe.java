@@ -62,5 +62,9 @@ public class PieceJointe extends AbstractAuditEntity implements Serializable {
     @JoinColumn(name = "information_personnel_id", nullable = false)
     private InformationPersonnelle informationPersonnel;
 
+    @ManyToOne
+    @JoinColumn(name = "aeroport_id", referencedColumnName = "id")
+    private Aeroport aeroport;
+
    
 }

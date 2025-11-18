@@ -224,7 +224,9 @@ dtoResult.setNumeroDocument(savedEnregistrement.getInformationPersonnel().getNum
             statuts,
             pageable);
     
-            System.out.println("==========================enregistrements.getContent()============"+enregistrements.getContent());
+            if(aeroportId !=null && aeroportId !=0) {
+
+            }
     // Grouper par numeroDocument et compter les occurrences
     Map<String, List<EnregistrementDto>> groupedByDocument = enregistrements.getContent()
             .stream()

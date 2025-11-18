@@ -1,5 +1,6 @@
 package aeroport.bf.service;
 
+import aeroport.bf.service.util.CurrentUserAeropert;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -38,8 +39,6 @@ public class VolService {
     private final VolMapper volMapper;
     private final TraceService traceService;
     private final VilleRepository villeRepository;
-    private final AeroportRepository aeroportRepository;
-    private final CompagnieRepository compagnieRepository;
 
     /**
      * Save compagine.
@@ -49,7 +48,8 @@ public class VolService {
      */
     public VolDto create(final VolDto dto) {
 
-        Vol vol = volMapper.toEntity(dto);        
+        Vol vol = volMapper.toEntity(dto);
+        vol.setAeroport(CurrentUserAeropert.retrieveAeropert());
         return volMapper.toDto(volRepository.save(vol));
     }
 
@@ -107,12 +107,16 @@ public class VolService {
 
     public Page<VolDto> findAllPeriodeAndStatut(LocalDate startDate, LocalDate endDate,List<StatutVol> statuts, Pageable pageable) {
         System.out.println("Received statuts request: " + statuts);
+        if (statuts.isEmpty()) {
+            statuts = null;
+        }
         Page<Vol> vols = volRepository.findByDeletedFalseAndStatutInAndDateDepartBetween(
         statuts,        
         startDate.atStartOfDay(),
                 endDate.plusDays(1).atStartOfDay(),
+                CurrentUserAeropert.retrieveAeropert().getId(),
                 pageable);
-        return vols.map(vol -> volMapper.toDto(vol));
+        return vols.map(volMapper::toDto);
     }
 
     /**

@@ -19,6 +19,7 @@ public interface UserRepository extends AbstractRepository<User, Long> {
     Optional<User> findByDeletedFalseAndUsername(String username);
     Optional<User> findByDeletedIsFalseAndUsername(String username);
     List<User> findByUsername(String username);
+    Optional<User> findOneByUsername(String login);
     User findTop1ByDeletedFalseAndUsername(String username);
     Optional<User> findOneByDeletedFalseAndUsername(String login);
     Optional<User> findOneWithAuthoritiesByEmail(String email);
