@@ -88,5 +88,9 @@ public class Enregistrement extends AbstractAuditEntity  implements Serializable
     @Builder.Default
     private StatutVoyageur statut = StatutVoyageur.EN_ATTENTE;
 
+    @ManyToOne
+    @JoinColumn(name = "aeroport_id", referencedColumnName = "id")
+    private Aeroport aeroport;
+
     
 }
