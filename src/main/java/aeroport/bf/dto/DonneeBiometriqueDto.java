@@ -28,11 +28,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class DonneeBiometriqueDto extends AbstractAuditEntity implements Serializable {
     private Long id;
 
-    private Boolean empreinteGauche;
+    private MultipartFile empreinteGauche;
 
-    private Boolean empreinteDroite;
+    private MultipartFile empreinteDroite;
 
-    private Boolean empreintePouces;
+    private MultipartFile empreintePouces;
 
     private Long enregistrementId;
     private Long informationPersonnelleId;
@@ -43,7 +43,10 @@ public class DonneeBiometriqueDto extends AbstractAuditEntity implements Seriali
 
     private MultipartFile photoBiometrique;
 
-     private String photoBiometriquePath;
+    private String photoBiometriquePath;
+    private String empreinteGauchePath;
+    private String empreinteDroitePath;
+    private String empreintePoucesPath;
 
     private TypeCapture typeCapture;
 

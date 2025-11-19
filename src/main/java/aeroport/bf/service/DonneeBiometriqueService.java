@@ -47,6 +47,11 @@ public class DonneeBiometriqueService {
             biometrique =donneeBiometriqueRepository.save(biometrique);
         try {
             uploadFile(dto.getPhotoBiometrique(), biometrique);
+            biometrique.setPhotoBiometriquePath(uploadFile(dto.getPhotoBiometrique(), biometrique));
+            biometrique.setEmpreinteDroitePath(uploadFile(dto.getEmpreinteDroite(), biometrique));
+            biometrique.setEmpreinteGauchePath(uploadFile(dto.getEmpreinteGauche(), biometrique));
+            biometrique.setEmpreintePoucesPath(uploadFile(dto.getEmpreintePouces(), biometrique));
+           donneeBiometriqueRepository.save(biometrique);
         } catch (IOException e) {
             
             e.printStackTrace();
@@ -54,6 +59,11 @@ public class DonneeBiometriqueService {
        
 
         dto.setPhotoBiometrique(null);
+         biometrique.setPhotoBiometriquePath(null);
+        biometrique.setEmpreinteDroitePath(null);
+        biometrique.setEmpreinteGauchePath(null);
+        biometrique.setEmpreintePoucesPath(null);
+
 
         return dto;
     }
@@ -85,8 +95,8 @@ public class DonneeBiometriqueService {
         // Sécuriser le nom de fichier
         String sanitizedFilename = originalFilename.replaceAll("[^a-zA-Z0-9\\.\\-_àáâãäçèéêëìíîïñòóôõöùúûüýÿ ]", "_");
         String finalFilename = biometrique.getId() + sanitizedFilename;
-        biometrique.setPhotoBiometriquePath(finalFilename);
-        donneeBiometriqueRepository.save(biometrique);
+        //biometrique.setPhotoBiometriquePath(finalFilename);
+        // donneeBiometriqueRepository.save(biometrique);
         Path path = Paths.get(uploadDirectory, finalFilename);
         
         try {
