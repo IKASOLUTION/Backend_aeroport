@@ -113,7 +113,7 @@ public class InformationPersonnelle extends AbstractAuditEntity  implements Seri
     @Builder.Default
     private LocalDate dateSaisie = LocalDate.now();
 
-
-   
-    
+    @ManyToOne
+    @JoinColumn(name = "aeroport_id", referencedColumnName = "id")
+    private Aeroport aeroport;
 }

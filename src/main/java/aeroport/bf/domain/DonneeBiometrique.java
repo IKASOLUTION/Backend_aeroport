@@ -78,4 +78,8 @@ public class DonneeBiometrique extends AbstractAuditEntity  implements Serializa
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "information_personnelle_id", nullable = false)
     private InformationPersonnelle informationPersonnelle;
+
+    @ManyToOne
+    @JoinColumn(name = "aeroport_id", referencedColumnName = "id")
+    private Aeroport aeroport;
 }

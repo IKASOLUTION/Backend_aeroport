@@ -74,6 +74,7 @@ public class VoyageDto extends AbstractAuditEntityDto  implements Serializable {
     private StatutVoyage statut = StatutVoyage.ACTIF;
     private String villeNomD;
     private String villeNomA;
+    private AeroportDto aeroport;
 
     
 }

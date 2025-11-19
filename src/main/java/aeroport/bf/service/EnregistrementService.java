@@ -39,6 +39,7 @@ import aeroport.bf.dto.mapper.InformationPersonnelleMapper;
 import aeroport.bf.repository.VilleRepository;
 import aeroport.bf.repository.VolRepository;
 import aeroport.bf.repository.VoyageRepository;
+import aeroport.bf.service.util.CurrentUserAeropert;
 import aeroport.bf.repository.EnregistrementRepository;
 import aeroport.bf.repository.InformationPersonnelleRepository;
 import aeroport.bf.repository.PieceJointeRepository;
@@ -226,7 +227,7 @@ public class EnregistrementService {
         Page<Enregistrement> enregistrements = enregistrementRepository.findByFilters(
                 startDate.atStartOfDay(),
                 endDate.atTime(23, 59, 59),
-                aeroportId,
+                aeroportId !=null ? aeroportId :  CurrentUserAeropert.retrieveAeropert().getId(),
                 statuts,
                 pageable);
 
@@ -246,7 +247,7 @@ public class EnregistrementService {
         Page<Enregistrement> enregistrements = enregistrementRepository.findByFilters(
                 startDate.atStartOfDay(),
                 endDate.atTime(23, 59, 59),
-                aeroportId,
+                aeroportId !=null ? aeroportId :  CurrentUserAeropert.retrieveAeropert().getId(),
                 statuts,
                 pageable);
 

@@ -1,9 +1,11 @@
 package aeroport.bf.dto.mapper;
 
+import aeroport.bf.domain.Aeroport;
 import aeroport.bf.domain.DonneeBiometrique;
 import aeroport.bf.domain.Enregistrement;
 import aeroport.bf.domain.InformationPersonnelle;
 import aeroport.bf.domain.ListeNoire;
+import aeroport.bf.dto.AeroportDto;
 import aeroport.bf.dto.DonneeBiometriqueDto;
 import aeroport.bf.dto.EnregistrementDto;
 import aeroport.bf.dto.ListeNoireDto;
@@ -21,11 +23,14 @@ public interface DonneeBiometriqueMapper extends EntityMapper<DonneeBiometriqueD
     
     // Entity -> DTO : Extraire l'ID de l'enregistrement
     @Mapping(target = "informationPersonnelleId", source = "informationPersonnelle.id")
+    @Mapping(target = "aeroportId", source = "aeroport.id")
     DonneeBiometriqueDto toDto(DonneeBiometrique entity);
 
+   
+
     // DTO -> Entity : Créer l'enregistrement avec seulement l'ID
-    
     @Mapping(target = "informationPersonnelle", source = "informationPersonnelleId", qualifiedByName = "idToInformationPersonnelle")
+    @Mapping(target = "aeroport", source = "aeroportId", qualifiedByName = "idToAeroport")
     DonneeBiometrique toEntity(DonneeBiometriqueDto dto);
 
     // Méthode helper pour créer un Enregistrement avec seulement l'ID
@@ -37,5 +42,15 @@ public interface DonneeBiometriqueMapper extends EntityMapper<DonneeBiometriqueD
         InformationPersonnelle informationPersonnelle = new InformationPersonnelle();
         informationPersonnelle.setId(informationPersonnelleId);
         return informationPersonnelle;
+    }
+
+    @Named("idToAeroport")
+    default Aeroport idToAeroport(Long aeroportId) {
+        if (aeroportId == null) {
+            return null;
+        }
+        Aeroport aeroport = new Aeroport();
+        aeroport.setId(aeroportId);
+        return aeroport;
     }
 }

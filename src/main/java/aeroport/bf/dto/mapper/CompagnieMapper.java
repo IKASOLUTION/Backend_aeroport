@@ -59,6 +59,7 @@ public class CompagnieMapper {
                 .prenomResponsable(dto.getPrenomResponsable())
                 .siege(dto.getSiege())
                 .statut(dto.getStatut())
+                .deleted(dto.getIsDeleted())
                 .telephoneResponsable(dto.getTelephoneResponsable())
                 .build();
     }

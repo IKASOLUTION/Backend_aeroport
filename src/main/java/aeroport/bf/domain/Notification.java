@@ -8,6 +8,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -70,4 +72,8 @@ public class Notification extends AbstractAuditEntity implements Serializable {
 
     @Column(name = "lieu_naissance", length = 100, nullable = false)
     private String lieuNaissance;
+
+    @ManyToOne
+    @JoinColumn(name = "aeroport_id", referencedColumnName = "id")
+    private Aeroport aeroport;
 }

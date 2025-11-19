@@ -8,6 +8,7 @@ import aeroport.bf.domain.enums.StatutVoyageur;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,11 @@ import org.springframework.data.repository.query.Param;
 public interface EnregistrementRepository extends AbstractRepository<Enregistrement, Long> {
     
     List<Enregistrement> findAllByDeletedFalse();
+   Optional<Enregistrement> findByInformationPersonnelId(Long informationPersonnelId);
+
+
+    @Query("select e from Enregistrement  e where e.deleted = false and :aeroportId is null or e.aeroport.id=:aeroportId")
+    List<Enregistrement> findAllByDeletedFalse(@Param("aeroportId") Long aeroportId);
     
     @EntityGraph(attributePaths = {"voyage", "voyage.vol", "voyage.vol.aeroport"})
    @Query("SELECT e FROM Enregistrement e " +

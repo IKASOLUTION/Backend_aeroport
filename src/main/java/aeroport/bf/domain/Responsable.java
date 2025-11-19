@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
@@ -60,4 +62,8 @@ public class Responsable extends AbstractAuditEntity implements Serializable {
     @Size(min = 4, max = 254)
     @Column(name="email", length = 254, unique = true)
     private String email;
+
+    @ManyToOne
+    @JoinColumn(name = "aeroport_id", referencedColumnName = "id")
+    private Aeroport aeroport;
 }

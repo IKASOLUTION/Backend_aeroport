@@ -1,39 +1,28 @@
 package aeroport.bf.service;
 
+import aeroport.bf.service.util.CurrentUserAeropert;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import aeroport.bf.config.audit.EntityAuditAction;
 import aeroport.bf.config.audit.ObjetEntity;
-import aeroport.bf.config.security.SecurityUtils;
-import aeroport.bf.domain.MenuAction;
 import aeroport.bf.domain.DonneeBiometrique;
-import aeroport.bf.domain.Trace;
-import aeroport.bf.domain.User;
-import aeroport.bf.dto.MenuActionDto;
 import aeroport.bf.dto.DonneeBiometriqueDto;
 import aeroport.bf.dto.mapper.DonneeBiometriqueMapper;
-import aeroport.bf.repository.MenuActionRepository;
 import aeroport.bf.repository.DonneeBiometriqueRepository;
-import aeroport.bf.repository.TraceRepository;
-import aeroport.bf.repository.UserRepository;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,7 +42,9 @@ public class DonneeBiometriqueService {
      * @return saved ticket object
      */
     private DonneeBiometriqueDto saveDonneeBiometrique(final DonneeBiometriqueDto dto) {
-            DonneeBiometrique biometrique= donneeBiometriqueRepository.save(mapper.toEntity(dto));
+            DonneeBiometrique biometrique= mapper.toEntity(dto);
+            biometrique.setAeroport(CurrentUserAeropert.retrieveAeropert());
+            biometrique =donneeBiometriqueRepository.save(biometrique);
         try {
             uploadFile(dto.getPhotoBiometrique(), biometrique);
         } catch (IOException e) {
@@ -74,8 +65,6 @@ public class DonneeBiometriqueService {
      * @return created ticket object
      */
     public DonneeBiometriqueDto createDonneeBiometrique(final DonneeBiometriqueDto dto) {
-       
-
         return saveDonneeBiometrique(dto);
     }
 
@@ -84,12 +73,10 @@ public class DonneeBiometriqueService {
         if (file.isEmpty() || biometrique == null) {
             return null;
         }
-        
         File uploadDir = new File(uploadDirectory);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
-
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null) {
             return null;
@@ -120,10 +107,8 @@ public class DonneeBiometriqueService {
      * @return updated ticket object
      */
     public DonneeBiometriqueDto update(final DonneeBiometriqueDto dto, final long id) {
-       
         return saveDonneeBiometrique(dto);
     }
-
     public List<DonneeBiometriqueDto> deleteAll(List<DonneeBiometriqueDto> dtos) {
         mapper.toEntity(dtos).stream().peek(filiale -> {
             filiale.setDeleted(Boolean.TRUE);
@@ -144,7 +129,6 @@ public class DonneeBiometriqueService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format("No filiale exists with this ID : %d", id));
         }
-
         return mapper.toDto(donneeBiometriqueRepository.findOneByDeletedFalseAndId(id));
     }
 
@@ -154,7 +138,8 @@ public class DonneeBiometriqueService {
      * @return list of {@link aeroport.bf.dto.TicketDto}
      */
     public List<DonneeBiometriqueDto> findAllDonneeBiometrique() {
-        List<DonneeBiometrique> dts = donneeBiometriqueRepository.findAllByDeletedFalse();
+        List<DonneeBiometrique> dts = donneeBiometriqueRepository.findAllByDeletedFalse(
+                CurrentUserAeropert.retrieveAeropert().getId());
         if (dts.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT,
                     "No data found, Please create at least one filiale before.");

@@ -14,6 +14,8 @@ import lombok.experimental.SuperBuilder;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import org.springframework.web.multipart.MultipartFile;
+
 
 /**
  * A liste_noire.
@@ -57,7 +59,6 @@ public class ListeNoireDto extends AbstractAuditEntity implements Serializable {
     /**
      * Chemin du photo du client fourni
      */
-    private String photo;
 
     /**
      * Statut
@@ -67,6 +68,8 @@ public class ListeNoireDto extends AbstractAuditEntity implements Serializable {
     private String numeroNip;
 
     private String numeroCnib;
+
+
 
 
 }

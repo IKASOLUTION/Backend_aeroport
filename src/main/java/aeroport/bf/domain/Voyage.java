@@ -95,5 +95,8 @@ public class Voyage extends AbstractAuditEntity  implements Serializable {
     @Builder.Default
     private StatutVoyage statut = StatutVoyage.ACTIF;
 
+    @ManyToOne
+    @JoinColumn(name = "aeroport_id", referencedColumnName = "id")
+    private Aeroport aeroport;
     
 }

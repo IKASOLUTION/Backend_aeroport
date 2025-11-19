@@ -29,7 +29,6 @@ public class ListeNoireMapper  {
                 .nom(dt.getNom())
                 .numeroCnib(dt.getNumeroCnib())
                 .numeroNip(dt.getNumeroNip())
-                .photo(dt.getPhoto())
                 .prenom(dt.getPrenom())
                 .statut(dt.getStatut())
                 .deleted(dt.getDeleted())
@@ -45,9 +44,9 @@ public class ListeNoireMapper  {
                 .nom(dto.getNom())
                 .numeroCnib(dto.getNumeroCnib())
                 .numeroNip(dto.getNumeroNip())
-                .photo(dto.getPhoto())
                 .prenom(dto.getPrenom())
                 .statut(dto.getStatut())
+                .deleted(dto.getDeleted()) 
                 .build();
     }
 
