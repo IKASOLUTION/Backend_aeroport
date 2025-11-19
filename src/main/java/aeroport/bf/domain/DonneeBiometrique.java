@@ -24,6 +24,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 
 /**
@@ -63,7 +64,12 @@ public class DonneeBiometrique extends AbstractAuditEntity  implements Serializa
 
     @Column(name = "type_capture")
     @Enumerated(EnumType.STRING)
-    private TypeCapture typeCapture;
+    @Builder.Default
+    private TypeCapture typeCapture = TypeCapture.ENROLEMENT;
+
+    @Column(name = "date_capture")
+    @Builder.Default
+    private LocalDate dateCapture =LocalDate.now();
 
     @Column(name = "statut")
     @Enumerated(EnumType.STRING)
