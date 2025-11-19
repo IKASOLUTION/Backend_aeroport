@@ -70,6 +70,7 @@ public class EnregistrementDto extends AbstractAuditEntityDto implements Seriali
     private MultipartFile  photoProfil;
     private MultipartFile  imageRecto;
     private MultipartFile  imageVerso;
+    private Long informationPersonnelleId;
 
     // === Personal Info ===
     private String nomFamille;

@@ -96,7 +96,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
     
                     
-                    auth.requestMatchers("/api/users/login","/api/users/verify-email").permitAll();
+                    auth.requestMatchers("/api/users/login","/api/users/refresh","/api/users/verify-email").permitAll();
                     auth.anyRequest().authenticated();
                 }).build();
 

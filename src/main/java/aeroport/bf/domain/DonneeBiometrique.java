@@ -71,10 +71,10 @@ public class DonneeBiometrique extends AbstractAuditEntity  implements Serializa
     @Column(name = "exercice")
     private Long exercice;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    /* @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "enregistrement_id", nullable = false)
     private Enregistrement enregistrement;
-
+ */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "information_personnelle_id", nullable = false)
     private InformationPersonnelle informationPersonnelle;

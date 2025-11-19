@@ -239,4 +239,30 @@ public class EnregistrementController {
         return ResponseEntity.ok(taches);
     }
 
+    @PutMapping("/enregistrements/periode/voyageur-attente")
+    public ResponseEntity<Page<EnregistrementDto>> findAllPeriodeVoyageurAttentAndStatut(@RequestBody SearchDto search) {
+        // Validation
+        if (search.getDateDebut() == null || search.getDateFin() == null) {
+            throw new IllegalArgumentException("dateDebut et dateFin sont obligatoires");
+        }
+
+        if (search.getDateDebut().isAfter(search.getDateFin())) {
+            throw new IllegalArgumentException("dateDebut doit être avant dateFin");
+        }
+
+         search.setSortBy("dateSaisie");
+        // Création du Pageable et récupération des données
+        Pageable pageable = PageableUtil.fromSearchDto(search);
+        Page<EnregistrementDto> taches = enregistrementService.findAllPeriodeAndVoyageurAndStatut(
+                
+                search.getDateDebut(),
+                search.getDateFin(),
+                search.getAeroportId(),
+               // search.getStatus(),
+                pageable
+               );
+
+        return ResponseEntity.ok(taches);
+    }
+
 }

@@ -62,6 +62,7 @@ public class DonneeBiometriqueService {
         }
        
 
+        dto.setPhotoBiometrique(null);
 
         return dto;
     }
