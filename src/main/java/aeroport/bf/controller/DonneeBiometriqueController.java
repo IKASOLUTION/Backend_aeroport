@@ -25,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import aeroport.bf.dto.DonneeBiometriqueDto;
 import aeroport.bf.service.DonneeBiometriqueService;
+
+import java.io.File;
 import java.util.List;
 
 @Slf4j
@@ -51,9 +53,9 @@ public class DonneeBiometriqueController {
     public ResponseEntity<DonneeBiometriqueDto> create(
             @RequestPart(value = "photoBiometrique", required = false) MultipartFile photoBiometrique,
             @RequestParam(value = "informationPersonnelleId", required = true) Long informationPersonnelleId,
-            @RequestParam(value = "empreintePouces", required = true) Boolean empreintePouces,
-            @RequestParam(value = "empreinteGauche", required = true) Boolean empreinteGauche,
-            @RequestParam(value = "empreinteDroite", required = true) Boolean empreinteDroite) {
+            @RequestParam(value = "empreintePouces", required = true) MultipartFile empreintePouces,
+            @RequestParam(value = "empreinteGauche", required = true) MultipartFile empreinteGauche,
+            @RequestParam(value = "empreinteDroite", required = true) MultipartFile empreinteDroite) {
                 System.out.println("informationPersonnelleId: " + informationPersonnelleId);
                 System.out.println("empreintePouces: " + empreintePouces);
                 System.out.println("empreinteGauche: " + empreinteGauche);  

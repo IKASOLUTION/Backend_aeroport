@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,13 +50,13 @@ public class DonneeBiometrique extends AbstractAuditEntity  implements Serializa
     private Long id;
 
     @Column(name = "empreinte_gauche")
-    private Boolean empreinteGauche;
+    private String empreinteGauchePath;
 
     @Column(name = "empreinte_droite")
-    private Boolean empreinteDroite;
+    private String empreinteDroitePath;
 
     @Column(name = "empreinte_pouces")
-    private Boolean empreintePouces;
+    private String empreintePoucesPath;
 
     @Column(name = "photo_biometrique_path")
     private String photoBiometriquePath;
@@ -66,7 +67,8 @@ public class DonneeBiometrique extends AbstractAuditEntity  implements Serializa
 
     @Column(name = "statut")
     @Enumerated(EnumType.STRING)
-    private StatutDonneeBio statut;
+    @Builder.Default
+    private StatutDonneeBio statut = StatutDonneeBio.VALIDE;
 
     @Column(name = "exercice")
     private Long exercice;
