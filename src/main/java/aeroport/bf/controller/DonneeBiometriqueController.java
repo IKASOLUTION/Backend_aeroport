@@ -50,15 +50,15 @@ public class DonneeBiometriqueController {
     })
     public ResponseEntity<DonneeBiometriqueDto> create(
             @RequestPart(value = "photoBiometrique", required = false) MultipartFile photoBiometrique,
-            @RequestParam(value = "enregistrementId", required = true) Long enregistrementId,
+            @RequestParam(value = "informationPersonnelleId", required = true) Long informationPersonnelleId,
             @RequestParam(value = "empreintePouces", required = true) Boolean empreintePouces,
             @RequestParam(value = "empreinteGauche", required = true) Boolean empreinteGauche,
             @RequestParam(value = "empreinteDroite", required = true) Boolean empreinteDroite) {
-                System.out.println("enregistrementId: " + enregistrementId);
+                System.out.println("informationPersonnelleId: " + informationPersonnelleId);
                 System.out.println("empreintePouces: " + empreintePouces);
                 System.out.println("empreinteGauche: " + empreinteGauche);  
         DonneeBiometriqueDto dto = DonneeBiometriqueDto.builder()
-                .enregistrementId(enregistrementId)
+                .informationPersonnelleId(informationPersonnelleId)
                 .empreintePouces(empreintePouces)
                 .empreinteGauche(empreinteGauche)
                 .empreinteDroite(empreinteDroite)

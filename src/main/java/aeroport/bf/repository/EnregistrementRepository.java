@@ -29,7 +29,7 @@ public interface EnregistrementRepository extends AbstractRepository<Enregistrem
    @Query("SELECT e FROM Enregistrement e " +
        "WHERE e.deleted = false " +
        "AND e.voyage.vol.dateDepart BETWEEN :startDate AND :endDate " +
-       "AND (:aeroportId IS NULL OR e.aeroport.id = :aeroportId) " +
+       "AND (:aeroportId = 0L OR e.voyage.vol.aeroport.id = :aeroportId) " +
        "AND (:statuts IS NULL OR e.statut IN :statuts)")
 Page<Enregistrement> findByFilters(
     @Param("startDate") LocalDateTime startDate,

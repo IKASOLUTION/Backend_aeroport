@@ -201,8 +201,18 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<JWTToken> refreshToken(@RequestBody TokenRefreshRequest request) {
+System.out.println("=============================================="+request.getRefreshToken());
+         try {
+            System.out.println("====================1=========================="+request.getRefreshToken());
         JWTToken newTokens = userService.refreshToken(request.getRefreshToken());
+        System.out.println("================2=============================="+newTokens);
         return ResponseEntity.ok(newTokens);
+    } catch (IllegalArgumentException e) {
+        System.out.println("=======================3======================="+request.getRefreshToken());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
+        /* JWTToken newTokens = userService.refreshToken(request.getRefreshToken());
+        return ResponseEntity.ok(newTokens); */
     }
 
     @DeleteMapping(path = "/{id}")

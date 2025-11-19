@@ -35,6 +35,7 @@ public class DonneeBiometriqueDto extends AbstractAuditEntity implements Seriali
     private Boolean empreintePouces;
 
     private Long enregistrementId;
+    private Long informationPersonnelleId;
 
     private Long aeroportId;
 

@@ -1,7 +1,5 @@
 package aeroport.bf.service;
 
-import aeroport.bf.domain.Aeroport;
-import aeroport.bf.service.util.CurrentUserAeropert;
 import jakarta.transaction.Transactional;
 import java_cup.runtime.lr_parser;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +35,11 @@ import aeroport.bf.dto.VilleDto;
 import aeroport.bf.dto.EnregistrementDto;
 import aeroport.bf.dto.mapper.VilleMapper;
 import aeroport.bf.dto.mapper.EnregistrementMapper;
+import aeroport.bf.dto.mapper.InformationPersonnelleMapper;
 import aeroport.bf.repository.VilleRepository;
 import aeroport.bf.repository.VolRepository;
 import aeroport.bf.repository.VoyageRepository;
+import aeroport.bf.service.util.CurrentUserAeropert;
 import aeroport.bf.repository.EnregistrementRepository;
 import aeroport.bf.repository.InformationPersonnelleRepository;
 import aeroport.bf.repository.PieceJointeRepository;
@@ -52,6 +52,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -72,102 +73,97 @@ public class EnregistrementService {
     @Value("${files.upload.baseDir}/identite")
     private String uploadDirectory;
     private final PieceJointeRepository pieceJointeRepository;
+    private final InformationPersonnelleMapper informationPersonnelleMapper;
 
+    public EnregistrementDto create(final EnregistrementDto dto) {
 
-public EnregistrementDto create(final EnregistrementDto dto) {
-     Aeroport aeroport = CurrentUserAeropert.retrieveAeropert();
-    // === 1. Créer et enregistrer InformationPersonnelle ===
-    InformationPersonnelle infoPerso = new InformationPersonnelle();
-    infoPerso.setNomFamille(dto.getNomFamille());
-    infoPerso.setPrenom(dto.getPrenom());
-    infoPerso.setDateNaissance(dto.getDateNaissance());
-    infoPerso.setLieuNaissance(dto.getLieuNaissance());
-    infoPerso.setNationalite(dto.getNationalite());
-    infoPerso.setTypeDocument(dto.getTypeDocument());
-    infoPerso.setNumeroDocument(dto.getNumeroDocument());
-    infoPerso.setDateDelivrance(dto.getDateDelivrance());
-    infoPerso.setLieuDelivrance(dto.getLieuDelivrance());
-    infoPerso.setNumeroNip(dto.getNumeroNip());
-    infoPerso.setProfession(dto.getProfession());
-    infoPerso.setAdresseBurkina(dto.getAdresseBurkina());
-    infoPerso.setTelephoneBurkina(dto.getTelephoneBurkina());
-    infoPerso.setPaysResidence(dto.getPaysResidence());
-    infoPerso.setEmailContact(dto.getEmailContact());
-    infoPerso.setStatut(Statut.ACTIF);
-    infoPerso.setDateSaisie(LocalDate.now());
-    infoPerso.setAeroport(aeroport);
-    System.out.println("DTO Nom Famille: " + infoPerso);
-    InformationPersonnelle savedInfoPerso = informationPersonnelleRepository.save(infoPerso);
-    System.out.println("DTO Nom savedInfoPerso: " + savedInfoPerso);
-    // === 2. Créer et enregistrer Voyage ===
-    Voyage voyage = new Voyage();
-    System.out.println("DTO Nom dto.getVolId(): " + dto.getVolId());
-    Vol vol = volRepository.getReferenceById(dto.getVolId());
-    voyage.setVol(vol); 
-    System.out.println("DTO Nom voyage avant setVol: " + villeRepository.getReferenceById(vol.getVilleDepart().getId()));
-    voyage.setVilleDepart(villeRepository.getReferenceById(vol.getVilleDepart().getId()));
-    voyage.setVilleDestination(villeRepository.getReferenceById(vol.getVilleArrivee().getId()));
-    voyage.setMotifVoyage(dto.getMotifVoyage());
-    voyage.setDateVoyage(dto.getDateVoyage());
-    voyage.setHeureVoyage(LocalTime.now());
-    voyage.setEtatVoyage(EtatVoyage.ALLER);
-    voyage.setDureeSejour(dto.getDureeSejour());
-    voyage.setStatut(StatutVoyage.ACTIF);
-    voyage.setAeroport(aeroport);
-System.out.println("DTO Nom voyage: " + voyage);
-    Voyage savedVoyage = voyageRepository.save(voyage);
-System.out.println("DTO Nom savedVoyage: " + savedVoyage);
-    // === 3. Créer Enregistrement ===
-    Enregistrement enregistrement = new Enregistrement();
-     SecurityUtils.getCurrentUserLogin()
-            .flatMap(userRepository::findOneByDeletedFalseAndUsername)
-            .ifPresent(user -> {
-                enregistrement.setUtilisateur(user);
-                   });
-    
-    enregistrement.setInformationPersonnel(savedInfoPerso);
-    enregistrement.setVoyage(savedVoyage);
-    enregistrement.setAdresseEtranger(dto.getAdresseEtranger());
-    enregistrement.setTelephoneEtranger(dto.getTelephoneEtranger());
-    enregistrement.setStatut(dto.getStatut() != null ? dto.getStatut() : StatutVoyageur.EN_ATTENTE);
-    enregistrement.setDateSaisie(LocalDate.now());
-    enregistrement.setAeroport(aeroport);
-System.out.println("DTO Nom enregistrement: " + enregistrement);
-    // === 4. Sauvegarder Enregistrement ===
-    Enregistrement savedEnregistrement = enregistrementRepository.save(enregistrement);
-    PieceJointe jointe = new PieceJointe();
-    jointe.setInformationPersonnel(savedInfoPerso);
-    jointe.setAeroport(aeroport);
-    if(dto.getImageRecto() !=null) {
+        // === 1. Créer et enregistrer InformationPersonnelle ===
+        InformationPersonnelle infoPerso = new InformationPersonnelle();
+        infoPerso.setNomFamille(dto.getNomFamille());
+        infoPerso.setPrenom(dto.getPrenom());
+        infoPerso.setDateNaissance(dto.getDateNaissance());
+        infoPerso.setLieuNaissance(dto.getLieuNaissance());
+        infoPerso.setNationalite(dto.getNationalite());
+        infoPerso.setTypeDocument(dto.getTypeDocument());
+        infoPerso.setNumeroDocument(dto.getNumeroDocument());
+        infoPerso.setDateDelivrance(dto.getDateDelivrance());
+        infoPerso.setLieuDelivrance(dto.getLieuDelivrance());
+        infoPerso.setNumeroNip(dto.getNumeroNip());
+        infoPerso.setProfession(dto.getProfession());
+        infoPerso.setAdresseBurkina(dto.getAdresseBurkina());
+        infoPerso.setTelephoneBurkina(dto.getTelephoneBurkina());
+        infoPerso.setPaysResidence(dto.getPaysResidence());
+        infoPerso.setEmailContact(dto.getEmailContact());
+        infoPerso.setStatut(Statut.ACTIF);
+        infoPerso.setDateSaisie(LocalDate.now());
+        System.out.println("DTO Nom Famille: " + infoPerso);
+        InformationPersonnelle savedInfoPerso = informationPersonnelleRepository.save(infoPerso);
+        System.out.println("DTO Nom savedInfoPerso: " + savedInfoPerso);
+        // === 2. Créer et enregistrer Voyage ===
+        Voyage voyage = new Voyage();
+        System.out.println("DTO Nom dto.getVolId(): " + dto.getVolId());
+        Vol vol = volRepository.getReferenceById(dto.getVolId());
+        voyage.setVol(vol);
+        System.out.println(
+                "DTO Nom voyage avant setVol: " + villeRepository.getReferenceById(vol.getVilleDepart().getId()));
+        voyage.setVilleDepart(villeRepository.getReferenceById(vol.getVilleDepart().getId()));
+        voyage.setVilleDestination(villeRepository.getReferenceById(vol.getVilleArrivee().getId()));
+        voyage.setMotifVoyage(dto.getMotifVoyage());
+        voyage.setDateVoyage(dto.getDateVoyage());
+        voyage.setHeureVoyage(LocalTime.now());
+        voyage.setEtatVoyage(EtatVoyage.ALLER);
+        voyage.setDureeSejour(dto.getDureeSejour());
+        voyage.setStatut(StatutVoyage.ACTIF);
+        System.out.println("DTO Nom voyage: " + voyage);
+        Voyage savedVoyage = voyageRepository.save(voyage);
+        System.out.println("DTO Nom savedVoyage: " + savedVoyage);
+        // === 3. Créer Enregistrement ===
+        Enregistrement enregistrement = new Enregistrement();
+        SecurityUtils.getCurrentUserLogin()
+                .flatMap(userRepository::findOneByDeletedFalseAndUsername)
+                .ifPresent(user -> {
+                    enregistrement.setUtilisateur(user);
+                });
 
-       jointe= uploadFileMultiple(dto.getImageRecto(), savedInfoPerso, 1, jointe);
+        enregistrement.setInformationPersonnel(savedInfoPerso);
+        enregistrement.setVoyage(savedVoyage);
+        enregistrement.setAdresseEtranger(dto.getAdresseEtranger());
+        enregistrement.setTelephoneEtranger(dto.getTelephoneEtranger());
+        enregistrement.setStatut(dto.getStatut() != null ? dto.getStatut() : StatutVoyageur.EN_ATTENTE);
+        enregistrement.setDateSaisie(LocalDate.now());
+        System.out.println("DTO Nom enregistrement: " + enregistrement);
+        // === 4. Sauvegarder Enregistrement ===
+        Enregistrement savedEnregistrement = enregistrementRepository.save(enregistrement);
+        PieceJointe jointe = new PieceJointe();
+        jointe.setInformationPersonnel(savedInfoPerso);
+        if (dto.getImageRecto() != null) {
+
+            jointe = uploadFileMultiple(dto.getImageRecto(), savedInfoPerso, 1, jointe);
+        }
+
+        if (dto.getImageVerso() != null) {
+
+            jointe = uploadFileMultiple(dto.getImageVerso(), savedInfoPerso, 2, jointe);
+        }
+
+        if (dto.getPhotoProfil() != null) {
+
+            jointe = uploadFileMultiple(dto.getPhotoProfil(), savedInfoPerso, 3, jointe);
+        }
+
+        pieceJointeRepository.save(jointe);
+
+        System.out.println("DTO Nom savedEnregistrement: " + savedEnregistrement);
+        EnregistrementDto dtoResult = new EnregistrementDto();
+        dtoResult.setId(savedEnregistrement.getId());
+        dtoResult.setNomFamille(savedEnregistrement.getInformationPersonnel().getNomFamille());
+        dtoResult.setPrenom(savedEnregistrement.getInformationPersonnel().getPrenom());
+        dtoResult.setInformationPersonnelleId(savedEnregistrement.getInformationPersonnel().getId());
+        dtoResult.setNumeroDocument(savedEnregistrement.getInformationPersonnel().getNumeroDocument());
+        dtoResult.setInformationPersonnelle(informationPersonnelleMapper.toDto(savedEnregistrement.getInformationPersonnel()));
+        // === 5. Retourner le DTO ===
+        return dtoResult;
     }
-
-    if(dto.getImageVerso() !=null) {
-
-       jointe= uploadFileMultiple(dto.getImageVerso(), savedInfoPerso,2, jointe);
-    }
-
-    if(dto.getPhotoProfil() !=null) {
-
-       jointe= uploadFileMultiple(dto.getPhotoProfil(), savedInfoPerso,3,jointe);
-    }
-
-    pieceJointeRepository.save(jointe);
-     
-
-    
-System.out.println("DTO Nom savedEnregistrement: " + savedEnregistrement);
-EnregistrementDto dtoResult = new EnregistrementDto();
-dtoResult.setId(savedEnregistrement.getId());
-dtoResult.setNomFamille(savedEnregistrement.getInformationPersonnel().getNomFamille());
-dtoResult.setPrenom(savedEnregistrement.getInformationPersonnel().getPrenom());
-dtoResult.setNumeroDocument(savedEnregistrement.getInformationPersonnel().getNumeroDocument());
-    // === 5. Retourner le DTO ===
-    return dtoResult;
-}
-
-    
 
     /**
      * Update existing Enregistrement.
@@ -183,10 +179,11 @@ dtoResult.setNumeroDocument(savedEnregistrement.getInformationPersonnel().getNum
                     String.format("No Enregistrement exists with this ID : %d", id));
         }
         if (Objects.isNull(dto.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already created Enregistrement cannot have null ID.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Already created Enregistrement cannot have null ID.");
         }
         Enregistrement enregistrement = enregistrementMapper.toEntity(dto);
-        
+
         return enregistrementMapper.toDto(enregistrementRepository.save(enregistrement));
     }
 
@@ -217,37 +214,63 @@ dtoResult.setNumeroDocument(savedEnregistrement.getInformationPersonnel().getNum
      * @return list of {@link EnregistrementDto}
      */
     public List<EnregistrementDto> findAll() {
-        return enregistrementMapper.toDto(enregistrementRepository.findAllByDeletedFalse(CurrentUserAeropert.retrieveAeropert().getId()));
+        return enregistrementMapper.toDto(enregistrementRepository.findAllByDeletedFalse());
 
     }
 
-    public Page<EnregistrementDto> findAllPeriodeAndStatut(LocalDate startDate, LocalDate endDate,Long aeroportId,
+    public Page<EnregistrementDto> findAllPeriodeAndVoyageurAndStatut(LocalDate startDate, LocalDate endDate,
+            Long aeroportId,
+            Pageable pageable) {
+        List<StatutVoyageur> statuts = Arrays.asList(
+
+                StatutVoyageur.EN_ATTENTE);
+        Page<Enregistrement> enregistrements = enregistrementRepository.findByFilters(
+                startDate.atStartOfDay(),
+                endDate.atTime(23, 59, 59),
+                aeroportId !=null ? aeroportId :  CurrentUserAeropert.retrieveAeropert().getId(),
+                statuts,
+                pageable);
+
+       
+        // Créer une liste sans doublons avec le nombre de voyages
+        List<EnregistrementDto> uniqueEnregistrements = enregistrements.getContent()
+                .stream()
+               .map(enregistrement -> enregistrementMapper.toDto(enregistrement))
+                .collect(Collectors.toList());
+
+        // Convertir la liste en Page
+        return new PageImpl<>(uniqueEnregistrements, pageable, uniqueEnregistrements.size());
+    }
+
+    public Page<EnregistrementDto> findAllPeriodeAndStatut(LocalDate startDate, LocalDate endDate, Long aeroportId,
             List<StatutVoyageur> statuts, Pageable pageable) {
-    Page<Enregistrement> enregistrements = enregistrementRepository.findByFilters(
-            startDate.atStartOfDay(),
-            endDate.atTime(23, 59, 59),
-            aeroportId !=null ? aeroportId : CurrentUserAeropert.retrieveAeropert().getId(),
-            statuts,
-            pageable);
-    // Grouper par numeroDocument et compter les occurrences
-    Map<String, List<EnregistrementDto>> groupedByDocument = enregistrements.getContent()
-            .stream()
-            .map(enregistrementMapper::toDto)
-            .collect(Collectors.groupingBy(EnregistrementDto::getNumeroDocument));
-    
-    // Créer une liste sans doublons avec le nombre de voyages
-    List<EnregistrementDto> uniqueEnregistrements = groupedByDocument.entrySet()
-            .stream()
-            .map(entry -> {
-                EnregistrementDto dto = entry.getValue().get(0); // Prendre le premier élément
-                dto.setNbreVoyage(Long.valueOf(entry.getValue().size())); // Définir le nombre de voyages
-                return dto;
-            })
-            .collect(Collectors.toList());
-    
-    // Convertir la liste en Page
-    return new PageImpl<>(uniqueEnregistrements, pageable, uniqueEnregistrements.size());
-}
+        Page<Enregistrement> enregistrements = enregistrementRepository.findByFilters(
+                startDate.atStartOfDay(),
+                endDate.atTime(23, 59, 59),
+                aeroportId !=null ? aeroportId :  CurrentUserAeropert.retrieveAeropert().getId(),
+                statuts,
+                pageable);
+
+       
+        // Grouper par numeroDocument et compter les occurrences
+        Map<String, List<EnregistrementDto>> groupedByDocument = enregistrements.getContent()
+                .stream()
+                .map(enregistrement -> enregistrementMapper.toDto(enregistrement))
+                .collect(Collectors.groupingBy(EnregistrementDto::getNumeroDocument));
+
+        // Créer une liste sans doublons avec le nombre de voyages
+        List<EnregistrementDto> uniqueEnregistrements = groupedByDocument.entrySet()
+                .stream()
+                .map(entry -> {
+                    EnregistrementDto dto = entry.getValue().get(0); // Prendre le premier élément
+                    dto.setNbreVoyage(Long.valueOf(entry.getValue().size())); // Définir le nombre de voyages
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        // Convertir la liste en Page
+        return new PageImpl<>(uniqueEnregistrements, pageable, uniqueEnregistrements.size());
+    }
 
     /**
      * Remove a Enregistrement by id if exists.
@@ -271,32 +294,31 @@ dtoResult.setNumeroDocument(savedEnregistrement.getInformationPersonnel().getNum
         return isExiste;
     }
 
-     public PieceJointe uploadFileMultiple(MultipartFile file, InformationPersonnelle enregistrement, int i, PieceJointe jointe) {
+    public PieceJointe uploadFileMultiple(MultipartFile file, InformationPersonnelle enregistrement, int i,
+            PieceJointe jointe) {
 
         try {
             String name = "";
 
-                name = file.getOriginalFilename();
-                int r = name.lastIndexOf('.');
-                String base = (r == -1) ? name : name.substring(0, r);
-                String finalFilename = uploadFile(file, enregistrement.getId().toString());
+            name = file.getOriginalFilename();
+            int r = name.lastIndexOf('.');
+            String base = (r == -1) ? name : name.substring(0, r);
+            String finalFilename = uploadFile(file, enregistrement.getId().toString());
 
-                if (finalFilename == null) {
-                    throw new IOException("Échec de l'upload du fichier: " + name);
-                }
-                
-                if(i==1) {
-                    jointe.setCheminImgRecto(finalFilename);
-                }
+            if (finalFilename == null) {
+                throw new IOException("Échec de l'upload du fichier: " + name);
+            }
 
-                if(i==2) {
-                    jointe.setCheminImgVerso(finalFilename);
-                }
-                if(i==3) {
-                    jointe.setCheminPhotoProfil(finalFilename);
-                }
-                
+            if (i == 1) {
+                jointe.setCheminImgRecto(finalFilename);
+            }
 
+            if (i == 2) {
+                jointe.setCheminImgVerso(finalFilename);
+            }
+            if (i == 3) {
+                jointe.setCheminPhotoProfil(finalFilename);
+            }
 
             return jointe;
         } catch (IOException e) {
@@ -304,12 +326,11 @@ dtoResult.setNumeroDocument(savedEnregistrement.getInformationPersonnel().getNum
         }
     }
 
-
     private String uploadFile(MultipartFile file, String courrierId) throws IOException {
         if (file.isEmpty() || courrierId == null || courrierId.trim().isEmpty()) {
             return null;
         }
-        
+
         File uploadDir = new File(uploadDirectory);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
@@ -319,12 +340,12 @@ dtoResult.setNumeroDocument(savedEnregistrement.getInformationPersonnel().getNum
         if (originalFilename == null) {
             return null;
         }
-        
+
         // Sécuriser le nom de fichier
         String sanitizedFilename = originalFilename.replaceAll("[^a-zA-Z0-9\\.\\-_àáâãäçèéêëìíîïñòóôõöùúûüýÿ ]", "_");
         String finalFilename = courrierId + sanitizedFilename;
         Path path = Paths.get(uploadDirectory, finalFilename);
-        
+
         try {
             Files.write(path, file.getBytes());
             System.out.println("Fichier sauvé: " + finalFilename);
