@@ -65,8 +65,8 @@ public class ListeNoireService {
                notification.setNumeroCnib(liste.getNumeroCnib());
                notification.setNumeroNip(liste.getNumeroNip());
                notification.setStatut(liste.getStatut());
+               notification.setDateNotification(enreOptional.get().getDateSaisie());
                notification.setAeroport(enreOptional.get().getAeroport());
-
                notification= notificationRepository.save(notification);
          
         }

@@ -57,6 +57,7 @@ public class Notification extends AbstractAuditEntity implements Serializable {
     /**
      * Statut
      */
+
     @Column(name = "statut")
     @Enumerated(EnumType.STRING)
     private Statut statut;
@@ -69,6 +70,10 @@ public class Notification extends AbstractAuditEntity implements Serializable {
 
     @Column(name = "date_naissance", nullable = false)
     private LocalDate dateNaissance;
+
+    // nouveau champ date
+    @Column(name = "date_notification")
+    private LocalDate dateNotification;
 
     @Column(name = "lieu_naissance", length = 100, nullable = false)
     private String lieuNaissance;
