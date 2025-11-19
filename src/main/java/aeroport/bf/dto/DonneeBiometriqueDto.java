@@ -36,6 +36,8 @@ public class DonneeBiometriqueDto extends AbstractAuditEntity implements Seriali
 
     private Long enregistrementId;
 
+    private Long aeroportId;
+
     private Long exercice;;
 
     private MultipartFile photoBiometrique;
@@ -49,4 +51,6 @@ public class DonneeBiometriqueDto extends AbstractAuditEntity implements Seriali
     private EnregistrementDto enregistrement;
 
     private InformationPersonnelleDto informationPersonnelle;
+
+    private AeroportDto aeroport;
 }

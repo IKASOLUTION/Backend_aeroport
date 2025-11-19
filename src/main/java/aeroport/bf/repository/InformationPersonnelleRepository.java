@@ -13,11 +13,14 @@ import org.springframework.data.domain.Pageable;
 public interface InformationPersonnelleRepository extends AbstractRepository<InformationPersonnelle, Long> {
     
     List<InformationPersonnelle> findAllByDeletedFalse();
+<<<<<<< HEAD
    Optional<InformationPersonnelle> findByNumeroNipAndDeletedFalse(String numeroNip);
     Page<InformationPersonnelle> findByDeletedFalseAndDateSaisieBetween(
       LocalDate startDate,
       LocalDate endDate,
       Pageable pageable
    );
+=======
+>>>>>>> c376742766109fbeda286363dc38c12ee81cef7e
 
 }

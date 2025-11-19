@@ -1,5 +1,6 @@
 package aeroport.bf.service;
 
+import aeroport.bf.service.util.CurrentUserAeropert;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -44,6 +45,7 @@ public class VoyageService {
     public VoyageDto create(final VoyageDto dto) {
 
         Voyage vol = volMapper.toEntity(dto);
+        vol.setAeroport(CurrentUserAeropert.retrieveAeropert());
         if (dto.getVilleNomA() != null) {
             if (!isExisteByNom(dto.getVilleNomA())) {
                 Ville villeA = new Ville();
@@ -152,6 +154,7 @@ public class VoyageService {
         Page<Voyage> vols = volRepository.findByDeletedFalseAndDateVoyageBetween(
                 startDate,
                 endDate,
+                CurrentUserAeropert.retrieveAeropert().getId(),
                 pageable);
         return vols.map(vol -> volMapper.toDto(vol));
     }

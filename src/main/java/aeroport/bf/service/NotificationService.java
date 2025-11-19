@@ -9,6 +9,7 @@ import aeroport.bf.dto.ListeNoireDto;
 import aeroport.bf.dto.NotificationDto;
 import aeroport.bf.dto.mapper.NotificationMapper;
 import aeroport.bf.repository.NotificationRepository;
+import aeroport.bf.service.util.CurrentUserAeropert;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,7 @@ public class NotificationService {
         if (listeNoire != null) {
             Notification notification = notificationMapper.toEntity(dto);
             notification.setStatut(Statut.ACTIF);
+            notification.setAeroport(CurrentUserAeropert.retrieveAeropert());
             notification= notificationRepository.save(notification);
             return notificationMapper.toDto(notification);
         }
