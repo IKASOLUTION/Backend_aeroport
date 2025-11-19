@@ -39,4 +39,5 @@ public class NotificationDto extends AbstractAuditEntityDto implements Serializa
     private LocalDate dateNaissance;
 
     private String lieuNaissance;
+     private LocalDate dateNotification;
 }

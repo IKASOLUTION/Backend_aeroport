@@ -57,7 +57,7 @@ public class VoyageController {
 
         return ResponseEntity.ok(voyageService.create(dto));
     }
-
+ 
     /**
      * PUT /voyages/:id : Updates an existing voyage.
      *
