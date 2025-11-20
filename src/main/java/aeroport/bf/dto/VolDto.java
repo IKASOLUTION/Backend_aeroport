@@ -1,5 +1,6 @@
 package aeroport.bf.dto;
 
+import aeroport.bf.domain.Aeroport;
 import aeroport.bf.domain.enums.StatutVol;
 import aeroport.bf.domain.enums.TypeVol;
 import java.io.Serializable;

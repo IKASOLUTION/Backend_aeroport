@@ -1,7 +1,9 @@
 package aeroport.bf.dto;
 
 import aeroport.bf.domain.AbstractAuditEntity;
+import aeroport.bf.domain.Ville;
 import aeroport.bf.domain.Voyage;
+import aeroport.bf.domain.enums.EtatVoyage;
 import aeroport.bf.domain.enums.MotifVoyage;
 import aeroport.bf.domain.enums.Statut;
 import aeroport.bf.domain.enums.StatutVol;
@@ -36,6 +38,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,6 +58,7 @@ public class EnregistrementDto extends AbstractAuditEntityDto implements Seriali
     private Long id;
    
     private VoyageDto voyage; 
+
     private InformationPersonnelleDto informationPersonnelle;
 
 
@@ -87,19 +91,26 @@ public class EnregistrementDto extends AbstractAuditEntityDto implements Seriali
     private String telephoneEtranger;
     private String adresseBurkina;
     private String adresseEtranger;
-
-    // === Voyage ===
-    private Long volId;
-    private String villeDepart;
-    private String villeDestination;
-    private LocalDate dateVoyage;
-    private String heureVoyage;
-    private MotifVoyage motifVoyage;
-    private String etatVoyage; // 'ALLER' | 'RETOUR' | 'ALLER_RETOUR'
-    private Integer dureeSejour;
     private LocalDate dateSaisie;
-    private Long nbreVoyage;
     private Long aeroportId;
+    private Long voyageId;
+
+    private Long nbreVoyage;
+
+     private String villeDepart;
+
+    private String villeDestination;
+
+    
+    private MotifVoyage motifVoyage;
+
+   
+    private LocalTime heureVoyage;
+
+    private EtatVoyage etatVoyage;
+
+    private Integer dureeSejour; 
+    private LocalDate dateVoyage;
 
     
 }

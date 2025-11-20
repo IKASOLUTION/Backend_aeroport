@@ -59,10 +59,9 @@ public class DonneeBiometriqueService {
        
 
         dto.setPhotoBiometrique(null);
-         biometrique.setPhotoBiometriquePath(null);
-        biometrique.setEmpreinteDroitePath(null);
-        biometrique.setEmpreinteGauchePath(null);
-        biometrique.setEmpreintePoucesPath(null);
+        dto.setEmpreinteDroitePath(null);
+        dto.setEmpreinteGauchePath(null);
+        dto.setEmpreintePoucesPath(null);
 
 
         return dto;

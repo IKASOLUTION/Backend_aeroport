@@ -23,8 +23,8 @@ public interface VolMapper extends EntityMapper<VolDto, Vol> {
     // --- ENTITY -> DTO ---
     @Mapping(source = "compagnie.id", target = "compagnieId")
     @Mapping(source = "aeroport.id", target = "aeroportId")
-    @Mapping(source = "villeDepart.id", target = "villeDepartId")
-    @Mapping(source = "villeArrivee.id", target = "villeArriveeId")
+   // @Mapping(source = "villeDepart.id", target = "villeDepartId")
+   // @Mapping(source = "villeArrivee.id", target = "villeArriveeId")
     // dateDepart/dateArrivee mappés automatiquement si mêmes noms
     VolDto toDto(Vol vol);
 
@@ -32,8 +32,8 @@ public interface VolMapper extends EntityMapper<VolDto, Vol> {
     // on demande d'utiliser les méthodes fromId pour construire les relations
     @Mapping(source = "compagnieId", target = "compagnie")
     @Mapping(source = "aeroportId", target = "aeroport")
-    @Mapping(source = "villeDepartId", target = "villeDepart")
-    @Mapping(source = "villeArriveeId", target = "villeArrivee")
+    //@Mapping(source = "villeDepartId", target = "villeDepart")
+    //@Mapping(source = "villeArriveeId", target = "villeArrivee")
     Vol toEntity(VolDto volDto);
 
     List<VolDto> toDto(List<Vol> vols);
@@ -76,12 +76,12 @@ public interface VolMapper extends EntityMapper<VolDto, Vol> {
     @AfterMapping
     default void fillNames(Vol vol, @MappingTarget VolDto dto) {
         if (vol == null) return;
-        if (vol.getVilleDepart() != null) {
+       /*  if (vol.getVilleDepart() != null) {
             dto.setVilleNomD(vol.getVilleDepart().getNom());
         }
         if (vol.getVilleArrivee() != null) {
             dto.setVilleNomA(vol.getVilleArrivee().getNom());
-        }
+        } */
         if (vol.getCompagnie() != null) {
             dto.setCompagnieId(vol.getCompagnie().getId());
         }

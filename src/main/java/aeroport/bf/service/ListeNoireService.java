@@ -51,8 +51,10 @@ public class ListeNoireService {
         liste= listeNoireRepository.save(liste);
 
 
-         Optional<InformationPersonnelle> infOptional = informationPersonnelleRepository.findByNumeroNipAndDeletedFalse(liste.getNumeroNip());
-        Optional<Enregistrement> enreOptional = enregistrementRepository.findByInformationPersonnelId(infOptional.get().getId());
+        Optional<InformationPersonnelle> infOptional = informationPersonnelleRepository.findByNumeroNipAndDeletedFalse(liste.getNumeroNip());
+        if(infOptional.isPresent()) {
+
+            Optional<Enregistrement> enreOptional = enregistrementRepository.findByInformationPersonnelId(infOptional.get().getId());
         if (infOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "NIP not found in Information Personnelle");
         }
@@ -70,6 +72,9 @@ public class ListeNoireService {
                notification= notificationRepository.save(notification);
          
         }
+        
+        }
+        
         return listeNoireMapper.toDto(liste);
     }
 

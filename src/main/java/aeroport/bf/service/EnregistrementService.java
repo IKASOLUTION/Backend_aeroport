@@ -100,33 +100,20 @@ public class EnregistrementService {
         InformationPersonnelle savedInfoPerso = informationPersonnelleRepository.save(infoPerso);
         System.out.println("DTO Nom savedInfoPerso: " + savedInfoPerso);
         // === 2. Créer et enregistrer Voyage ===
-        Voyage voyage = new Voyage();
-        System.out.println("DTO Nom dto.getVolId(): " + dto.getVolId());
-        Vol vol = volRepository.getReferenceById(dto.getVolId());
-        voyage.setVol(vol);
-        System.out.println(
-                "DTO Nom voyage avant setVol: " + villeRepository.getReferenceById(vol.getVilleDepart().getId()));
-        voyage.setVilleDepart(villeRepository.getReferenceById(vol.getVilleDepart().getId()));
-        voyage.setVilleDestination(villeRepository.getReferenceById(vol.getVilleArrivee().getId()));
-        voyage.setMotifVoyage(dto.getMotifVoyage());
-        voyage.setDateVoyage(dto.getDateVoyage());
-        voyage.setHeureVoyage(LocalTime.now());
-        voyage.setEtatVoyage(EtatVoyage.ALLER);
-        voyage.setDureeSejour(dto.getDureeSejour());
-        voyage.setStatut(StatutVoyage.ACTIF);
-        System.out.println("DTO Nom voyage: " + voyage);
-        Voyage savedVoyage = voyageRepository.save(voyage);
-        System.out.println("DTO Nom savedVoyage: " + savedVoyage);
+     
+        Voyage voyage = voyageRepository.getReferenceById(dto.getVoyageId());
+      
         // === 3. Créer Enregistrement ===
         Enregistrement enregistrement = new Enregistrement();
         SecurityUtils.getCurrentUserLogin()
                 .flatMap(userRepository::findOneByDeletedFalseAndUsername)
                 .ifPresent(user -> {
                     enregistrement.setUtilisateur(user);
+                    enregistrement.setAeroport(user.getAeroport());
                 });
 
         enregistrement.setInformationPersonnel(savedInfoPerso);
-        enregistrement.setVoyage(savedVoyage);
+        enregistrement.setVoyage(voyage);
         enregistrement.setAdresseEtranger(dto.getAdresseEtranger());
         enregistrement.setTelephoneEtranger(dto.getTelephoneEtranger());
         enregistrement.setStatut(dto.getStatut() != null ? dto.getStatut() : StatutVoyageur.EN_ATTENTE);
@@ -231,7 +218,7 @@ public class EnregistrementService {
                 statuts,
                 pageable);
 
-       
+      
         // Créer une liste sans doublons avec le nombre de voyages
         List<EnregistrementDto> uniqueEnregistrements = enregistrements.getContent()
                 .stream()
@@ -250,7 +237,7 @@ public class EnregistrementService {
                 aeroportId !=null ? aeroportId :  CurrentUserAeropert.retrieveAeropert().getId(),
                 statuts,
                 pageable);
-
+ System.out.println("==================================="+enregistrementRepository.findAllByDeletedFalse());
        
         // Grouper par numeroDocument et compter les occurrences
         Map<String, List<EnregistrementDto>> groupedByDocument = enregistrements.getContent()

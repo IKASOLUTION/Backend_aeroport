@@ -89,16 +89,10 @@ public class EnregistrementController {
             @RequestParam(value = "adresseEtranger", required = false) String adresseEtranger,
             
             // Voyage
-            @RequestParam(value = "volId", required = false) Long volId,
-            @RequestParam(value = "villeDepart", required = false) String villeDepart,
-            @RequestParam(value = "villeDestination", required = false) String villeDestination,
-            @RequestParam(value = "dateVoyage", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateVoyage,
-            @RequestParam(value = "heureVoyage", required = false) String heureVoyage,
-            @RequestParam(value = "motifVoyage", required = false) String motifVoyage,
-            @RequestParam(value = "etatVoyage", required = false) String etatVoyage,
-            @RequestParam(value = "dureeSejour", required = false) Integer dureeSejour
+            @RequestParam(value = "voyageId", required = false) Long voyageId
+          
     ) {
-        System.out.println("Creating Enregistrement for: " + typeDocument + " " + motifVoyage);
+        System.out.println("Creating Enregistrement for: " + typeDocument + " " );
         
         // Construire le DTO
         EnregistrementDto dto = EnregistrementDto.builder()
@@ -122,14 +116,7 @@ public class EnregistrementController {
                 .telephoneEtranger(telephoneEtranger)
                 .adresseBurkina(adresseBurkina)
                 .adresseEtranger(adresseEtranger)
-                .volId(volId)
-                .villeDepart(villeDepart)
-                .villeDestination(villeDestination)
-                .dateVoyage(dateVoyage)
-                .heureVoyage(heureVoyage)
-                .motifVoyage(MotifVoyage.valueOf(motifVoyage.toUpperCase()))
-                .etatVoyage(etatVoyage)
-                .dureeSejour(dureeSejour)
+                .voyageId(voyageId)
                 .build();
          System.out.println("Creating EnregistrementDto for: " + dto);
         EnregistrementDto saved = enregistrementService.create(dto);

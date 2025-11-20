@@ -49,7 +49,7 @@ public class VolService {
     public VolDto create(final VolDto dto) {
 
         Vol vol = volMapper.toEntity(dto);
-        vol.setAeroport(CurrentUserAeropert.retrieveAeropert());
+        vol.setAeroportForUser(CurrentUserAeropert.retrieveAeropert());
         return volMapper.toDto(volRepository.save(vol));
     }
 

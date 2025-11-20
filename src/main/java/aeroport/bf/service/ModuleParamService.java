@@ -47,18 +47,21 @@ public class ModuleParamService {
  * @return saved moduleParam object
  */
 private ModuleParamDto saveModuleParam(final ModuleParamDto moduleParamDto) {
+    System.out.println("==================moduleParam==================="+moduleParamDto);
     ModuleParam moduleParam = moduleParamMapper.toEntity(moduleParamDto);
     moduleParam.setDeleted(Boolean.FALSE);
+    System.out.println("==================moduleParam==================="+moduleParam);
 
     ModuleParam savedModuleParam = moduleParamRepository.save(moduleParam);
 
     // synchronize menu actions: create new ones, update existing, mark deleted removed ones
     List<MenuAction> existingMenus = menuActionRepository.findByModuleParamIdAndDeletedFalse(savedModuleParam.getId());
     Set<Long> processedIds = new HashSet<>();
-
+ System.out.println("==================savedModuleParam==================="+savedModuleParam);
     if (moduleParamDto.getMenuActions() != null && !moduleParamDto.getMenuActions().isEmpty()) {
+        System.out.println("==================1===================");
         for (MenuActionDto dto : moduleParamDto.getMenuActions()) {
-
+System.out.println("==================2===================");
             // If DTO has id => try update existing
             if (dto.getId() != null) {
                 menuActionRepository.findTop1ByDeletedFalseAndId(dto.getId()).ifPresentOrElse(existing -> {
@@ -86,23 +89,28 @@ private ModuleParamDto saveModuleParam(final ModuleParamDto moduleParamDto) {
             } else {
                 // new menu action -> create
                 MenuAction action = menuActionMapper.toEntity(dto);
+                System.out.println("==================3===================");
                 if (isExisteMenuByCode(dto)) {
                     throw new ResponseStatusException(HttpStatus.CONFLICT, "Le code de  existe déjà.");
                 }
                 action.setDeleted(Boolean.FALSE);
                 action.setModuleParam(savedModuleParam);
+                System.out.println("==================4==================="+action);
                 MenuAction saved = menuActionRepository.save(action);
+                System.out.println("==================5==================="+saved);
                 processedIds.add(saved.getId());
             }
         }
     }
 
     // mark as deleted any existing menus that were not sent in the DTO
-    for (MenuAction existing : existingMenus) {
+    if(existingMenus !=null && !existingMenus.isEmpty()) {
+        for (MenuAction existing : existingMenus) {
         if (!processedIds.contains(existing.getId())) {
             existing.setDeleted(Boolean.TRUE);
             menuActionRepository.save(existing);
         }
+    }
     }
 
     // Return DTO enriched with persisted menu actions

@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import aeroport.bf.domain.MenuAction;
@@ -14,6 +15,8 @@ import aeroport.bf.dto.MenuActionDto;
  */
 @Component
 public class MenuActionMapper {
+    @Autowired
+    ModuleParamMapper moduleParamMapper;
     public MenuActionDto toDto(MenuAction menuAction) {
     return MenuActionDto.builder()
             .id(menuAction.getId())
