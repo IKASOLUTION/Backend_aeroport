@@ -25,7 +25,7 @@ public interface VolRepository extends AbstractRepository<Vol, Long> {
             "OR (CAST(:startDate AS date) IS NOT NULL AND CAST(:endDate AS date) IS NOT NULL AND v.dateDepart BETWEEN :startDate AND :endDate)" +
             "OR (CAST(:startDate AS date) IS NOT NULL AND CAST(:endDate AS date) IS NULL AND v.dateDepart >=:startDate)" +
             "OR (CAST(:startDate AS date) IS NULL AND CAST(:endDate AS date) IS NULL))" +
-            "AND (:aeroport IS NULL OR v.aeroport.id =:aeroport)")
+            "AND (:aeroport IS NULL OR v.aeroportForUser.id =:aeroport)")
     Page<Vol> findByDeletedFalseAndStatutInAndDateDepartBetween(
       @Param("statuts") List<StatutVol> statuts,
       @Param("startDate") LocalDateTime startDate,

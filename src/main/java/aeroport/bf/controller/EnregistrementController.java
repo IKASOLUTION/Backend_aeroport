@@ -89,7 +89,7 @@ public class EnregistrementController {
             @RequestParam(value = "adresseEtranger", required = false) String adresseEtranger,
             
             // Voyage
-            @RequestParam(value = "voyageId", required = false) Long voyageId
+            @RequestParam(value = "volId", required = false) Long volId
           
     ) {
         System.out.println("Creating Enregistrement for: " + typeDocument + " " );
@@ -116,7 +116,7 @@ public class EnregistrementController {
                 .telephoneEtranger(telephoneEtranger)
                 .adresseBurkina(adresseBurkina)
                 .adresseEtranger(adresseEtranger)
-                .voyageId(voyageId)
+                .volId(volId)
                 .build();
          System.out.println("Creating EnregistrementDto for: " + dto);
         EnregistrementDto saved = enregistrementService.create(dto);

@@ -13,9 +13,13 @@ import org.springframework.web.server.ResponseStatusException;
 import aeroport.bf.config.audit.EntityAuditAction;
 import aeroport.bf.config.audit.ObjetEntity;
 import aeroport.bf.domain.DonneeBiometrique;
+import aeroport.bf.domain.InformationPersonnelle;
 import aeroport.bf.dto.DonneeBiometriqueDto;
+import aeroport.bf.dto.InformationPersonnelleDto;
 import aeroport.bf.dto.mapper.DonneeBiometriqueMapper;
+import aeroport.bf.dto.mapper.InformationPersonnelleMapper;
 import aeroport.bf.repository.DonneeBiometriqueRepository;
+import aeroport.bf.repository.InformationPersonnelleRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +38,8 @@ public class DonneeBiometriqueService {
     private final TraceService traceService;
     @Value("${files.upload.baseDir}/identite/biometric")
     private String uploadDirectory;
+    private final InformationPersonnelleRepository informationPersonnelleRepository;
+    private final InformationPersonnelleMapper informationPersonnelleMapper;
 
     /**
      * Save ticket.
@@ -59,9 +65,9 @@ public class DonneeBiometriqueService {
        
 
         dto.setPhotoBiometrique(null);
-        dto.setEmpreinteDroitePath(null);
-        dto.setEmpreinteGauchePath(null);
-        dto.setEmpreintePoucesPath(null);
+        dto.setEmpreinteDroite(null);
+        dto.setEmpreinteGauche(null);
+        dto.setEmpreintePouces(null);
 
 
         return dto;
@@ -154,6 +160,10 @@ public class DonneeBiometriqueService {
                     "No data found, Please create at least one filiale before.");
         }
         return mapper.toDto(dts);
+    }
+
+    public List<InformationPersonnelleDto> findAllPersonne(){
+        return informationPersonnelleMapper.toDto(informationPersonnelleRepository.findAllByDeletedFalse());
     }
 
     /**

@@ -53,9 +53,7 @@ public interface EnregistrementMapper extends EntityMapper<EnregistrementDto, En
     @Mapping(target = "adresseEtranger", source = "adresseEtranger")
     
     // === Voyage (depuis Voyage) ===
-    @Mapping(target = "voyageId", source = "voyage.vol.id")
-     @Mapping(target = "villeDepart", source = "voyage.villeDepart.nom")
-    @Mapping(target = "villeDestination", source = "voyage.villeDestination.nom")
+    @Mapping(target = "volId", source = "voyage.vol.id")
     @Mapping(target = "dateVoyage", source = "voyage.dateVoyage")
     @Mapping(target = "heureVoyage", source = "voyage.heureVoyage")
     @Mapping(target = "motifVoyage", source = "voyage.motifVoyage")

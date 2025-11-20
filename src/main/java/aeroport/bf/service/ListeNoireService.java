@@ -13,6 +13,7 @@ import aeroport.bf.repository.EnregistrementRepository;
 import aeroport.bf.repository.InformationPersonnelleRepository;
 import aeroport.bf.repository.ListeNoireRepository;
 import aeroport.bf.repository.NotificationRepository;
+import aeroport.bf.service.util.CurrentUserAeropert;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,7 +58,18 @@ public class ListeNoireService {
 
             Optional<Enregistrement> enreOptional = enregistrementRepository.findByInformationPersonnelId(infOptional.get().getId());
         if (infOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "NIP not found in Information Personnelle");
+            Notification notification = new Notification();
+               notification.setNom(liste.getNom());
+               notification.setPrenom(liste.getPrenom());
+               notification.setDateNaissance(liste.getDateNaissance());
+               notification.setLieuNaissance(liste.getLieuNaissance());
+               notification.setNumeroCnib(liste.getNumeroCnib());
+               notification.setNumeroNip(liste.getNumeroNip());
+               notification.setStatut(liste.getStatut());
+               notification.setDateNotification(LocalDate.now());
+               notification.setAeroport(CurrentUserAeropert.retrieveAeropert());
+               notification= notificationRepository.save(notification);
+            // throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "NIP not found in Information Personnelle");
         }
         else {
                Notification notification = new Notification();

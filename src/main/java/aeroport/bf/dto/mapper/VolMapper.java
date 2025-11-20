@@ -23,17 +23,17 @@ public interface VolMapper extends EntityMapper<VolDto, Vol> {
     // --- ENTITY -> DTO ---
     @Mapping(source = "compagnie.id", target = "compagnieId")
     @Mapping(source = "aeroport.id", target = "aeroportId")
-   // @Mapping(source = "villeDepart.id", target = "villeDepartId")
-   // @Mapping(source = "villeArrivee.id", target = "villeArriveeId")
-    // dateDepart/dateArrivee mappés automatiquement si mêmes noms
+    @Mapping(source = "aeroportForUser.id", target = "aeroportForUserId")
+    @Mapping(source = "aeroportForUser.nomAeroport", target = "nomAgentConnecteAeroport")
+
+ 
     VolDto toDto(Vol vol);
 
     // --- DTO -> ENTITY ---
     // on demande d'utiliser les méthodes fromId pour construire les relations
     @Mapping(source = "compagnieId", target = "compagnie")
     @Mapping(source = "aeroportId", target = "aeroport")
-    //@Mapping(source = "villeDepartId", target = "villeDepart")
-    //@Mapping(source = "villeArriveeId", target = "villeArrivee")
+    
     Vol toEntity(VolDto volDto);
 
     List<VolDto> toDto(List<Vol> vols);
@@ -61,8 +61,7 @@ public interface VolMapper extends EntityMapper<VolDto, Vol> {
         return v;
     }
 
-    // MapStruct choisira automatiquement ces méthodes si on nomme correctement les cibles.
-    // Mais pour s'assurer qu'il les utilise, on peut ajouter méthodes génériques :
+   
     @org.mapstruct.Named("compagnieFromId")
     default Compagnie fromCompagnieId(Long id) { return compagnieFromId(id); }
 
@@ -76,12 +75,7 @@ public interface VolMapper extends EntityMapper<VolDto, Vol> {
     @AfterMapping
     default void fillNames(Vol vol, @MappingTarget VolDto dto) {
         if (vol == null) return;
-       /*  if (vol.getVilleDepart() != null) {
-            dto.setVilleNomD(vol.getVilleDepart().getNom());
-        }
-        if (vol.getVilleArrivee() != null) {
-            dto.setVilleNomA(vol.getVilleArrivee().getNom());
-        } */
+       
         if (vol.getCompagnie() != null) {
             dto.setCompagnieId(vol.getCompagnie().getId());
         }

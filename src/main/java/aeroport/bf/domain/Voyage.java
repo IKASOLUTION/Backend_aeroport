@@ -65,14 +65,14 @@ public class Voyage extends AbstractAuditEntity  implements Serializable {
     @JoinColumn(name = "vol_id", nullable = false)
     private Vol vol;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    /* @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ville_depart_id", nullable = false)
     private Ville villeDepart;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+ */
+    /* @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ville_destination_id", nullable = false)
     private Ville villeDestination;
-
+ */
     @Enumerated(EnumType.STRING)
     @Column(name = "motif_voyage", nullable = false, length = 50)
     private MotifVoyage motifVoyage;
@@ -98,5 +98,9 @@ public class Voyage extends AbstractAuditEntity  implements Serializable {
     @ManyToOne
     @JoinColumn(name = "aeroport_id", referencedColumnName = "id")
     private Aeroport aeroport;
+
+    @ManyToOne
+    @JoinColumn(name = "aeroport_for_user_id", referencedColumnName = "id")
+    private Aeroport aeroportForUser;;
     
 }

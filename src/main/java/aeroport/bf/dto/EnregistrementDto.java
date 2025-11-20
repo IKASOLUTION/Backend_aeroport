@@ -93,7 +93,7 @@ public class EnregistrementDto extends AbstractAuditEntityDto implements Seriali
     private String adresseEtranger;
     private LocalDate dateSaisie;
     private Long aeroportId;
-    private Long voyageId;
+    private Long volId;
 
     private Long nbreVoyage;
 

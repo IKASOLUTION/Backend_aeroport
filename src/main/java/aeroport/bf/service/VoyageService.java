@@ -46,7 +46,7 @@ public class VoyageService {
 
         Voyage vol = volMapper.toEntity(dto);
         vol.setAeroport(CurrentUserAeropert.retrieveAeropert());
-        if (dto.getVilleNomA() != null) {
+       /*  if (dto.getVilleNomA() != null) {
             if (!isExisteByNom(dto.getVilleNomA())) {
                 Ville villeA = new Ville();
                 villeA.setNom(dto.getVilleNomA());
@@ -55,10 +55,11 @@ public class VoyageService {
             } else {
                 villeRepository.findByNomIgnoreCaseAndDeletedFalse(dto.getVilleNomA())
                         .ifPresent(ville -> vol.setVilleDestination(ville));
-
+ 
             }
 
         }
+            
         if (dto.getVilleNomD() != null) {
             if (!isExisteByNom(dto.getVilleNomD())) {
                 Ville villeD = new Ville();
@@ -70,7 +71,7 @@ public class VoyageService {
                         .ifPresent(ville -> vol.setVilleDepart(ville));
 
             }
-        }
+        }*/
         return volMapper.toDto(volRepository.save(vol));
     }
 
@@ -91,7 +92,7 @@ public class VoyageService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already created Voyage cannot have null ID.");
         }
         Voyage vol = volMapper.toEntity(dto);
-        if (dto.getVilleNomA() != null) {
+       /*  if (dto.getVilleNomA() != null) {
             if (!isExisteByNom(dto.getVilleNomA())) {
                 Ville villeA = new Ville();
                 villeA.setNom(dto.getVilleNomA());
@@ -116,7 +117,7 @@ public class VoyageService {
             }
 
         }
-        return volMapper.toDto(volRepository.save(vol));
+ */        return volMapper.toDto(volRepository.save(vol));
     }
 
     /**

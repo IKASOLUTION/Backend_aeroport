@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import aeroport.bf.dto.DonneeBiometriqueDto;
+import aeroport.bf.dto.InformationPersonnelleDto;
 import aeroport.bf.service.DonneeBiometriqueService;
 
 import java.io.File;
@@ -155,4 +156,15 @@ public class DonneeBiometriqueController {
         return ResponseEntity.ok(service.deleteAll(dtos));
     }
 
+
+    @GetMapping("/donneeBiometriques/personne")
+    @Operation(summary = "Fetch all tickets")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
+            @ApiResponse(responseCode = "204", description = "${swagger.http-status.204}"),
+            @ApiResponse(responseCode = "500", description = "${swagger.http-status.500}")
+    })
+    public ResponseEntity<List<InformationPersonnelleDto>> findAllPersonne() {
+        return new ResponseEntity<>(service.findAllPersonne(), HttpStatus.OK);
+    }
 }

@@ -37,7 +37,10 @@ public class VolDto extends AbstractAuditEntityDto  implements Serializable {
     private CompagnieDto compagnie;
 
     private Long compagnieId;
+
     private Long aeroportId;
+    private Long aeroportForUserId;
+
     private Long villeDepartId;
     private Long villeArriveeId;
 
@@ -54,6 +57,10 @@ public class VolDto extends AbstractAuditEntityDto  implements Serializable {
     private String villeNomD;
     
     private String villeNomA;
+    
+    private String nomAeroport;
+
+    private String nomAgentConnecteAeroport;
    
 
    

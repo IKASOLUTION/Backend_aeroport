@@ -60,12 +60,6 @@ public class Vol extends AbstractAuditEntity  implements Serializable {
     @Column(name = "numero_vol")
     @NotNull
     private String numero;
-    /* @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("vol")
-    private Ville villeDepart;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("vol")
-    private Ville villeArrivee; */
     @Column(name = "date_depart")
     @NotNull
     private LocalDateTime dateDepart;
