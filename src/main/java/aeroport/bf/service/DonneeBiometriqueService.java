@@ -60,6 +60,7 @@ public class DonneeBiometriqueService {
     private DonneeBiometriqueDto saveDonneeBiometrique(final DonneeBiometriqueDto dto) {
             DonneeBiometrique biometrique= mapper.toEntity(dto);
             biometrique.setStatut(StatutDonneeBio.VALIDE);
+            biometrique.setDateCapture(LocalDate.now());
             if(dto.getTypeCapture() == null) {
                 biometrique.setTypeCapture(TypeCapture.ENROLEMENT);
             }
