@@ -1,6 +1,7 @@
 package aeroport.bf.controller;
 
 import aeroport.bf.config.util.PageableUtil;
+import aeroport.bf.domain.enums.EtatVoyage;
 import aeroport.bf.domain.enums.MotifVoyage;
 import aeroport.bf.domain.enums.TypeDocument;
 import aeroport.bf.dto.SearchDto;
@@ -87,6 +88,10 @@ public class EnregistrementController {
             @RequestParam(value = "telephoneEtranger", required = false) String telephoneEtranger,
             @RequestParam(value = "adresseBurkina", required = false) String adresseBurkina,
             @RequestParam(value = "adresseEtranger", required = false) String adresseEtranger,
+            @RequestParam(value = "dureeSejour", required = false) int dureeSejour,
+            @RequestParam(value = "etatVoyage", required = false) EtatVoyage etatVoyage,
+            @RequestParam(value = "motifVoyage", required = false) MotifVoyage motifVoyage,
+            
             
             // Voyage
             @RequestParam(value = "volId", required = false) Long volId
@@ -117,6 +122,9 @@ public class EnregistrementController {
                 .adresseBurkina(adresseBurkina)
                 .adresseEtranger(adresseEtranger)
                 .volId(volId)
+                .dureeSejour(dureeSejour)
+                .etatVoyage(etatVoyage)
+                .motifVoyage(motifVoyage)
                 .build();
          System.out.println("Creating EnregistrementDto for: " + dto);
         EnregistrementDto saved = enregistrementService.create(dto);

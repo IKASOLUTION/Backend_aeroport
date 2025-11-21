@@ -5,6 +5,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,8 +16,13 @@ import org.springframework.web.server.ResponseStatusException;
 import aeroport.bf.config.audit.EntityAuditAction;
 import aeroport.bf.config.audit.ObjetEntity;
 import aeroport.bf.domain.DonneeBiometrique;
+import aeroport.bf.domain.Enregistrement;
 import aeroport.bf.domain.InformationPersonnelle;
+import aeroport.bf.domain.enums.StatutDonneeBio;
+import aeroport.bf.domain.enums.StatutVoyageur;
+import aeroport.bf.domain.enums.TypeCapture;
 import aeroport.bf.dto.DonneeBiometriqueDto;
+import aeroport.bf.dto.EnregistrementDto;
 import aeroport.bf.dto.InformationPersonnelleDto;
 import aeroport.bf.dto.mapper.DonneeBiometriqueMapper;
 import aeroport.bf.dto.mapper.InformationPersonnelleMapper;
@@ -26,7 +34,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,6 +59,10 @@ public class DonneeBiometriqueService {
      */
     private DonneeBiometriqueDto saveDonneeBiometrique(final DonneeBiometriqueDto dto) {
             DonneeBiometrique biometrique= mapper.toEntity(dto);
+            biometrique.setStatut(StatutDonneeBio.VALIDE);
+            if(dto.getTypeCapture() == null) {
+                biometrique.setTypeCapture(TypeCapture.ENROLEMENT);
+            }
             biometrique.setAeroport(CurrentUserAeropert.retrieveAeropert());
             biometrique =donneeBiometriqueRepository.save(biometrique);
         try {
@@ -180,6 +194,31 @@ public class DonneeBiometriqueService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     String.format("Cannot remove filiale with ID : %d", id));
         });
+    }
+
+
+
+    public Page<DonneeBiometriqueDto> findAllPeriodeAndStatut(LocalDate startDate, LocalDate endDate,
+           Pageable pageable) {
+        Page<DonneeBiometrique> donnneBiometric = donneeBiometriqueRepository.findByFilters(
+        startDate,
+        endDate.plusDays(1),
+        CurrentUserAeropert.retrieveAeropert().getId(),
+        pageable
+);
+
+       
+       
+
+       
+        List<DonneeBiometriqueDto> uniques = donnneBiometric.getContent()
+                .stream()
+               .map(donnee -> mapper.toDto(donnee))
+                .collect(Collectors.toList());
+       
+
+        // Convertir la liste en Page
+        return new PageImpl<>(uniques, pageable, uniques.size());
     }
 
 }

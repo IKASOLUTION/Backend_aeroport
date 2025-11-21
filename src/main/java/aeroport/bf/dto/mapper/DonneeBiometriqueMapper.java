@@ -10,8 +10,10 @@ import aeroport.bf.dto.DonneeBiometriqueDto;
 import aeroport.bf.dto.EnregistrementDto;
 import aeroport.bf.dto.ListeNoireDto;
 
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
 /**
@@ -53,4 +55,14 @@ public interface DonneeBiometriqueMapper extends EntityMapper<DonneeBiometriqueD
         aeroport.setId(aeroportId);
         return aeroport;
     }
+
+     // 🌟 Initialisation automatique des booleans après mapping
+    @AfterMapping
+    default void afterToDto(DonneeBiometrique entity, @MappingTarget DonneeBiometriqueDto dto) {
+
+        dto.setEmpreinteGauche1(dto.getEmpreinteGauchePath() != null && !dto.getEmpreinteGauchePath().isEmpty());
+        dto.setEmpreinteDroite1(dto.getEmpreinteDroitePath() != null && !dto.getEmpreinteDroitePath().isEmpty());
+        dto.setEmpreintePouces1(dto.getEmpreintePoucesPath() != null && !dto.getEmpreintePoucesPath().isEmpty());
+    }
+    
 }

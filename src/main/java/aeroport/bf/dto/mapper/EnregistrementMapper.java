@@ -1,6 +1,7 @@
 package aeroport.bf.dto.mapper;
 
 import aeroport.bf.domain.Enregistrement;
+import aeroport.bf.domain.enums.TypeVol;
 import aeroport.bf.dto.EnregistrementDto;
 
 import org.mapstruct.Mapper;
@@ -21,8 +22,8 @@ public interface EnregistrementMapper extends EntityMapper<EnregistrementDto, En
     @Mapping(target = "dateSaisie", source = "dateSaisie")
     
     // Relations complètes (utilise les mappers associés)
-    @Mapping(target = "voyage", source = "voyage")
-    @Mapping(target = "informationPersonnelle", source = "informationPersonnel")
+     @Mapping(target = "voyage", ignore = true) 
+    @Mapping(target = "informationPersonnelle", ignore = true)
     
     // === Document (depuis InformationPersonnelle) ===
     @Mapping(target = "typeDocument", source = "informationPersonnel.typeDocument")
@@ -62,6 +63,24 @@ public interface EnregistrementMapper extends EntityMapper<EnregistrementDto, En
 
     // === Aeroport (depuis Aeroport) ===
     @Mapping(target = "aeroportId", source = "aeroport.id")
+     // Champs calculés pour le front
+    @Mapping(target = "aeroportDepart", expression = "java(determineAeroportDepart(entity))")
+    @Mapping(target = "aeroportDestination", expression = "java(determineAeroportDestination(entity))")
+
     
     EnregistrementDto toDto(Enregistrement entity);
+
+     default String determineAeroportDepart(Enregistrement entity) {
+        if(entity.getVoyage() == null || entity.getVoyage().getVol() == null) return null;
+        return entity.getVoyage().getVol().getTypeVol() == TypeVol.ARRIVEE
+                ? entity.getVoyage().getVol().getAeroport().getNomAeroport()
+                : entity.getVoyage().getAeroportForUser().getNomAeroport();
+    }
+
+    default String determineAeroportDestination(Enregistrement entity) {
+        if(entity.getVoyage() == null || entity.getVoyage().getVol() == null) return null;
+        return entity.getVoyage().getVol().getTypeVol() == TypeVol.ARRIVEE
+                ? entity.getVoyage().getAeroportForUser().getNomAeroport()
+                : entity.getVoyage().getVol().getAeroport().getNomAeroport();
+    }
 }

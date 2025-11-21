@@ -111,6 +111,8 @@ public class EnregistrementDto extends AbstractAuditEntityDto implements Seriali
 
     private Integer dureeSejour; 
     private LocalDate dateVoyage;
+     private String aeroportDepart;
+    private String aeroportDestination;
 
     
 }

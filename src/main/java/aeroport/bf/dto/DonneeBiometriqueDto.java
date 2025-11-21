@@ -11,6 +11,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +40,7 @@ public class DonneeBiometriqueDto extends AbstractAuditEntity implements Seriali
 
     private Long aeroportId;
 
-    private Long exercice;;
+    private Long exercice;
 
     private MultipartFile photoBiometrique;
 
@@ -57,4 +58,8 @@ public class DonneeBiometriqueDto extends AbstractAuditEntity implements Seriali
     private InformationPersonnelleDto informationPersonnelle;
 
     private AeroportDto aeroport;
+    private LocalDate dateCapture;
+    private Boolean empreinteDroite1;
+    private Boolean empreinteGauche1;
+    private Boolean empreintePouces1;
 }

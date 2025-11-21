@@ -8,6 +8,9 @@ import io.swagger.v3.oas.annotations.tags.Tags;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +26,13 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import aeroport.bf.config.util.PageableUtil;
+import aeroport.bf.domain.enums.EtatVoyage;
+import aeroport.bf.domain.enums.TypeCapture;
 import aeroport.bf.dto.DonneeBiometriqueDto;
+import aeroport.bf.dto.EnregistrementDto;
 import aeroport.bf.dto.InformationPersonnelleDto;
+import aeroport.bf.dto.SearchDto;
 import aeroport.bf.service.DonneeBiometriqueService;
 
 import java.io.File;
@@ -56,7 +64,9 @@ public class DonneeBiometriqueController {
             @RequestParam(value = "informationPersonnelleId", required = true) Long informationPersonnelleId,
             @RequestParam(value = "empreintePouces", required = true) MultipartFile empreintePouces,
             @RequestParam(value = "empreinteGauche", required = true) MultipartFile empreinteGauche,
-            @RequestParam(value = "empreinteDroite", required = true) MultipartFile empreinteDroite) {
+            @RequestParam(value = "empreinteDroite", required = true) MultipartFile empreinteDroite,
+            @RequestParam(value = "typeCapture", required = false) TypeCapture typeCapture
+        ) {
                 System.out.println("informationPersonnelleId: " + informationPersonnelleId);
                 System.out.println("empreintePouces: " + empreintePouces);
                 System.out.println("empreinteGauche: " + empreinteGauche);  
@@ -66,6 +76,7 @@ public class DonneeBiometriqueController {
                 .empreinteGauche(empreinteGauche)
                 .empreinteDroite(empreinteDroite)
                 .photoBiometrique(photoBiometrique)
+                .typeCapture(typeCapture)
                 .build();
 
         return ResponseEntity.ok(service.createDonneeBiometrique(dto));
@@ -166,5 +177,28 @@ public class DonneeBiometriqueController {
     })
     public ResponseEntity<List<InformationPersonnelleDto>> findAllPersonne() {
         return new ResponseEntity<>(service.findAllPersonne(), HttpStatus.OK);
+    }
+
+    
+    @PutMapping("/donneeBiometriques/periode")
+    public ResponseEntity<Page<DonneeBiometriqueDto>> findAllPeriode(@RequestBody SearchDto search) {
+        // Validation
+        if (search.getDateDebut() == null || search.getDateFin() == null) {
+            throw new IllegalArgumentException("dateDebut et dateFin sont obligatoires");
+        }
+
+        if (search.getDateDebut().isAfter(search.getDateFin())) {
+            throw new IllegalArgumentException("dateDebut doit être avant dateFin");
+        }
+
+         search.setSortBy("dateCapture");
+        Pageable pageable = PageableUtil.fromSearchDto(search);
+        Page<DonneeBiometriqueDto> taches = service.findAllPeriodeAndStatut(
+                search.getDateDebut(),
+                search.getDateFin(),
+                pageable
+               );
+
+        return ResponseEntity.ok(taches);
     }
 }

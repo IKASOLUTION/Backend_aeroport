@@ -111,7 +111,7 @@ public class EnregistrementService {
         voyage.setDateVoyage(dto.getDateVoyage());
         voyage.setHeureVoyage(LocalTime.now());
         voyage.setDateVoyage(LocalDate.now());
-        voyage.setEtatVoyage(EtatVoyage.ALLER);
+        voyage.setEtatVoyage(dto.getEtatVoyage());
         voyage.setDureeSejour(dto.getDureeSejour());
         voyage.setMotifVoyage(dto.getMotifVoyage());
         voyage.setStatut(StatutVoyage.ACTIF);
@@ -132,6 +132,7 @@ public class EnregistrementService {
         enregistrement.setTelephoneEtranger(dto.getTelephoneEtranger());
         enregistrement.setStatut(dto.getStatut() != null ? dto.getStatut() : StatutVoyageur.EN_ATTENTE);
         enregistrement.setDateSaisie(LocalDate.now());
+        enregistrement.setAeroport(CurrentUserAeropert.retrieveAeropert());
         System.out.println("DTO Nom enregistrement: " + enregistrement);
         // === 4. Sauvegarder Enregistrement ===
         Enregistrement savedEnregistrement = enregistrementRepository.save(enregistrement);
