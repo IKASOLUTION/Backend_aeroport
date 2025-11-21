@@ -12,10 +12,13 @@ import org.springframework.web.server.ResponseStatusException;
 import aeroport.bf.config.audit.EntityAuditAction;
 import aeroport.bf.config.audit.ObjetEntity;
 import aeroport.bf.domain.Ville;
+import aeroport.bf.domain.Vol;
 import aeroport.bf.domain.Voyage;
+import aeroport.bf.domain.enums.StatutVol;
 import aeroport.bf.domain.enums.StatutVoyage;
 import aeroport.bf.dto.MenuActionDto;
 import aeroport.bf.dto.VilleDto;
+import aeroport.bf.dto.VolDto;
 import aeroport.bf.dto.VoyageDto;
 import aeroport.bf.dto.mapper.VilleMapper;
 import aeroport.bf.dto.mapper.VoyageMapper;
@@ -31,8 +34,9 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class VoyageService {
-    private final VoyageRepository volRepository;
-    private final VoyageMapper volMapper;
+    private final VoyageRepository voyageRepository;
+    private final VoyageMapper voyageMapper;
+
     private final TraceService traceService;
     private final VilleRepository villeRepository;
 
@@ -44,7 +48,7 @@ public class VoyageService {
      */
     public VoyageDto create(final VoyageDto dto) {
 
-        Voyage vol = volMapper.toEntity(dto);
+        Voyage vol = voyageMapper.toEntity(dto);
         vol.setAeroport(CurrentUserAeropert.retrieveAeropert());
        /*  if (dto.getVilleNomA() != null) {
             if (!isExisteByNom(dto.getVilleNomA())) {
@@ -72,7 +76,7 @@ public class VoyageService {
 
             }
         }*/
-        return volMapper.toDto(volRepository.save(vol));
+        return voyageMapper.toDto(voyageRepository.save(vol));
     }
 
     /**
@@ -84,14 +88,14 @@ public class VoyageService {
      */
     public VoyageDto update(final VoyageDto dto, final long id) {
 
-        if (!volRepository.existsById(id)) {
+        if (!voyageRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format("No Voyage exists with this ID : %d", id));
         }
         if (Objects.isNull(dto.getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already created Voyage cannot have null ID.");
         }
-        Voyage vol = volMapper.toEntity(dto);
+        Voyage vol = voyageMapper.toEntity(dto);
        /*  if (dto.getVilleNomA() != null) {
             if (!isExisteByNom(dto.getVilleNomA())) {
                 Ville villeA = new Ville();
@@ -117,7 +121,7 @@ public class VoyageService {
             }
 
         }
- */        return volMapper.toDto(volRepository.save(vol));
+ */        return voyageMapper.toDto(voyageRepository.save(vol));
     }
 
     /**
@@ -127,11 +131,11 @@ public class VoyageService {
      * @return found VoyageDto object
      */
     public VoyageDto findOne(final long id) {
-        if (!volRepository.existsById(id)) {
+        if (!voyageRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format("No Voyage exists with this ID : %d", id));
         }
-        return volMapper.toDto(Objects.requireNonNull(volRepository.findById(id).orElse(null)));
+        return voyageMapper.toDto(Objects.requireNonNull(voyageRepository.findById(id).orElse(null)));
     }
 
     /**
@@ -147,18 +151,29 @@ public class VoyageService {
      * @return list of {@link VoyageDto}
      */
     public List<VoyageDto> findAll() {
-        return volMapper.toDto(volRepository.findAllByDeletedFalse());
+        return voyageMapper.toDto(voyageRepository.findAllByDeletedFalse());
 
     }
 
-    public Page<VoyageDto> findAllPeriodeAndStatut(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        Page<Voyage> vols = volRepository.findByDeletedFalseAndDateVoyageBetween(
-                startDate,
+
+  
+
+
+      public Page<VoyageDto> findAllPeriodeAndStatut(LocalDate startDate, LocalDate endDate,List<StatutVoyage> statuts, Pageable pageable) {
+        System.out.println("Received statuts request: " + statuts);
+          System.out.println("Received statuts request: " + CurrentUserAeropert.retrieveAeropert().getId());
+        if (statuts.isEmpty()) {
+            statuts = null;
+        }
+        Page<Voyage> voyages = voyageRepository.findByDeletedFalseAndStatutInAndDateDepartBetween(
+        statuts,        
+        startDate,
                 endDate,
                 CurrentUserAeropert.retrieveAeropert().getId(),
                 pageable);
-        return vols.map(vol -> volMapper.toDto(vol));
+        return voyages.map(voyageMapper::toDto);
     }
+
 
     /**
      * Remove a Voyage by id if exists.
@@ -166,9 +181,9 @@ public class VoyageService {
      * @param id removed hotel id.
      */
     public void delete(final long id) {
-        volRepository.findById(id).ifPresentOrElse(vol -> {
+        voyageRepository.findById(id).ifPresentOrElse(vol -> {
             vol.setDeleted(Boolean.TRUE);
-            volRepository.save(vol);
+            voyageRepository.save(vol);
             traceService.writeAuditEvent(EntityAuditAction.VOL, ObjetEntity.VOL);
         }, () -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,

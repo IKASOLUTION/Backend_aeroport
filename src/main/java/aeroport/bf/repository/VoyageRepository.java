@@ -1,8 +1,12 @@
 package aeroport.bf.repository;
 
+import aeroport.bf.domain.Vol;
 import aeroport.bf.domain.Voyage;
+import aeroport.bf.domain.enums.StatutVol;
+import aeroport.bf.domain.enums.StatutVoyage;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -19,16 +23,24 @@ public interface VoyageRepository extends AbstractRepository<Voyage, Long> {
       LocalDate endDate,
       Pageable pageable
    );*/
-    @Query("select v from Voyage v where v.deleted = false " +
-            "AND ((CAST(:startDate AS date) IS NULL AND CAST(:endDate AS date) IS NOT NULL AND v.dateVoyage <= :endDate)" +
-            "OR (CAST(:startDate AS date) IS NOT NULL AND CAST(:endDate AS date) IS NOT NULL AND v.dateVoyage BETWEEN :startDate AND :endDate)" +
-            "OR (CAST(:startDate AS date) IS NOT NULL AND CAST(:endDate AS date) IS NULL AND v.dateVoyage >=:startDate)" +
-            "OR (CAST(:startDate AS date) IS NULL AND CAST(:endDate AS date) IS NULL))" +
-            "AND (:aeroport IS NULL OR v.aeroport.id =:aeroport)")
-    Page<Voyage> findByDeletedFalseAndDateVoyageBetween(
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate,
-            @Param("aeroport") Long aeroport,
-            Pageable pageable);
+   
+
+
+
+ @Query("SELECT v FROM Voyage v " +
+           "WHERE v.deleted = false " +
+           "AND (:statuts IS NULL OR v.statut IN :statuts) " +
+           "AND v.dateVoyage >= :startDate " +
+           "AND v.dateVoyage <= :endDate " +
+           "AND (:aeroport IS NULL OR v.aeroportForUser.id = :aeroport)")
+    Page<Voyage> findByDeletedFalseAndStatutInAndDateDepartBetween(
+      @Param("statuts") List<StatutVoyage> statuts,
+      @Param("startDate") LocalDate  startDate,
+      @Param("endDate") LocalDate  endDate,
+      @Param("aeroport") Long aeroport,
+      Pageable pageable);
+
+
+
 
 }
