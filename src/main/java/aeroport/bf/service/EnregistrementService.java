@@ -115,6 +115,8 @@ public class EnregistrementService {
         voyage.setDureeSejour(dto.getDureeSejour());
         voyage.setMotifVoyage(dto.getMotifVoyage());
         voyage.setStatut(StatutVoyage.ACTIF);
+        voyage.setNomVoyageur(savedInfoPerso.getNomFamille());
+        voyage.setPrenomVoyageur(savedInfoPerso.getPrenom());
         System.out.println("DTO Nom voyage: " + voyage);
         Voyage savedVoyage = voyageRepository.save(voyage);
         System.out.println("DTO Nom savedVoyage: " + savedVoyage);

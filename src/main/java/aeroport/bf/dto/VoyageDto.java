@@ -75,6 +75,12 @@ public class VoyageDto extends AbstractAuditEntityDto  implements Serializable {
     private String villeNomD;
     private String villeNomA;
     private AeroportDto aeroport;
+    private String nomAgentConnecteAeroport;
+    private Long aeroportId;
+    private Long aeroportForUserId;
+
+    private String nomVoyageur;
+    private String prenomVoyageur;
 
     
 }
