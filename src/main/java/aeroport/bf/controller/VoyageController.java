@@ -142,7 +142,7 @@ public class VoyageController {
         if (search.getDateDebut().isAfter(search.getDateFin())) {
             throw new IllegalArgumentException("dateDebut doit être avant dateFin");
         }
-        search.setSortBy("dateDepart");
+        search.setSortBy("dateVoyage");
 
         // Création du Pageable et récupération des données
         Pageable pageable = PageableUtil.fromSearchDto(search);
