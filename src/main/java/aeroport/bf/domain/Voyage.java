@@ -101,6 +101,17 @@ public class Voyage extends AbstractAuditEntity  implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "aeroport_for_user_id", referencedColumnName = "id")
-    private Aeroport aeroportForUser;;
+    private Aeroport aeroportForUser;
+
+
+    @Column(name = "nomVoyageur", nullable = false)
+    private String nomVoyageur;
+
+    @Column(name = "prenomVoyageur", nullable = false)
+    private String prenomVoyageur;
+
+
+
+
     
 }

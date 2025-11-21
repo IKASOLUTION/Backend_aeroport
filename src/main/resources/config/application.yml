@@ -40,5 +40,6 @@ logging:
 
 files:
   upload:
-    baseDir: C:\Users\USER\Documents\identite
+    # baseDir: C:\Users\USER\Documents\identite
+    baseDir: C:\Users\dgsi\Documents\identite\identite
     
