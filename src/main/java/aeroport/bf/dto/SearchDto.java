@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import aeroport.bf.domain.enums.StatutDonneeBio;
 import aeroport.bf.domain.enums.StatutVol;
+import aeroport.bf.domain.enums.StatutVoyage;
 import aeroport.bf.domain.enums.StatutVoyageur;
 import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
@@ -42,6 +43,7 @@ public class SearchDto {
     private Long aeroportId;
     private List<StatutVoyageur> status;
     private List<StatutDonneeBio> selectedStatuts;
+    private List<StatutVoyage> statutVoyages;
 
     
 }

@@ -4,6 +4,7 @@ import aeroport.bf.config.util.PageableUtil;
 import aeroport.bf.dto.SearchDto;
 import aeroport.bf.dto.UserDto;
 import aeroport.bf.dto.VilleDto;
+import aeroport.bf.dto.VolDto;
 import aeroport.bf.dto.VoyageDto;
 import aeroport.bf.service.VoyageService;
 
@@ -130,8 +131,9 @@ public class VoyageController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/voyages/periode")
+     @PutMapping("/voyages/periode")
     public ResponseEntity<Page<VoyageDto>> getTachesHistorique(@RequestBody SearchDto search) {
+        System.out.println("Received search request: " + search);
         // Validation
         if (search.getDateDebut() == null || search.getDateFin() == null) {
             throw new IllegalArgumentException("dateDebut et dateFin sont obligatoires");
@@ -140,16 +142,18 @@ public class VoyageController {
         if (search.getDateDebut().isAfter(search.getDateFin())) {
             throw new IllegalArgumentException("dateDebut doit être avant dateFin");
         }
+        search.setSortBy("dateDepart");
 
         // Création du Pageable et récupération des données
         Pageable pageable = PageableUtil.fromSearchDto(search);
-        Page<VoyageDto> taches = voyageService.findAllPeriodeAndStatut(
-                
+        System.out.println("Received search pageable: " + search);
+        Page<VoyageDto> voyages = voyageService.findAllPeriodeAndStatut(
                 search.getDateDebut(),
                 search.getDateFin(),
+                search.getStatutVoyages(),
                 pageable);
-
-        return ResponseEntity.ok(taches);
+System.out.println("Received vols request: " + voyages);
+        return ResponseEntity.ok(voyages);
     }
 
 
