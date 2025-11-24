@@ -132,7 +132,7 @@ public class EnregistrementService {
         enregistrement.setVoyage(savedVoyage);
         enregistrement.setAdresseEtranger(dto.getAdresseEtranger());
         enregistrement.setTelephoneEtranger(dto.getTelephoneEtranger());
-        enregistrement.setStatut(dto.getStatut() != null ? dto.getStatut() : StatutVoyageur.EN_ATTENTE);
+        enregistrement.setStatut(dto.getStatut() != null ? dto.getStatut() : StatutVoyageur.VALIDE);
         enregistrement.setDateSaisie(LocalDate.now());
         enregistrement.setAeroport(CurrentUserAeropert.retrieveAeropert());
         System.out.println("DTO Nom enregistrement: " + enregistrement);
