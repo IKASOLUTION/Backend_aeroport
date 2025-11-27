@@ -52,5 +52,6 @@ public class UserDto extends AbstractAuditEntityDto {
     private Set<String> authorities;
     private Boolean passChange;
     private AeroportDto aeroport;
+    private String phone;
 
 }

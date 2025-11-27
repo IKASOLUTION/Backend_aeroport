@@ -125,6 +125,9 @@ public class User extends AbstractAuditEntity implements Serializable {
   
     @Column(name = "pass_change")
     private Boolean passChange;
+
+     @Column(name = "telephone")
+    private String phone;
     
     @ManyToOne(cascade = CascadeType.MERGE)
     @JsonIgnoreProperties(value = {"users"})
