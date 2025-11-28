@@ -74,9 +74,11 @@ public class EnregistrementService {
     private String uploadDirectory;
     private final PieceJointeRepository pieceJointeRepository;
     private final InformationPersonnelleMapper informationPersonnelleMapper;
+    private final RegulaWebService regulaWebService;
 
     public EnregistrementDto create(final EnregistrementDto dto) {
 
+        
         // === 1. Créer et enregistrer InformationPersonnelle ===
         InformationPersonnelle infoPerso = new InformationPersonnelle();
         infoPerso.setNomFamille(dto.getNomFamille());
@@ -225,6 +227,28 @@ public class EnregistrementService {
     public Page<EnregistrementDto> findAllPeriodeAndVoyageurAndStatut(LocalDate startDate, LocalDate endDate,
             Long aeroportId,
             Pageable pageable) {
+              File file = new File("C:/Users/USER/Projet personnel/Projet AZIZ/IKA/cnib.jpeg");
+byte[] fileBytes;
+try {
+    System.out.println("============ Début de la vérification ============");
+    
+    fileBytes = Files.readAllBytes(file.toPath());
+    
+    // IMPORTANT : Récupérer et afficher le résultat
+    String result = regulaWebService.verifyDocument(fileBytes);
+    
+    System.out.println("============ Résultat ============");
+    System.out.println(result);
+    System.out.println("============ Fin ============");
+    
+} catch (IOException e) {
+    System.err.println("Erreur lors de la lecture du fichier : " + e.getMessage());
+    e.printStackTrace();
+} catch (Exception e) {
+    System.err.println("Erreur lors de l'appel à Regula : " + e.getMessage());
+    e.printStackTrace();
+}
+               
         List<StatutVoyageur> statuts = Arrays.asList(
 
                 StatutVoyageur.EN_ATTENTE);
