@@ -2,6 +2,7 @@ package aeroport.bf.domain;
 
 import aeroport.bf.domain.enums.Statut;
 import aeroport.bf.domain.enums.StatutAeroport;
+import aeroport.bf.domain.enums.TypeAeroport;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
@@ -65,7 +66,7 @@ public class Aeroport extends AbstractAuditEntity  implements Serializable {
 
     private Ville ville;
     private String pays;
-   private String typeAeroport;
+    private TypeAeroport typeAeroport;
    private String siteWeb;
    private String adresse;
    private Double latitude;
