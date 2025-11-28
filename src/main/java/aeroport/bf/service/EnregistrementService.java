@@ -227,14 +227,13 @@ public class EnregistrementService {
     public Page<EnregistrementDto> findAllPeriodeAndVoyageurAndStatut(LocalDate startDate, LocalDate endDate,
             Long aeroportId,
             Pageable pageable) {
-              File file = new File("C:/Users/USER/Projet personnel/Projet AZIZ/IKA/cnib.jpeg");
+              /* File file = new File("C:/Users/USER/Projet personnel/Projet AZIZ/IKA/cnib.jpeg");
 byte[] fileBytes;
 try {
     System.out.println("============ Début de la vérification ============");
     
     fileBytes = Files.readAllBytes(file.toPath());
     
-    // IMPORTANT : Récupérer et afficher le résultat
     String result = regulaWebService.verifyDocument(fileBytes);
     
     System.out.println("============ Résultat ============");
@@ -247,7 +246,7 @@ try {
 } catch (Exception e) {
     System.err.println("Erreur lors de l'appel à Regula : " + e.getMessage());
     e.printStackTrace();
-}
+} */
                
         List<StatutVoyageur> statuts = Arrays.asList(
 

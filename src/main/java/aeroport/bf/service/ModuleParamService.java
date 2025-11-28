@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,77 +47,136 @@ public class ModuleParamService {
  * @param moduleParamDto {@link aeroport.bf.dto.ModuleParamDto}
  * @return saved moduleParam object
  */
+
 private ModuleParamDto saveModuleParam(final ModuleParamDto moduleParamDto) {
-    System.out.println("==================moduleParam==================="+moduleParamDto);
+    // 1. Save or update ModuleParam
     ModuleParam moduleParam = moduleParamMapper.toEntity(moduleParamDto);
     moduleParam.setDeleted(Boolean.FALSE);
-    System.out.println("==================moduleParam==================="+moduleParam);
-
     ModuleParam savedModuleParam = moduleParamRepository.save(moduleParam);
 
-    // synchronize menu actions: create new ones, update existing, mark deleted removed ones
-    List<MenuAction> existingMenus = menuActionRepository.findByModuleParamIdAndDeletedFalse(savedModuleParam.getId());
+    // 2. Synchronize MenuActions
+    synchronizeMenuActions(moduleParamDto.getMenuActions(), savedModuleParam);
+
+    // 3. Return updated DTO
+    return buildModuleParamDto(savedModuleParam);
+}
+
+private void synchronizeMenuActions(List<MenuActionDto> menuActionDtos, ModuleParam moduleParam) {
+    // Get existing menu actions
+    List<MenuAction> existingMenuActions = menuActionRepository
+            .findByModuleParamIdAndDeletedFalse(moduleParam.getId());
+    
     Set<Long> processedIds = new HashSet<>();
- System.out.println("==================savedModuleParam==================="+savedModuleParam);
-    if (moduleParamDto.getMenuActions() != null && !moduleParamDto.getMenuActions().isEmpty()) {
-        System.out.println("==================1===================");
-        for (MenuActionDto dto : moduleParamDto.getMenuActions()) {
-System.out.println("==================2===================");
-            // If DTO has id => try update existing
-            if (dto.getId() != null) {
-                menuActionRepository.findTop1ByDeletedFalseAndId(dto.getId()).ifPresentOrElse(existing -> {
-                    // validate code uniqueness (will throw if conflict)
-                    if (isExisteMenuByCode(dto)) {
-                        throw new ResponseStatusException(HttpStatus.CONFLICT, "Le code de  existe déjà.");
-                    }
-                    existing.setMenuActionLibelle(dto.getMenuActionLibelle());
-                    existing.setMenuActionCode(dto.getMenuActionCode());
-                    existing.setDeleted(Boolean.FALSE);
-                    existing.setModuleParam(savedModuleParam);
-                    menuActionRepository.save(existing);
-                    processedIds.add(existing.getId());
-                }, () -> {
-                    // not found (maybe previously deleted) -> create new
-                    MenuAction action = menuActionMapper.toEntity(dto);
-                    if (isExisteMenuByCode(dto)) {
-                        throw new ResponseStatusException(HttpStatus.CONFLICT, "Le code de  existe déjà.");
-                    }
-                    action.setDeleted(Boolean.FALSE);
-                    action.setModuleParam(savedModuleParam);
-                    MenuAction saved = menuActionRepository.save(action);
-                    processedIds.add(saved.getId());
-                });
-            } else {
-                // new menu action -> create
-                MenuAction action = menuActionMapper.toEntity(dto);
-                System.out.println("==================3===================");
-                if (isExisteMenuByCode(dto)) {
-                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Le code de  existe déjà.");
-                }
-                action.setDeleted(Boolean.FALSE);
-                action.setModuleParam(savedModuleParam);
-                System.out.println("==================4==================="+action);
-                MenuAction saved = menuActionRepository.save(action);
-                System.out.println("==================5==================="+saved);
-                processedIds.add(saved.getId());
+
+    // Process incoming menu actions
+    if (menuActionDtos != null && !menuActionDtos.isEmpty()) {
+        for (MenuActionDto dto : menuActionDtos) {
+            Long savedId = processMenuAction(dto, moduleParam);
+            if (savedId != null) {
+                processedIds.add(savedId);
             }
         }
     }
 
-    // mark as deleted any existing menus that were not sent in the DTO
-    if(existingMenus !=null && !existingMenus.isEmpty()) {
-        for (MenuAction existing : existingMenus) {
-        if (!processedIds.contains(existing.getId())) {
-            existing.setDeleted(Boolean.TRUE);
-            menuActionRepository.save(existing);
-        }
-    }
-    }
-
-    // Return DTO enriched with persisted menu actions
-   return moduleParamDto;
+    // Mark removed menu actions as deleted
+    markRemovedMenuActionsAsDeleted(existingMenuActions, processedIds);
 }
 
+private Long processMenuAction(MenuActionDto dto, ModuleParam moduleParam) {
+    if (dto.getId() != null && dto.getId() > 0) {
+        // Update existing or create if not found
+        return updateOrCreateMenuAction(dto, moduleParam);
+    } else {
+        // Create new menu action
+        return createNewMenuAction(dto, moduleParam);
+    }
+}
+
+private Long updateOrCreateMenuAction(MenuActionDto dto, ModuleParam moduleParam) {
+    Optional<MenuAction> existingOpt = menuActionRepository
+            .findTop1ByDeletedFalseAndId(dto.getId());
+    
+    if (existingOpt.isPresent()) {
+        // Update existing
+        MenuAction existing = existingOpt.get();
+        validateMenuCodeUniqueness(dto, existing.getId());
+        
+        existing.setMenuActionLibelle(dto.getMenuActionLibelle());
+        existing.setMenuActionCode(dto.getMenuActionCode());
+        existing.setDeleted(Boolean.FALSE);
+        existing.setModuleParam(moduleParam);
+        
+        MenuAction saved = menuActionRepository.save(existing);
+        return saved.getId();
+    } else {
+        // Create new if not found (maybe was deleted)
+        return createNewMenuAction(dto, moduleParam);
+    }
+}
+
+private Long createNewMenuAction(MenuActionDto dto, ModuleParam moduleParam) {
+    validateMenuCodeUniqueness(dto, null);
+    
+    MenuAction newAction = MenuAction.builder()
+            .menuActionLibelle(dto.getMenuActionLibelle())
+            .menuActionCode(dto.getMenuActionCode())
+            .deleted(Boolean.FALSE)
+            .moduleParam(moduleParam)
+            .build();
+    
+    MenuAction saved = menuActionRepository.save(newAction);
+    return saved.getId();
+}
+
+private void validateMenuCodeUniqueness(MenuActionDto dto, Long excludeId) {
+    if (isExisteMenuByCode(dto, excludeId)) {
+        throw new ResponseStatusException(
+                HttpStatus.CONFLICT, 
+                "Le code '" + dto.getMenuActionCode() + "' existe déjà."
+        );
+    }
+}
+
+private boolean isExisteMenuByCode(MenuActionDto dto, Long excludeId) {
+    // You need to modify your existing isExisteMenuByCode method to accept excludeId
+    // to exclude the current record when checking for duplicates during updates
+    Optional<MenuAction> existing = menuActionRepository
+            .findByMenuActionCodeAndDeletedFalse(dto.getMenuActionCode());
+    
+    if (existing.isEmpty()) {
+        return false;
+    }
+    
+    // If excludeId is provided, check if it's the same record
+    return excludeId == null || !existing.get().getId().equals(excludeId);
+}
+
+private void markRemovedMenuActionsAsDeleted(List<MenuAction> existingMenuActions, 
+                                              Set<Long> processedIds) {
+    if (existingMenuActions != null && !existingMenuActions.isEmpty()) {
+        existingMenuActions.stream()
+                .filter(existing -> !processedIds.contains(existing.getId()))
+                .forEach(existing -> {
+                    existing.setDeleted(Boolean.TRUE);
+                    menuActionRepository.save(existing);
+                });
+    }
+}
+
+private ModuleParamDto buildModuleParamDto(ModuleParam moduleParam) {
+    ModuleParamDto dto = moduleParamMapper.toDto(moduleParam);
+    
+    // Load and attach menu actions
+    List<MenuAction> menuActions = menuActionRepository
+            .findByModuleParamIdAndDeletedFalse(moduleParam.getId());
+    
+    if (!menuActions.isEmpty()) {
+        MenuActionMapper menuActionMapper = new MenuActionMapper();
+        dto.setMenuActions(menuActionMapper.toDtos(menuActions));
+    }
+    
+    return dto;
+}
 /**
  * Create new moduleParam.
  *

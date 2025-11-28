@@ -29,7 +29,6 @@ import lombok.experimental.SuperBuilder;
 import java.io.Serial;
 import java.io.Serializable;
 
-
 /**
  * A compagnie.
  */
@@ -42,40 +41,39 @@ import java.io.Serializable;
 @Table(name = "aeroport")
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
-public class Aeroport extends AbstractAuditEntity  implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class Aeroport extends AbstractAuditEntity implements Serializable {
+        @Serial
+        private static final long serialVersionUID = 1L;
 
-    @Id
-    @EqualsAndHashCode.Include
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "aeroport_seq_generator")
-    @SequenceGenerator(name = "aeroport_seq_generator", sequenceName = "aeroport_sequence",
-            initialValue = 1001, allocationSize = 1)
-    private Long id;
+        @Id
+        @EqualsAndHashCode.Include
+        @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "aeroport_seq_generator")
+        @SequenceGenerator(name = "aeroport_seq_generator", sequenceName = "aeroport_sequence", initialValue = 1001, allocationSize = 1)
+        private Long id;
 
-    @Column(name = "nom_aeroport", nullable = false, unique = true)
-    @NotNull
-    private String nomAeroport;
+        @Column(name = "nom_aeroport", nullable = false, unique = true)
+        @NotNull
+        private String nomAeroport;
 
+        @Enumerated(EnumType.STRING)
+        private StatutAeroport statutAeroport;
 
-     @Enumerated(EnumType.STRING)
-    private StatutAeroport statutAeroport;
+        @ManyToOne
+        @JoinColumn(name = "ville_id")
 
-    @ManyToOne
-    @JoinColumn(name = "ville_id")
-
-    private Ville ville;
-    private String pays;
-    private TypeAeroport typeAeroport;
-   private String siteWeb;
-   private String adresse;
-   private Double latitude;
-   private Double longitude;
-   private String telephone;
-   private String code_oaci;
-   private String nomResponsable;
-   private String prenomResponsable;
-   private String mailResponsable;
-   private String telephoneResponsable;
+        private Ville ville;
+        private String pays;
+        @Enumerated(EnumType.STRING)
+        private TypeAeroport typeAeroport;
+        private String siteWeb;
+        private String adresse;
+        private Double latitude;
+        private Double longitude;
+        private String telephone;
+        private String code_oaci;
+        private String nomResponsable;
+        private String prenomResponsable;
+        private String mailResponsable;
+        private String telephoneResponsable;
 
 }
