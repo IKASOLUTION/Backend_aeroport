@@ -137,6 +137,9 @@ public class EnregistrementService {
         enregistrement.setStatut(dto.getStatut() != null ? dto.getStatut() : StatutVoyageur.VALIDE);
         enregistrement.setDateSaisie(LocalDate.now());
         enregistrement.setAeroport(CurrentUserAeropert.retrieveAeropert());
+        if(enregistrement.getAeroport() == null || enregistrement.getAeroport().getId() == null) {
+            enregistrement.setAeroport(vol.getAeroport());
+        }
         System.out.println("DTO Nom enregistrement: " + enregistrement);
         // === 4. Sauvegarder Enregistrement ===
         Enregistrement savedEnregistrement = enregistrementRepository.save(enregistrement);
