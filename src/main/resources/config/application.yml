@@ -40,6 +40,17 @@ logging:
 
 files:
   upload:
-    # baseDir: C:\Users\USER\Documents\identite
-    baseDir: C:\Users\dgsi\Documents\identite\identite
-    
+    baseDir: C:\Users\USER\Documents\identite
+    #baseDir: C:\Users\dgsi\Documents\identite\identite
+
+# Configuration Regula
+regula:
+  license:
+    path: C:\Program Files (x86)\Regula\Document Reader Web API\extBin\win_x86\regula.license
+  api:
+    # Le RegulaWebService détectera automatiquement le bon port
+    # Pas besoin de spécifier l'URL ici
+    base-url: http://localhost:5000  # Port par défaut, sera auto-détecté
+  service:
+    name: RegulaDocReader
+    auto-start: true

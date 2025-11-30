@@ -19,14 +19,14 @@ public class RegulaWebService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     
-    // Configurations possibles pour Regula
+    // Configurations possibles pour Regula - MISE À JOUR
     private static final String[][] POSSIBLE_CONFIGS = {
-        {"http://localhost:5000", "/api/v1/process"},
-        {"http://localhost:5000", "/api/process"},
         {"http://localhost:5000", "/process"},
+        {"http://localhost:5000", "/api/v1/process"},
         {"http://localhost:5000", "/v1/process"},
-        {"http://localhost:5000", "/"},
-        {"http://localhost:5000", "/api"},
+        {"http://localhost:5000", "/api/v2/process"},
+        {"http://localhost:5000", "/v2/process"},
+        {"http://localhost:5000", "/api/process"},
         {"http://localhost:8080", "/api/v1/process"},
         {"http://localhost:8080", "/process"}
     };
@@ -53,7 +53,6 @@ public class RegulaWebService {
             try {
                 System.out.println("Test: " + fullUrl);
                 
-                // Test avec OPTIONS pour voir si l'endpoint existe
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
                 
@@ -65,34 +64,49 @@ public class RegulaWebService {
                 HttpEntity<Map<String, Object>> request = new HttpEntity<>(testBody, headers);
                 
                 try {
-                    restTemplate.postForEntity(fullUrl, request, String.class);
-                    // Si pas d'exception, c'est bon
+                    ResponseEntity<String> response = restTemplate.postForEntity(fullUrl, request, String.class);
+                    // Si 200, c'est bon
                     this.workingBaseUrl = baseUrl;
                     this.workingEndpoint = endpoint;
-                    System.out.println("✓ Configuration trouvée: " + fullUrl);
+                    System.out.println("✓ Configuration trouvée (200): " + fullUrl);
                     return;
                 } catch (HttpClientErrorException e) {
-                    // 400 = endpoint existe mais payload invalide (c'est bon)
-                    if (e.getStatusCode().value() == 400) {
+                    int statusCode = e.getStatusCode().value();
+                    
+                    // 400 = endpoint existe mais payload invalide (c'est acceptable)
+                    if (statusCode == 400) {
                         this.workingBaseUrl = baseUrl;
                         this.workingEndpoint = endpoint;
-                        System.out.println("✓ Configuration trouvée (400 OK): " + fullUrl);
+                        System.out.println("✓ Configuration trouvée (400 - endpoint valide): " + fullUrl);
                         return;
                     }
+                    
+                    // 403 = problème de licence mais endpoint existe
+                    if (statusCode == 403) {
+                        this.workingBaseUrl = baseUrl;
+                        this.workingEndpoint = endpoint;
+                        System.out.println("⚠ Configuration trouvée (403 - vérifier licence): " + fullUrl);
+                        return;
+                    }
+                    
                     // 404 = endpoint n'existe pas
-                    System.out.println("  → 404 Not Found");
+                    if (statusCode == 404) {
+                        System.out.println("  → 404 Not Found");
+                    } else {
+                        System.out.println("  → HTTP " + statusCode);
+                    }
                 }
                 
             } catch (ResourceAccessException e) {
-                System.out.println("  → Connexion refusée (serveur non démarré?)");
+                System.out.println("  → Connexion refusée");
             } catch (Exception e) {
                 System.out.println("  → Erreur: " + e.getMessage());
             }
         }
         
         System.err.println("✗ ERREUR: Aucune configuration Regula valide trouvée!");
-        System.err.println("Vérifiez que le serveur Regula est démarré.");
-        System.err.println("Ports testés: 5000, 8080");
+        System.err.println("Le serveur Regula semble tourner sur http://localhost:5000 mais aucun endpoint API n'a été trouvé.");
+        System.err.println("Vérifiez la documentation de votre version de Regula.");
     }
 
     /**
@@ -102,8 +116,8 @@ public class RegulaWebService {
         if (workingBaseUrl == null || workingEndpoint == null) {
             throw new RuntimeException(
                 "API Regula non disponible. " +
-                "Vérifiez que le serveur est démarré sur le port 5000 ou 8080. " +
-                "Commande Docker: docker run -p 8080:8080 regulaforensics/docreader"
+                "Vérifiez que le serveur est démarré sur le port 5000. " +
+                "URL testée: http://localhost:5000"
             );
         }
         
@@ -140,9 +154,8 @@ public class RegulaWebService {
             if (e.getStatusCode().value() == 403 && errorBody.contains("Bad license")) {
                 throw new RuntimeException(
                     "Licence Regula invalide ou manquante. " +
-                    "Solutions: 1) Obtenir une licence d'essai sur regulaforensics.com, " +
-                    "2) Vérifier la configuration du serveur Regula, " +
-                    "3) Monter le fichier regula.license dans le conteneur Docker. " +
+                    "La licence doit être placée dans: C:\\Program Files (x86)\\Regula\\Document Reader Web API\\extBin\\win_x86\\regula.license " +
+                    "Puis redémarrez le service: .\regdocreadersvc.exe restart " +
                     "Erreur: " + errorBody,
                     e
                 );
@@ -225,14 +238,16 @@ public class RegulaWebService {
             diag.append("URL: ").append(getApiUrl()).append("\n");
         } else {
             diag.append("✗ API non disponible\n\n");
+            diag.append("Le serveur Regula tourne sur http://localhost:5000\n");
+            diag.append("mais aucun endpoint API valide n'a été trouvé.\n\n");
             diag.append("Configurations testées:\n");
             for (String[] config : POSSIBLE_CONFIGS) {
                 diag.append("  - ").append(config[0]).append(config[1]).append("\n");
             }
             diag.append("\nSolutions possibles:\n");
-            diag.append("1. Vérifier que Regula est démarré\n");
-            diag.append("2. Si Docker: docker run -p 8080:8080 regulaforensics/docreader\n");
-            diag.append("3. Vérifier les logs du serveur Regula\n");
+            diag.append("1. Vérifier la documentation de votre version de Regula\n");
+            diag.append("2. Chercher dans les logs le chemin de l'API\n");
+            diag.append("3. Ouvrir http://localhost:5000 dans un navigateur\n");
         }
         
         return diag.toString();
