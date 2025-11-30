@@ -180,19 +180,123 @@ public class EnregistrementService {
      */
     public EnregistrementDto update(final EnregistrementDto dto, final long id) {
 
-        if (!enregistrementRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    String.format("No Enregistrement exists with this ID : %d", id));
-        }
-        if (Objects.isNull(dto.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Already created Enregistrement cannot have null ID.");
-        }
-        Enregistrement enregistrement = enregistrementMapper.toEntity(dto);
+    System.out.println("--------Afficher les elements a modifier: " + dto);
 
-        return enregistrementMapper.toDto(enregistrementRepository.save(enregistrement));
+    // ✅ Récupérer l'entité existante avec toutes ses relations
+    Enregistrement existingEnregistrement = enregistrementRepository.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+            String.format("No Enregistrement exists with this ID : %d", id)));
+
+    if (Objects.isNull(dto.getId())) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Already created Enregistrement cannot have null ID.");
     }
 
+    try {
+        // ===== Mise à jour des champs directs de Enregistrement =====
+        if (dto.getStatut() != null) {
+            existingEnregistrement.setStatut(dto.getStatut());
+        }
+        if (dto.getTelephoneEtranger() != null) {
+            existingEnregistrement.setTelephoneEtranger(dto.getTelephoneEtranger());
+        }
+        if (dto.getAdresseEtranger() != null) {
+            existingEnregistrement.setAdresseEtranger(dto.getAdresseEtranger());
+        }
+
+        // ===== Mise à jour de InformationPersonnelle =====
+        if (existingEnregistrement.getInformationPersonnel() != null) {
+            InformationPersonnelle info = existingEnregistrement.getInformationPersonnel();
+            
+            if (dto.getTypeDocument() != null) {
+                info.setTypeDocument(dto.getTypeDocument());
+            }
+            if (dto.getNumeroDocument() != null) {
+                info.setNumeroDocument(dto.getNumeroDocument());
+            }
+            if (dto.getNumeroNip() != null) {
+                info.setNumeroNip(dto.getNumeroNip());
+            }
+            if (dto.getDateDelivrance() != null) {
+                info.setDateDelivrance(dto.getDateDelivrance());
+            }
+            if (dto.getLieuDelivrance() != null) {
+                info.setLieuDelivrance(dto.getLieuDelivrance());
+            }
+            if (dto.getNomFamille() != null) {
+                info.setNomFamille(dto.getNomFamille());
+            }
+            if (dto.getPrenom() != null) {
+                info.setPrenom(dto.getPrenom());
+            }
+            if (dto.getDateNaissance() != null) {
+                info.setDateNaissance(dto.getDateNaissance());
+            }
+            if (dto.getLieuNaissance() != null) {
+                info.setLieuNaissance(dto.getLieuNaissance());
+            }
+            if (dto.getNationalite() != null) {
+                info.setNationalite(dto.getNationalite());
+            }
+            if (dto.getProfession() != null) {
+                info.setProfession(dto.getProfession());
+            }
+            if (dto.getPaysResidence() != null) {
+                info.setPaysResidence(dto.getPaysResidence());
+            }
+            if (dto.getEmailContact() != null) {
+                info.setEmailContact(dto.getEmailContact());
+            }
+            if (dto.getTelephoneBurkina() != null) {
+                info.setTelephoneBurkina(dto.getTelephoneBurkina());
+            }
+            if (dto.getAdresseBurkina() != null) {
+                info.setAdresseBurkina(dto.getAdresseBurkina());
+            }
+        }
+
+        // ===== Mise à jour de Voyage =====
+        if (existingEnregistrement.getVoyage() != null) {
+            Voyage voyage = existingEnregistrement.getVoyage();
+            
+            if (dto.getDateVoyage() != null) {
+                voyage.setDateVoyage(dto.getDateVoyage());
+            }
+            if (dto.getHeureVoyage() != null) {
+                voyage.setHeureVoyage(dto.getHeureVoyage());
+            }
+            if (dto.getMotifVoyage() != null) {
+                voyage.setMotifVoyage(dto.getMotifVoyage());
+            }
+            if (dto.getEtatVoyage() != null) {
+                voyage.setEtatVoyage(dto.getEtatVoyage());
+            }
+            if (dto.getDureeSejour() != null) {
+                voyage.setDureeSejour(dto.getDureeSejour());
+            }
+            
+            // Note: aeroportDepart et aeroportDestination sont calculés, 
+            // pas directement stockés dans Voyage
+        }
+
+        System.out.println("--------Avant sauvegarde");
+        Enregistrement saved = enregistrementRepository.save(existingEnregistrement);
+        System.out.println("--------Après sauvegarde");
+        
+        return enregistrementMapper.toDto(saved);
+        
+    } catch (Exception e) {
+        System.err.println("========================================");
+        System.err.println("ERREUR LORS DE LA MISE À JOUR");
+        System.err.println("Message: " + e.getMessage());
+        System.err.println("Type: " + e.getClass().getName());
+        e.printStackTrace();
+        System.err.println("========================================");
+        
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+            "Erreur lors de la mise à jour: " + e.getMessage(), e);
+    }
+}
     /**
      * Get Enregistrement by id.
      *
