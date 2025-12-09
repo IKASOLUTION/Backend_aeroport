@@ -45,12 +45,10 @@ files:
 
 # Configuration Regula
 regula:
-  license:
-    path: C:\Program Files (x86)\Regula\Document Reader Web API\extBin\win_x86\regula.license
   api:
+    url: https://api.regulaforensics.com
     # Le RegulaWebService détectera automatiquement le bon port
     # Pas besoin de spécifier l'URL ici
-    base-url: http://localhost:5000  # Port par défaut, sera auto-détecté
-  service:
-    name: RegulaDocReader
-    auto-start: true
+   # base-url: http://localhost:5000  # Port par défaut, sera auto-détecté
+  license:
+    path: classpath:regula.license

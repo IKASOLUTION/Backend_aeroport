@@ -37,6 +37,10 @@
         <mapstruct.version>1.6.3</mapstruct.version>
     </properties>
 	<dependencies>
+    <dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+</dependency>
 		<dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
@@ -174,12 +178,23 @@
             <version>${mapstruct.version}</version>
             <scope>provided</scope>
         </dependency>
+
+         <dependency>
+        <groupId>com.regula.documentreader</groupId>
+        <artifactId>webclient</artifactId>
+        <version>7.1.1</version> <!-- Utilisez une version spécifique au lieu de 5.+ -->
+    </dependency>
        
 	</dependencies>
 	<repositories>
+
+            <repository>
+                <id>regula-document-reader</id>
+                <url>https://maven-master.regulaforensics.com/RegulaDocumentReaderWebClient</url>
+            </repository>
           <repository>
           <id>jasperreports</id>
-          <url>http://jasperreports.sourceforge.net/maven2</url>
+          <url>https://jasperreports.sourceforge.net/maven2</url>
         </repository>
         <repository>
           <id>jaspersoft-third-party</id>
@@ -207,53 +222,45 @@
     </profiles>
 
 	<build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-
-             <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-resources-plugin</artifactId>
-            <version>3.3.1</version>
-            <configuration>
-                <nonFilteredFileExtensions>
-                    <nonFilteredFileExtension>jasper</nonFilteredFileExtension>
-                    <nonFilteredFileExtension>jrxml</nonFilteredFileExtension>
-                </nonFilteredFileExtensions>
-            </configuration>
-        </plugin>
-        </plugins>
-
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-             <resource>
+    <resources>
+        <!-- 1) Ressources filtrées : YAML, properties, etc. -->
+        <resource>
             <directory>src/main/resources</directory>
             <filtering>true</filtering>
             <excludes>
+                <exclude>regula.license</exclude>
                 <exclude>**/*.jasper</exclude>
+                <exclude>**/*.jrxml</exclude>
             </excludes>
         </resource>
+
+        <!-- 2) Fichiers JASPER non filtrés -->
         <resource>
             <directory>src/main/resources</directory>
             <filtering>false</filtering>
             <includes>
                 <include>**/*.jasper</include>
+                <include>**/*.jrxml</include>
             </includes>
         </resource>
-        </resources>
-    </build>
+
+        <!-- 3) Fichier Regula NON FILTRÉ (ULTRA IMPORTANT !) -->
+        <resource>
+            <directory>src/main/resources</directory>
+            <filtering>false</filtering>
+            <includes>
+                <include>regula.license</include>
+            </includes>
+        </resource>
+    </resources>
+
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+    </plugins>
+</build>
+
 
 </project>

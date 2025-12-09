@@ -10,4 +10,6 @@ public class AeroportApplication {
 		SpringApplication.run(AeroportApplication.class, args);
 	}
 
+	
+
 }

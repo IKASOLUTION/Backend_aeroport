@@ -14,6 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.regula.documentreader.webclient.ApiException;
+import com.regula.documentreader.webclient.model.ProcessResponse;
+import com.regula.documentreader.webclient.model.ResultItem;
+import com.regula.documentreader.webclient.model.ext.RecognitionResponse;
+
 import aeroport.bf.config.audit.EntityAuditAction;
 import aeroport.bf.config.audit.ObjetEntity;
 import aeroport.bf.config.security.SecurityUtils;
@@ -45,18 +52,25 @@ import aeroport.bf.repository.InformationPersonnelleRepository;
 import aeroport.bf.repository.PieceJointeRepository;
 import aeroport.bf.repository.UserRepository;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
 
 @Service
 @Transactional
@@ -74,7 +88,8 @@ public class EnregistrementService {
     private String uploadDirectory;
     private final PieceJointeRepository pieceJointeRepository;
     private final InformationPersonnelleMapper informationPersonnelleMapper;
-    private final RegulaWebService regulaWebService;
+    private final RegulaDocumentService documentService;
+  //  private final RegulaWebService regulaWebService;
 
     public EnregistrementDto create(final EnregistrementDto dto) {
 
@@ -331,51 +346,33 @@ public class EnregistrementService {
 
     }
 
-    public Page<EnregistrementDto> findAllPeriodeAndVoyageurAndStatut(LocalDate startDate, LocalDate endDate,
+
+      public Page<EnregistrementDto> findAllPeriodeAndVoyageurAndStatut(LocalDate startDate, LocalDate endDate,
             Long aeroportId,
             Pageable pageable) {
-              File file = new File("C:/Users/USER/Projet personnel/Projet AZIZ/IKA/cnib.jpeg");
-byte[] fileBytes;
-try {
-    System.out.println("============ Début de la vérification ============");
-    
-    fileBytes = Files.readAllBytes(file.toPath());
-    
-    String result = regulaWebService.verifyDocument(fileBytes);
-    
-    System.out.println("============ Résultat ============");
-    System.out.println(result);
-    System.out.println("============ Fin ============");
-    
-} catch (IOException e) {
-    System.err.println("Erreur lors de la lecture du fichier : " + e.getMessage());
-    e.printStackTrace();
-} catch (Exception e) {
-    System.err.println("Erreur lors de l'appel à Regula : " + e.getMessage());
-    e.printStackTrace();
-} 
-               
-        List<StatutVoyageur> statuts = Arrays.asList(
 
-                StatutVoyageur.EN_ATTENTE);
-        Page<Enregistrement> enregistrements = enregistrementRepository.findByFilters(
-                startDate.atStartOfDay(),
-                endDate.atTime(23, 59, 59),
-                aeroportId !=null ? aeroportId :  CurrentUserAeropert.retrieveAeropert().getId(),
-                statuts,
-                pageable);
+    // Suite de ton code existant
+    List<StatutVoyageur> statuts = Arrays.asList(StatutVoyageur.EN_ATTENTE);
+    Page<Enregistrement> enregistrements = enregistrementRepository.findByFilters(
+            startDate.atStartOfDay(),
+            endDate.atTime(23, 59, 59),
+            aeroportId != null ? aeroportId : CurrentUserAeropert.retrieveAeropert().getId(),
+            statuts,
+            pageable
+    );
 
-       
-        // Créer une liste sans doublons avec le nombre de voyages
-        List<EnregistrementDto> uniqueEnregistrements = enregistrements.getContent()
-                .stream()
-               .map(enregistrement -> enregistrementMapper.toDto(enregistrement))
-                .collect(Collectors.toList());
+    // Mapper en DTO
+    List<EnregistrementDto> uniqueEnregistrements = enregistrements.getContent()
+            .stream()
+            .map(enregistrement -> enregistrementMapper.toDto(enregistrement))
+            .collect(Collectors.toList());
 
-        // Convertir la liste en Page
-        return new PageImpl<>(uniqueEnregistrements, pageable, uniqueEnregistrements.size());
-    }
+    return new PageImpl<>(uniqueEnregistrements, pageable, uniqueEnregistrements.size());
+}
 
+
+
+ 
     public Page<EnregistrementDto> findAllPeriodeAndStatut(LocalDate startDate, LocalDate endDate, Long aeroportId,
             List<StatutVoyageur> statuts, Pageable pageable) {
         Page<Enregistrement> enregistrements = enregistrementRepository.findByFilters(
@@ -490,5 +487,7 @@ try {
             throw e; // Relancer l'exception pour la gestion d'erreur
         }
     }
+
+
 
 }
