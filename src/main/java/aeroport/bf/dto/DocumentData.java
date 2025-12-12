@@ -33,6 +33,7 @@ public  class DocumentData {
     private String profession;
     private String issueState;
     private String nip;
+    private String dateIssue;
     
     }
 
