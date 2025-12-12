@@ -93,7 +93,8 @@ public class EnregistrementService {
 
     public EnregistrementDto create(final EnregistrementDto dto) {
 
-        
+        System.out.println("DTO Nom enregistrement1: " + dto);
+
         // === 1. Créer et enregistrer InformationPersonnelle ===
         InformationPersonnelle infoPerso = new InformationPersonnelle();
         infoPerso.setNomFamille(dto.getNomFamille());
