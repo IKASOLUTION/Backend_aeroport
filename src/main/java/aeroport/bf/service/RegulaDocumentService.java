@@ -1,5 +1,6 @@
 package aeroport.bf.service;
 
+import org.bouncycastle.asn1.isismtt.x509.ProfessionInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageImpl;
@@ -234,8 +235,10 @@ private DocumentData extractDocumentData(RecognitionResponse response) {
     data.setDocumentNumber(getDocumentNumber(response));
     data.setNationality(getNationality(response));
     data.setExpiryDate(getDateOfExpiry(response));
+    data.setIssueDate(getIssueDate(response));
     data.setLieuNaissance(getPlaceOfBirth(response));
     data.setSexe(getSex(response));
+    data.setProfession(getProfession(response));
     data.setNip(getNip(response));
     data.setDateIssue(getDateIssue(response));
     
@@ -254,9 +257,11 @@ private void logExtractedData(DocumentData data) {
     System.out.println("Expiration: " + data.getExpiryDate());
     System.out.println("Lieu de naissance: "+data.getPlaceOfBirth());
     System.out.println("Sexe: "+data.getSexe());
+    System.out.println("date delivrance:"+data.getIssueDate());
     System.out.println("NIP: "+data.getNip());
 
     System.out.println("=============Laurent===============================");
+
 }
 
 
@@ -372,6 +377,14 @@ private void extractImages(RecognitionResponse response) throws IOException {
         return getFieldValueByName(response, "Date of Expiry");
     }
 
+    public String getIssueDate(RecognitionResponse response){
+        return getFieldValueByName(response,"Date of Issue"); 
+    }
+
+
+      public String getIssueState(RecognitionResponse response){
+        return getFieldValueByName(response,"Issuing State Name"); 
+    }
     /**
      * Extrait la nationalité
      */
@@ -385,6 +398,15 @@ private void extractImages(RecognitionResponse response) throws IOException {
     public String getSex(RecognitionResponse response) {
         return getFieldValueByName(response, "Sex");
     }
+
+    public String getProfession(RecognitionResponse response) {
+        return getFieldValueByName(response, "Profession");
+    }
+
+     /**
+     * Extrait le profession
+     */
+   
 
     /**
      * Extrait l'image du document
