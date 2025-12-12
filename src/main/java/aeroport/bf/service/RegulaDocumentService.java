@@ -20,9 +20,7 @@ import aeroport.bf.dto.DocumentData;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Base64;
 
 import javax.imageio.ImageIO;
@@ -103,7 +101,7 @@ public class RegulaDocumentService {
         // Créer systemInfo avec la licence
         ProcessSystemInfo systemInfo = new ProcessSystemInfo();
         if (regulaLicense != null && !regulaLicense.isEmpty()) {
-            systemInfo.setLicense(regulaLicense);
+           // systemInfo.setLicense(regulaLicense);
             System.out.println("✓ Licence Regula configurée (longueur: " + regulaLicense.length() + ")");
         } else {
             System.err.println("⚠️ ATTENTION: Aucune licence Regula configurée !");
@@ -161,7 +159,7 @@ public class RegulaDocumentService {
         logExtractedData(data);
 
         // 🖼 Extraction des images
-        extractImages(response);
+       // extractImages(response);
 
         return data;
 
@@ -235,11 +233,12 @@ private DocumentData extractDocumentData(RecognitionResponse response) {
     data.setDateOfBirth(getDateOfBirth(response));
     data.setDocumentNumber(getDocumentNumber(response));
     data.setNationality(getNationality(response));
-    //data.setGender(getSex(response));
     data.setExpiryDate(getDateOfExpiry(response));
     data.setLieuNaissance(getPlaceOfBirth(response));
     data.setSexe(getSex(response));
     data.setNip(getNip(response));
+    data.setDateIssue(getDateIssue(response));
+    
 
     return data;
 }
@@ -251,13 +250,13 @@ private void logExtractedData(DocumentData data) {
     System.out.println("Date naissance: " + data.getDateOfBirth());
     System.out.println("Numéro Document: " + data.getDocumentNumber());
     System.out.println("Nationalité: " + data.getNationality());
-    //System.out.println("Sexe: " + data.getGender());
+    System.out.println("Délivrance: " + data.getDateIssue());
     System.out.println("Expiration: " + data.getExpiryDate());
     System.out.println("Lieu de naissance: "+data.getPlaceOfBirth());
     System.out.println("Sexe: "+data.getSexe());
     System.out.println("NIP: "+data.getNip());
 
-    System.out.println("============================================");
+    System.out.println("=============Laurent===============================");
 }
 
 
@@ -355,6 +354,9 @@ private void extractImages(RecognitionResponse response) throws IOException {
      */
     public String getDateOfBirth(RecognitionResponse response) {
         return getFieldValueByName(response, "Date of Birth");
+    }
+    public String getDateIssue(RecognitionResponse response) {
+        return getFieldValueByName(response, "Date of Issue");
     }
 
     public String getPlaceOfBirth(RecognitionResponse response) {

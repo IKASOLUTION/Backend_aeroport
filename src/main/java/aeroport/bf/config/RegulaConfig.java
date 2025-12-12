@@ -22,20 +22,23 @@ public class RegulaConfig {
 
     @Bean
     public DocumentReaderApi documentReaderApi() throws IOException {
-        // Crée un ApiClient et configure l'URL de l'API en ligne
+        // Créer le client avec l'URL configurée
         ApiClient client = new ApiClient();
         client.setBasePath(regulaApiUrl);
         client.setDebugging(false);
         client.setVerifyingSsl(true);
 
-        // Crée l'API avec le client configuré
+        // Créer l'API
         DocumentReaderApi api = new DocumentReaderApi(client);
 
-        // Lire le fichier de licence et définir la licence
-        byte[] licenseBytes = Files.readAllBytes(licenseResource.getFile().toPath());
-        api.setLicense(licenseBytes); // ou api.withLicense(Base64) si tu veux en string
-
-        System.out.println("Licence Regula initialisée : " + (api.getLicense() != null));
+        // Charger la licence depuis le fichier
+        if (licenseResource.exists()) {
+            byte[] licenseBytes = Files.readAllBytes(licenseResource.getFile().toPath());
+            api.setLicense(licenseBytes);
+            System.out.println("✓ Licence Regula initialisée et API configurée avec URL : " + regulaApiUrl);
+        } else {
+            System.err.println("⚠️ Fichier de licence introuvable : " + licenseResource.getDescription());
+        }
 
         return api;
     }

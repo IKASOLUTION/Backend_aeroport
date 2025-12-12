@@ -31,6 +31,7 @@ public  class DocumentData {
     private String lieuNaissance;
     private String sexe;
     private String nip;
+    private String dateIssue;
     
     }
 
