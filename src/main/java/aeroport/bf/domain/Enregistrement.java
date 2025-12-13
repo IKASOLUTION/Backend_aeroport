@@ -85,8 +85,7 @@ public class Enregistrement extends AbstractAuditEntity  implements Serializable
 
     @Enumerated(EnumType.STRING)
     @Column(name = "statut", nullable = false, length = 50)
-    @Builder.Default
-    private StatutVoyageur statut = StatutVoyageur.EN_ATTENTE;
+    private StatutVoyageur statut ;
 
     @ManyToOne
     @JoinColumn(name = "aeroport_id", referencedColumnName = "id")

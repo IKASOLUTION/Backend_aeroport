@@ -227,22 +227,72 @@ private void validateImageDimensions(byte[] fileBytes) {
 }
 
 private DocumentData extractDocumentData(RecognitionResponse response) {
-
     DocumentData data = new DocumentData();
+    
+    // Informations personnelles de base
     data.setLastName(getSurname(response));
     data.setFirstName(getGivenNames(response));
     data.setDateOfBirth(getDateOfBirth(response));
     data.setDocumentNumber(getDocumentNumber(response));
-    data.setNationality(getNationality(response));
-    data.setExpiryDate(getDateOfExpiry(response));
-    data.setIssueDate(getIssueDate(response));
-    data.setLieuNaissance(getPlaceOfBirth(response));
     data.setSexe(getSex(response));
-    data.setProfession(getProfession(response));
-    data.setNip(getNip(response));
-    data.setDateIssue(getDateIssue(response));
     
-
+    // Nationalité - essayer plusieurs noms de champ
+    String nationality = getFieldValueByName(response, "Nationality");
+    if (nationality == null) {
+        nationality = getFieldValueByName(response, "Nationalité"); // version française
+    }
+    if (nationality == null) {
+        nationality = getFieldValueByName(response, "Issuing State Code"); // code pays
+    }
+    data.setNationality(nationality);
+    
+    // Date d'expiration
+    data.setExpiryDate(getDateOfExpiry(response));
+    
+    // Date de délivrance - essayer plusieurs noms de champ
+    String issueDate = getFieldValueByName(response, "Date of Issue");
+    if (issueDate == null) {
+        issueDate = getFieldValueByName(response, "Date de délivrance"); // version française
+    }
+    if (issueDate == null) {
+        issueDate = getFieldValueByName(response, "Date Issued");
+    }
+    data.setIssueDate(issueDate);
+    data.setDateIssue(issueDate); // pour assurer la compatibilité
+    
+    // Lieu de naissance
+    String placeOfBirth = getFieldValueByName(response, "Place of Birth");
+    if (placeOfBirth == null) {
+        placeOfBirth = getFieldValueByName(response, "Lieu de naissance"); // version française
+    }
+    data.setLieuNaissance(placeOfBirth);
+    data.setPlaceOfBirth(placeOfBirth); // pour assurer la compatibilité
+    
+    // Numéro personnel (NIP)
+    String nip = getFieldValueByName(response, "Personal Number");
+    if (nip == null) {
+        nip = getFieldValueByName(response, "NIP"); // version française
+    }
+    if (nip == null) {
+        nip = getFieldValueByName(response, "Personal Identification Number");
+    }
+    data.setNip(nip);
+    
+    // Profession
+    String profession = getFieldValueByName(response, "Profession");
+    if (profession == null) {
+        profession = getFieldValueByName(response, "Profession/Occupation");
+    }
+    data.setProfession(profession);
+    
+    // Pays d'émission
+    String issueState = getFieldValueByName(response, "Issuing State Name");
+    if (issueState == null) {
+        issueState = getFieldValueByName(response, "Pays d'émission"); // version française
+    }
+    // À ajouter si vous avez ces champs dans DocumentData
+    // data.setIssueState(issueState);
+    
     return data;
 }
 
