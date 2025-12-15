@@ -34,6 +34,7 @@ public  class DocumentData {
     private String issueState;
     private String nip;
     private String dateIssue;
+    private String lieuDelivrance;
     
     }
 

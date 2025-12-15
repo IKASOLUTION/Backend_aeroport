@@ -1,5 +1,6 @@
 package aeroport.bf.service;
 
+import org.apache.poi.sl.usermodel.TextRun.FieldType;
 import org.bouncycastle.asn1.isismtt.x509.ProfessionInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -33,17 +34,19 @@ public class RegulaDocumentService {
     private String regulaLicense;
 
     public RegulaDocumentService(DocumentReaderApi documentReaderApi,
-                                 @Value("${regula.license.path}") Resource licenseResource) {
+            @Value("${regula.license.path}") Resource licenseResource) {
         this.documentReaderApi = documentReaderApi;
-        
+
         // Charger la licence depuis le fichier
         try {
             if (licenseResource.exists()) {
                 byte[] licenseBytes = licenseResource.getInputStream().readAllBytes();
                 this.regulaLicense = new String(licenseBytes, java.nio.charset.StandardCharsets.UTF_8).trim();
-                System.out.println("✓ Licence Regula chargée depuis le fichier (longueur: " + regulaLicense.length() + ")");
+                System.out.println(
+                        "✓ Licence Regula chargée depuis le fichier (longueur: " + regulaLicense.length() + ")");
             } else {
-                System.err.println("⚠️ ATTENTION: Fichier de licence Regula introuvable : " + licenseResource.getDescription());
+                System.err.println(
+                        "⚠️ ATTENTION: Fichier de licence Regula introuvable : " + licenseResource.getDescription());
             }
         } catch (IOException e) {
             System.err.println("❌ Erreur lors du chargement de la licence Regula: " + e.getMessage());
@@ -56,7 +59,7 @@ public class RegulaDocumentService {
      * 
      * @param file Le fichier image du document
      * @return RecognitionResponse contenant les données extraites
-     * @throws IOException Si erreur de lecture du fichier
+     * @throws IOException  Si erreur de lecture du fichier
      * @throws ApiException Si erreur de l'API Regula
      */
     public RecognitionResponse processDocument(MultipartFile file) throws IOException, ApiException {
@@ -82,27 +85,27 @@ public class RegulaDocumentService {
         ProcessParams processParams = new ProcessParams();
         processParams.setScenario("FullProcess");
         processParams.setAlreadyCropped(true);
-        
+
         // Paramètres d'authentification
         AuthParams authParams = new AuthParams();
         authParams.setCheckLiveness(false);
         processParams.setAuthParams(authParams);
-        
+
         // Ajouter tous les types de résultats nécessaires
-        processParams.addResultTypeOutputItem(3);   // TEXT
-        processParams.addResultTypeOutputItem(5);   // IMAGES
-        processParams.addResultTypeOutputItem(8);   // VISUAL_OCR_EXTENDED
-        processParams.addResultTypeOutputItem(15);  // STATUS
-        processParams.addResultTypeOutputItem(17);  // TEXT_AVAILABLE
-        processParams.addResultTypeOutputItem(30);  // DOCUMENT_TYPE
-        processParams.addResultTypeOutputItem(33);  // DOCUMENT_POSITION
-        processParams.addResultTypeOutputItem(36);  // BARCODES
-        processParams.addResultTypeOutputItem(37);  // MRZ_POSITION
+        processParams.addResultTypeOutputItem(3); // TEXT
+        processParams.addResultTypeOutputItem(5); // IMAGES
+        processParams.addResultTypeOutputItem(8); // VISUAL_OCR_EXTENDED
+        processParams.addResultTypeOutputItem(15); // STATUS
+        processParams.addResultTypeOutputItem(17); // TEXT_AVAILABLE
+        processParams.addResultTypeOutputItem(30); // DOCUMENT_TYPE
+        processParams.addResultTypeOutputItem(33); // DOCUMENT_POSITION
+        processParams.addResultTypeOutputItem(36); // BARCODES
+        processParams.addResultTypeOutputItem(37); // MRZ_POSITION
 
         // Créer systemInfo avec la licence
         ProcessSystemInfo systemInfo = new ProcessSystemInfo();
         if (regulaLicense != null && !regulaLicense.isEmpty()) {
-           // systemInfo.setLicense(regulaLicense);
+            // systemInfo.setLicense(regulaLicense);
             System.out.println("✓ Licence Regula configurée (longueur: " + regulaLicense.length() + ")");
         } else {
             System.err.println("⚠️ ATTENTION: Aucune licence Regula configurée !");
@@ -118,10 +121,10 @@ public class RegulaDocumentService {
         // Appeler l'API Regula
         try {
             RecognitionResponse response = documentReaderApi.process(request);
-            
+
             // Log des informations extraites
             logExtractedInformation(response);
-            
+
             return response;
         } catch (ApiException e) {
             System.err.println("❌ Erreur lors de l'appel API Regula: " + e.getMessage());
@@ -130,178 +133,174 @@ public class RegulaDocumentService {
         }
     }
 
+    public DocumentData findDonneeBiometriquue(MultipartFile file) {
+        try {
+            logHeader("Début de la vérification", file);
 
-   public DocumentData findDonneeBiometriquue(MultipartFile file) {
-    try {
-        logHeader("Début de la vérification", file);
+            // Vérification du fichier
+            byte[] fileBytes = validateFile(file);
 
-        //  Vérification du fichier
-        byte[] fileBytes = validateFile(file);
+            // Vérification des dimensions de l'image
+            validateImageDimensions(fileBytes);
 
-        //  Vérification des dimensions de l'image
-        validateImageDimensions(fileBytes);
+            // 📤 Appel au service de reconnaissance Regula
+            RecognitionResponse response = processDocument(file);
 
-        // 📤 Appel au service de reconnaissance Regula
-        RecognitionResponse response = processDocument(file);
+            // Vérifier si le document est valide
+            if (!isDocumentValid(response)) {
+                System.err.println("⚠️ Document non valide selon Regula");
+            }
 
-        //  Vérifier si le document est valide
-        if (!isDocumentValid(response)) {
-            System.err.println("⚠️ Document non valide selon Regula");
+            // 📄 Afficher type de document
+            System.out.println("Type de document détecté : " + getDocumentTypeInfo(response));
+
+            // 🧾 Debug : afficher tout
+            printAllFields(response);
+
+            // 📌 Extraction des données biographiques
+            DocumentData data = extractDocumentData(response);
+            logExtractedData(data);
+
+            // 🖼 Extraction des images
+            // extractImages(response);
+
+            return data;
+
+        } catch (ApiException e) {
+            System.err.println("❌ Erreur Regula : " + e.getMessage());
+            System.err.println("Code HTTP: " + e.getCode());
+            System.err.println("Response: " + e.getResponseBody());
+
+            if (e.getCode() == 403) {
+                System.err.println("➡️ Cause probable : licence Regula invalide / non acceptée");
+            }
+            return null;
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur inattendue : " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void logHeader(String title, MultipartFile file) {
+        System.out.println("=================Laurent=============================");
+        System.out.println(title);
+        System.out.println("Fichier: " + file.getOriginalFilename());
+        System.out.println("================Laurent==============================");
+    }
+
+    private byte[] validateFile(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IOException("Le fichier est vide ou inexistant.");
         }
 
-        // 📄 Afficher type de document
-        System.out.println("Type de document détecté : " + getDocumentTypeInfo(response));
+        byte[] bytes = file.getBytes();
+        System.out.println("Taille fichier: " + bytes.length + " bytes (" + bytes.length / 1024 + " KB)");
 
-        // 🧾 Debug : afficher tout
-        printAllFields(response);
+        if (bytes.length < 10_000) {
+            System.err.println("⚠️ Fichier trop petit (<10KB) : risque d'échec OCR");
+        }
 
-        // 📌 Extraction des données biographiques
-        DocumentData data = extractDocumentData(response);
-        logExtractedData(data);
+        return bytes;
+    }
 
-        // 🖼 Extraction des images
-       // extractImages(response);
+    private void validateImageDimensions(byte[] fileBytes) {
+        try {
+            BufferedImage img = ImageIO.read(new ByteArrayInputStream(fileBytes));
+
+            if (img == null) {
+                System.err.println("❌ Format d'image inconnu / illisible");
+                return;
+            }
+
+            System.out.println("Dimensions image: " + img.getWidth() + " x " + img.getHeight());
+
+            if (img.getWidth() < 600 || img.getHeight() < 400) {
+                System.err.println("⚠️ Dimensions trop faibles (min recommandé : 600×400)");
+            }
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lecture image : " + e.getMessage());
+        }
+    }
+
+    private DocumentData extractDocumentData(RecognitionResponse response) {
+
+        DocumentData data = new DocumentData();
+        data.setLastName(getSurname(response));
+        data.setFirstName(getGivenNames(response));
+        data.setDateOfBirth(getDateOfBirth(response));
+        data.setDocumentNumber(getDocumentNumber(response));
+        data.setNationality(getNationality(response));
+        data.setExpiryDate(getDateOfExpiry(response));
+        data.setIssueDate(getDateIssue(response));
+        data.setDateIssue(data.getIssueDate());
+        data.setLieuNaissance(getPlaceOfBirth(response));
+        data.setLieuDelivrance(getPlaceOfIssue(response));
+        data.setSexe(getSex(response));
+        data.setProfession(getProfession(response));
+        data.setNip(getNip(response));
 
         return data;
-
-    } catch (ApiException e) {
-        System.err.println("❌ Erreur Regula : " + e.getMessage());
-        System.err.println("Code HTTP: " + e.getCode());
-        System.err.println("Response: " + e.getResponseBody());
-
-        if (e.getCode() == 403) {
-            System.err.println("➡️ Cause probable : licence Regula invalide / non acceptée");
-        }
-        return null;
-
-    } catch (Exception e) {
-        System.err.println("❌ Erreur inattendue : " + e.getMessage());
-        e.printStackTrace();
-        return null;
-    }
-}
-
-
-private void logHeader(String title, MultipartFile file) {
-    System.out.println("=================Laurent=============================");
-    System.out.println(title);
-    System.out.println("Fichier: " + file.getOriginalFilename());
-    System.out.println("================Laurent==============================");
-}
-
-
-private byte[] validateFile(MultipartFile file) throws IOException {
-    if (file.isEmpty()) {
-        throw new IOException("Le fichier est vide ou inexistant.");
     }
 
-    byte[] bytes = file.getBytes();
-    System.out.println("Taille fichier: " + bytes.length + " bytes (" + bytes.length / 1024 + " KB)");
+    private void logExtractedData(DocumentData data) {
+        System.out.println("============ DONNÉES EXTRAITES ============");
+        System.out.println("Nom: " + data.getLastName());
+        System.out.println("Prénom: " + data.getFirstName());
+        System.out.println("Date naissance: " + data.getDateOfBirth());
+        System.out.println("Numéro Document: " + data.getDocumentNumber());
+        System.out.println("Nationalité: " + data.getNationality());
+        System.out.println("Délivrance: " + data.getDateIssue());
+        System.out.println("Expiration: " + data.getExpiryDate());
+        System.out.println("Lieu de naissance: " + data.getLieuNaissance());
+        System.out.println("Sexe: " + data.getSexe());
+        System.out.println("NIP: " + data.getNip());
+        System.out.println("Profession: " + data.getProfession());
 
-    if (bytes.length < 10_000) {
-        System.err.println("⚠️ Fichier trop petit (<10KB) : risque d'échec OCR");
+        System.out.println("=============Laurent===============================");
+
     }
 
-    return bytes;
-}
-
-
-private void validateImageDimensions(byte[] fileBytes) {
-    try {
-        BufferedImage img = ImageIO.read(new ByteArrayInputStream(fileBytes));
-
-        if (img == null) {
-            System.err.println("❌ Format d'image inconnu / illisible");
-            return;
+    private void extractImages(RecognitionResponse response) throws IOException {
+        byte[] docImage = getDocumentImage(response);
+        if (docImage != null) {
+            System.out.println("📄 Image document extraite: " + docImage.length + " bytes");
+            // Files.write(Paths.get("document.jpg"), docImage);
         }
 
-        System.out.println("Dimensions image: " + img.getWidth() + " x " + img.getHeight());
-
-        if (img.getWidth() < 600 || img.getHeight() < 400) {
-            System.err.println("⚠️ Dimensions trop faibles (min recommandé : 600×400)");
+        byte[] portrait = getPortraitImage(response);
+        if (portrait != null) {
+            System.out.println("🧑 Photo portrait extraite: " + portrait.length + " bytes");
+            // Files.write(Paths.get("portrait.jpg"), portrait);
         }
-
-    } catch (Exception e) {
-        System.err.println("❌ Erreur lecture image : " + e.getMessage());
     }
-}
-
-private DocumentData extractDocumentData(RecognitionResponse response) {
-
-    DocumentData data = new DocumentData();
-    data.setLastName(getSurname(response));
-    data.setFirstName(getGivenNames(response));
-    data.setDateOfBirth(getDateOfBirth(response));
-    data.setDocumentNumber(getDocumentNumber(response));
-    data.setNationality(getNationality(response));
-    data.setExpiryDate(getDateOfExpiry(response));
-    data.setIssueDate(getIssueDate(response));
-    data.setLieuNaissance(getPlaceOfBirth(response));
-    data.setSexe(getSex(response));
-    data.setProfession(getProfession(response));
-    data.setNip(getNip(response));
-    data.setDateIssue(getDateIssue(response));
-    
-
-    return data;
-}
-
-private void logExtractedData(DocumentData data) {
-    System.out.println("============ DONNÉES EXTRAITES ============");
-    System.out.println("Nom: " + data.getLastName());
-    System.out.println("Prénom: " + data.getFirstName());
-    System.out.println("Date naissance: " + data.getDateOfBirth());
-    System.out.println("Numéro Document: " + data.getDocumentNumber());
-    System.out.println("Nationalité: " + data.getNationality());
-    System.out.println("Délivrance: " + data.getDateIssue());
-    System.out.println("Expiration: " + data.getExpiryDate());
-    System.out.println("Lieu de naissance: "+data.getPlaceOfBirth());
-    System.out.println("Sexe: "+data.getSexe());
-    System.out.println("date delivrance:"+data.getIssueDate());
-    System.out.println("NIP: "+data.getNip());
-
-    System.out.println("=============Laurent===============================");
-
-}
-
-
-private void extractImages(RecognitionResponse response) throws IOException {
-    byte[] docImage = getDocumentImage(response);
-    if (docImage != null) {
-        System.out.println("📄 Image document extraite: " + docImage.length + " bytes");
-        // Files.write(Paths.get("document.jpg"), docImage);
-    }
-
-    byte[] portrait = getPortraitImage(response);
-    if (portrait != null) {
-        System.out.println("🧑 Photo portrait extraite: " + portrait.length + " bytes");
-        // Files.write(Paths.get("portrait.jpg"), portrait);
-    }
-}
 
     /**
      * Affiche les informations extraites du document
      */
     private void logExtractedInformation(RecognitionResponse response) {
-        System.out.println();
+        printAllFields(response);
+
         System.out.println("-----------------------------------------------------------------");
-        
+
         // Type de document
         if (response.documentType() != null) {
             System.out.println("Type de Document: " + response.documentType().getDocumentName());
         }
-        
+
         // Statut
         if (response.status() != null) {
             var overallStatus = response.status().getOverallStatus();
             System.out.println("Statut Global: " + (overallStatus == 1 ? "VALIDE" : "NON VALIDE"));
         }
-        
+
         // Champs de texte
         if (response.text() != null && response.text().getFieldList() != null) {
             System.out.println();
             System.out.println("Champs extraits:");
-            
+
             for (var field : response.text().getFieldList()) {
                 if (field.getValueList() != null && !field.getValueList().isEmpty()) {
                     var firstValue = field.getValueList().get(0);
@@ -312,7 +311,7 @@ private void extractImages(RecognitionResponse response) throws IOException {
                 }
             }
         }
-        
+
         System.out.println("-----------------------------------------------------------------");
         System.out.println();
     }
@@ -321,6 +320,7 @@ private void extractImages(RecognitionResponse response) throws IOException {
      * Extrait une valeur de champ par nom
      */
     public String getFieldValueByName(RecognitionResponse response, String fieldName) {
+        
         if (response.text() != null && response.text().getFieldList() != null) {
             for (var field : response.text().getFieldList()) {
                 if (fieldName.equals(field.getFieldName())) {
@@ -330,8 +330,13 @@ private void extractImages(RecognitionResponse response) throws IOException {
                 }
             }
         }
+
+
         return null;
     }
+    
+
+    
 
     /**
      * Extrait le numéro de document
@@ -360,16 +365,49 @@ private void extractImages(RecognitionResponse response) throws IOException {
     public String getDateOfBirth(RecognitionResponse response) {
         return getFieldValueByName(response, "Date of Birth");
     }
+
     public String getDateIssue(RecognitionResponse response) {
+        String value = getFieldValueByName(response, "Date of Issue");
+        if (value == null) {
+            value = getFieldValueByName(response, "Issue Date");
+        }
+        return value;
+    }
+
+    public String getIssueDate(RecognitionResponse response) {
         return getFieldValueByName(response, "Date of Issue");
     }
 
-    public String getPlaceOfBirth(RecognitionResponse response) {
-        return getFieldValueByName(response, "Place of Birth");
+    public String getPlaceOfIssue(RecognitionResponse response) {
+        String value = getFieldValueByName(response, "Place of Issue");
+        if (value == null) {
+            value = getFieldValueByName(response, "Issuing Place");
+        }
+        return value;
     }
+
+    /*
+     * public String getPlaceOfBirth(RecognitionResponse response) {
+     * return getFieldValueByName(response, "Place of Birth");
+     * }
+     */
+
+    public String getPlaceOfBirth(RecognitionResponse response) {
+        // Essayez toutes les variantes possibles
+        String value = getFieldValueByName(response, "Place of Birth");
+        if (value == null)
+            value = getFieldValueByName(response, "Place of birth");
+        if (value == null)
+            value = getFieldValueByName(response, "Birth Place");
+        
+
+        return value;
+    }
+
     public String getNip(RecognitionResponse response) {
         return getFieldValueByName(response, "Personal Number");
     }
+
     /**
      * Extrait la date d'expiration
      */
@@ -377,14 +415,6 @@ private void extractImages(RecognitionResponse response) throws IOException {
         return getFieldValueByName(response, "Date of Expiry");
     }
 
-    public String getIssueDate(RecognitionResponse response){
-        return getFieldValueByName(response,"Date of Issue"); 
-    }
-
-
-      public String getIssueState(RecognitionResponse response){
-        return getFieldValueByName(response,"Issuing State Name"); 
-    }
     /**
      * Extrait la nationalité
      */
@@ -400,13 +430,17 @@ private void extractImages(RecognitionResponse response) throws IOException {
     }
 
     public String getProfession(RecognitionResponse response) {
-        return getFieldValueByName(response, "Profession");
+        String value = getFieldValueByName(response, "Profession");
+        if (value == null)
+            value = getFieldValueByName(response, "Occupation");
+        if (value == null)
+            value = getFieldValueByName(response, "Job");
+        return value;
     }
 
-     /**
+    /**
      * Extrait le profession
      */
-   
 
     /**
      * Extrait l'image du document
