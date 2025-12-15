@@ -18,24 +18,37 @@ import org.springframework.data.repository.query.Param;
 
 public interface EnregistrementRepository extends AbstractRepository<Enregistrement, Long> {
 
-    List<Enregistrement> findAllByDeletedFalse();
+        List<Enregistrement> findAllByDeletedFalse();
 
-    Optional<Enregistrement> findByInformationPersonnelId(Long informationPersonnelId);
+        Optional<Enregistrement> findByInformationPersonnelId(Long informationPersonnelId);
 
-    @Query("select e from Enregistrement  e where e.deleted = false and :aeroportId is null or e.aeroport.id=:aeroportId")
-    List<Enregistrement> findAllByDeletedFalse(@Param("aeroportId") Long aeroportId);
+        @Query("select e from Enregistrement  e where e.deleted = false and :aeroportId is null or e.aeroport.id=:aeroportId")
+        List<Enregistrement> findAllByDeletedFalse(@Param("aeroportId") Long aeroportId);
 
-    @EntityGraph(attributePaths = { "voyage", "voyage.vol", "voyage.vol.aeroport" })
-    @Query("SELECT e FROM Enregistrement e " +
-            "WHERE e.deleted = false " +
-            "AND e.voyage.vol.dateDepart BETWEEN :startDate AND :endDate " +
-            "AND (:aeroportId = 0L OR e.voyage.vol.aeroport.id = :aeroportId) " +
-            "AND (:statuts IS NULL OR e.statut IN :statuts)")
-    Page<Enregistrement> findByFilters(
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate,
-            @Param("aeroportId") Long aeroportId,
-            @Param("statuts") List<StatutVoyageur> statuts,
-            Pageable pageable);
+        @EntityGraph(attributePaths = { "voyage", "voyage.vol", "voyage.vol.aeroport" })
+        @Query("SELECT e FROM Enregistrement e " +
+                        "WHERE e.deleted = false " +
+                        "AND e.voyage.vol.dateDepart BETWEEN :startDate AND :endDate " +
+                        "AND (:aeroportId = 0L OR e.voyage.vol.aeroport.id = :aeroportId) " +
+                        "AND (:statuts IS NULL OR e.statut IN :statuts)")
+        Page<Enregistrement> findByFilters(
+                        @Param("startDate") LocalDateTime startDate,
+                        @Param("endDate") LocalDateTime endDate,
+                        @Param("aeroportId") Long aeroportId,
+                        @Param("statuts") List<StatutVoyageur> statuts,
+                        Pageable pageable);
+
+        @EntityGraph(attributePaths = { "voyage", "voyage.vol", "voyage.vol.aeroport", "utilisateur" })
+        @Query("SELECT e FROM Enregistrement e " +
+                        "WHERE e.deleted = false " +
+                        "AND e.voyage.vol.dateDepart BETWEEN :startDate AND :endDate " +
+                        "AND (:userId = 0L OR e.utilisateur.id = :userId) " +
+                        "AND (:statuts IS NULL OR e.statut IN :statuts)")
+        Page<Enregistrement> findByPreenregistrement(
+                        @Param("startDate") LocalDateTime startDate,
+                        @Param("endDate") LocalDateTime endDate,
+                        @Param("userId") Long userId,
+                        @Param("statuts") List<StatutVoyageur> statuts,
+                        Pageable pageable);
 
 }

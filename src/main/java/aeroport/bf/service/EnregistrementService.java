@@ -63,6 +63,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -149,7 +150,7 @@ public class EnregistrementService {
         enregistrement.setVoyage(savedVoyage);
         enregistrement.setAdresseEtranger(dto.getAdresseEtranger());
         enregistrement.setTelephoneEtranger(dto.getTelephoneEtranger());
-        enregistrement.setStatut(dto.getStatut() != null ? dto.getStatut() : StatutVoyageur.VALIDE);
+        enregistrement.setStatut(dto.getStatut());
         enregistrement.setDateSaisie(LocalDate.now());
         enregistrement.setAeroport(CurrentUserAeropert.retrieveAeropert());
         if(enregistrement.getAeroport() == null || enregistrement.getAeroport().getId() == null) {
@@ -371,6 +372,7 @@ public class EnregistrementService {
 }
 
 
+ 
 
  
     public Page<EnregistrementDto> findAllPeriodeAndStatut(LocalDate startDate, LocalDate endDate, Long aeroportId,
@@ -487,6 +489,58 @@ public class EnregistrementService {
             throw e; // Relancer l'exception pour la gestion d'erreur
         }
     }
+
+
+
+    public List<EnregistrementDto> ListVol(String numeroDocument) {
+
+        List<EnregistrementDto> resultats = new ArrayList<>();
+
+        List<Enregistrement> enregistrements = enregistrementRepository.findAll();
+
+        for (Enregistrement enregistrement : enregistrements) {
+        // Vérifier si le numéro de document correspond
+        if (enregistrement.getInformationPersonnel().getNumeroDocument() != null && 
+            enregistrement.getInformationPersonnel().getNumeroDocument().equals(numeroDocument)) {
+            
+            // Convertir en DTO
+            EnregistrementDto dto = enregistrementMapper.toDto(enregistrement);
+            resultats.add(dto);
+            System.out.println("---------Afficher numero"+numeroDocument);
+            System.out.println("---------Afficher numero"+resultats);
+        }
+       
+      }
+        return resultats; 
+
+    }
+
+
+     public Page<EnregistrementDto> findByPreenregistrement(LocalDate startDate, LocalDate endDate,
+            Pageable pageable) {
+
+    // Suite de ton code existant
+    List<StatutVoyageur> statuts = Arrays.asList(StatutVoyageur.EN_ATTENTE, StatutVoyageur.ANNULE, StatutVoyageur.REJETE, StatutVoyageur.VALIDE);
+    Page<Enregistrement> enregistrements = enregistrementRepository.findByPreenregistrement(
+            startDate.atStartOfDay(),
+            endDate.atTime(23, 59, 59),
+            SecurityUtils.getCurrentUserLogin()
+                    .flatMap(userRepository::findOneByDeletedFalseAndUsername)
+                    .map(User::getId)
+                    .orElse(0L),
+            statuts,
+            pageable
+    );
+
+    // Mapper en DTO
+    List<EnregistrementDto> uniqueEnregistrements = enregistrements.getContent()
+            .stream()
+            .map(enregistrement -> enregistrementMapper.toDto(enregistrement))
+            .collect(Collectors.toList());
+
+    return new PageImpl<>(uniqueEnregistrements, pageable, uniqueEnregistrements.size());
+}
+
 
 
 

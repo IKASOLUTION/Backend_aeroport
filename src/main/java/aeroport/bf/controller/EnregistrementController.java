@@ -49,12 +49,12 @@ public class EnregistrementController {
     private final EnregistrementService enregistrementService;
 
     /**
-     * POST  /users  : Creates a new user.
+     * POST /users : Creates a new user.
      *
      * @param dto
      * @return {@link EnregistrementDto}
      */
-    @PostMapping(path = "/enregistrements",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/enregistrements", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Creating a new Enregistrement.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${swagger.http-status.200}"),
@@ -65,14 +65,14 @@ public class EnregistrementController {
             @RequestPart(value = "photoProfil", required = false) MultipartFile photoProfil,
             @RequestPart(value = "imageRecto", required = false) MultipartFile imageRecto,
             @RequestPart(value = "imageVerso", required = false) MultipartFile imageVerso,
-            
+
             // Champs simples
             @RequestParam(value = "typeDocument", required = false) String typeDocument,
             @RequestParam(value = "numeroDocument", required = false) String numeroDocument,
             @RequestParam(value = "numeroNip", required = false) String numeroNip,
             @RequestParam(value = "dateDelivrance", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDelivrance,
             @RequestParam(value = "lieuDelivrance", required = false) String lieuDelivrance,
-            
+
             // Personal Info
             @RequestParam(value = "nomFamille", required = false) String nomFamille,
             @RequestParam(value = "prenom", required = false) String prenom,
@@ -80,7 +80,7 @@ public class EnregistrementController {
             @RequestParam(value = "lieuNaissance", required = false) String lieuNaissance,
             @RequestParam(value = "nationalite", required = false) String nationalite,
             @RequestParam(value = "profession", required = false) String profession,
-            
+
             // Coordonnees
             @RequestParam(value = "paysResidence", required = false) String paysResidence,
             @RequestParam(value = "emailContact", required = false) String emailContact,
@@ -91,20 +91,19 @@ public class EnregistrementController {
             @RequestParam(value = "dureeSejour", required = false) int dureeSejour,
             @RequestParam(value = "etatVoyage", required = false) EtatVoyage etatVoyage,
             @RequestParam(value = "motifVoyage", required = false) MotifVoyage motifVoyage,
-            
-            
+
             // Voyage
             @RequestParam(value = "volId", required = false) Long volId
-          
+
     ) {
-        System.out.println("Creating Enregistrement for: " + typeDocument + " " );
-        
+        System.out.println("Creating Enregistrement for: " + typeDocument + " ");
+
         // Construire le DTO
         EnregistrementDto dto = EnregistrementDto.builder()
                 .photoProfil(photoProfil)
                 .imageRecto(imageRecto)
                 .imageVerso(imageVerso)
-                .typeDocument(TypeDocument.valueOf( typeDocument.toUpperCase()))
+                .typeDocument(TypeDocument.valueOf(typeDocument.toUpperCase()))
                 .numeroDocument(numeroDocument)
                 .numeroNip(numeroNip)
                 .dateDelivrance(dateDelivrance)
@@ -126,15 +125,11 @@ public class EnregistrementController {
                 .etatVoyage(etatVoyage)
                 .motifVoyage(motifVoyage)
                 .build();
-         System.out.println("Creating EnregistrementDto for: " + dto);
+        System.out.println("Creating EnregistrementDto for: " + dto);
         EnregistrementDto saved = enregistrementService.create(dto);
-        
+
         return ResponseEntity.ok(saved);
     }
-
-
-
-    
 
     /**
      * PUT /enregistrements/:id : Updates an existing enregistrement.
@@ -219,23 +214,23 @@ public class EnregistrementController {
             throw new IllegalArgumentException("dateDebut doit être avant dateFin");
         }
 
-         search.setSortBy("dateSaisie");
+        search.setSortBy("dateSaisie");
         // Création du Pageable et récupération des données
         Pageable pageable = PageableUtil.fromSearchDto(search);
         Page<EnregistrementDto> taches = enregistrementService.findAllPeriodeAndStatut(
-                
+
                 search.getDateDebut(),
                 search.getDateFin(),
                 search.getAeroportId(),
                 search.getStatus(),
-                pageable
-               );
+                pageable);
 
         return ResponseEntity.ok(taches);
     }
 
     @PutMapping("/enregistrements/periode/voyageur-attente")
-    public ResponseEntity<Page<EnregistrementDto>> findAllPeriodeVoyageurAttentAndStatut(@RequestBody SearchDto search) {
+    public ResponseEntity<Page<EnregistrementDto>> findAllPeriodeVoyageurAttentAndStatut(
+            @RequestBody SearchDto search) {
         // Validation
         if (search.getDateDebut() == null || search.getDateFin() == null) {
             throw new IllegalArgumentException("dateDebut et dateFin sont obligatoires");
@@ -245,17 +240,50 @@ public class EnregistrementController {
             throw new IllegalArgumentException("dateDebut doit être avant dateFin");
         }
 
-         search.setSortBy("dateSaisie");
+        search.setSortBy("dateSaisie");
         // Création du Pageable et récupération des données
         Pageable pageable = PageableUtil.fromSearchDto(search);
         Page<EnregistrementDto> taches = enregistrementService.findAllPeriodeAndVoyageurAndStatut(
-                
+
                 search.getDateDebut(),
                 search.getDateFin(),
                 search.getAeroportId(),
-               // search.getStatus(),
-                pageable
-               );
+                // search.getStatus(),
+                pageable);
+
+        return ResponseEntity.ok(taches);
+    }
+
+    /**
+     * GET / : get all enregistrements.
+     *
+     * @return {@link List<EnregistrementDto>}
+     */
+
+    @GetMapping("/enregistrements/document/{numeroDocument}")
+    public ResponseEntity<List<EnregistrementDto>> ListVol(@PathVariable String numeroDocument) {
+        return new ResponseEntity<>(enregistrementService.ListVol(numeroDocument), HttpStatus.OK);
+    }
+
+    @PutMapping("/enregistrements/pre-enrgistrement/periode")
+    public ResponseEntity<Page<EnregistrementDto>> findByPreenregistrement(@RequestBody SearchDto search) {
+        // Validation
+        if (search.getDateDebut() == null || search.getDateFin() == null) {
+            throw new IllegalArgumentException("dateDebut et dateFin sont obligatoires");
+        }
+
+        if (search.getDateDebut().isAfter(search.getDateFin())) {
+            throw new IllegalArgumentException("dateDebut doit être avant dateFin");
+        }
+
+        search.setSortBy("dateSaisie");
+        // Création du Pageable et récupération des données
+        Pageable pageable = PageableUtil.fromSearchDto(search);
+        Page<EnregistrementDto> taches = enregistrementService.findByPreenregistrement(
+
+                search.getDateDebut(),
+                search.getDateFin(),
+                pageable);
 
         return ResponseEntity.ok(taches);
     }
