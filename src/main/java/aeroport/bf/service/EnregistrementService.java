@@ -90,11 +90,10 @@ public class EnregistrementService {
     private final PieceJointeRepository pieceJointeRepository;
     private final InformationPersonnelleMapper informationPersonnelleMapper;
     private final RegulaDocumentService documentService;
-  //  private final RegulaWebService regulaWebService;
+    // private final RegulaWebService regulaWebService;
 
     public EnregistrementDto create(final EnregistrementDto dto) {
 
-        
         // === 1. Créer et enregistrer InformationPersonnelle ===
         InformationPersonnelle infoPerso = new InformationPersonnelle();
         infoPerso.setNomFamille(dto.getNomFamille());
@@ -122,9 +121,9 @@ public class EnregistrementService {
         System.out.println("DTO Nom dto.getVolId(): " + dto.getVolId());
         Vol vol = volRepository.getReferenceById(dto.getVolId());
         voyage.setVol(vol);
-         
+
         voyage.setAeroport(vol.getAeroport());
-        voyage.setAeroportForUser(CurrentUserAeropert.retrieveAeropert()); 
+        voyage.setAeroportForUser(CurrentUserAeropert.retrieveAeropert());
         voyage.setMotifVoyage(dto.getMotifVoyage());
         voyage.setDateVoyage(dto.getDateVoyage());
         voyage.setHeureVoyage(LocalTime.now());
@@ -153,7 +152,7 @@ public class EnregistrementService {
         enregistrement.setStatut(dto.getStatut());
         enregistrement.setDateSaisie(LocalDate.now());
         enregistrement.setAeroport(CurrentUserAeropert.retrieveAeropert());
-        if(enregistrement.getAeroport() == null || enregistrement.getAeroport().getId() == null) {
+        if (enregistrement.getAeroport() == null || enregistrement.getAeroport().getId() == null) {
             enregistrement.setAeroport(vol.getAeroport());
         }
         System.out.println("DTO Nom enregistrement: " + enregistrement);
@@ -185,7 +184,8 @@ public class EnregistrementService {
         dtoResult.setPrenom(savedEnregistrement.getInformationPersonnel().getPrenom());
         dtoResult.setInformationPersonnelleId(savedEnregistrement.getInformationPersonnel().getId());
         dtoResult.setNumeroDocument(savedEnregistrement.getInformationPersonnel().getNumeroDocument());
-        dtoResult.setInformationPersonnelle(informationPersonnelleMapper.toDto(savedEnregistrement.getInformationPersonnel()));
+        dtoResult.setInformationPersonnelle(
+                informationPersonnelleMapper.toDto(savedEnregistrement.getInformationPersonnel()));
         // === 5. Retourner le DTO ===
         return dtoResult;
     }
@@ -199,123 +199,124 @@ public class EnregistrementService {
      */
     public EnregistrementDto update(final EnregistrementDto dto, final long id) {
 
-    System.out.println("--------Afficher les elements a modifier: " + dto);
+        System.out.println("--------Afficher les elements a modifier: " + dto);
 
-    // ✅ Récupérer l'entité existante avec toutes ses relations
-    Enregistrement existingEnregistrement = enregistrementRepository.findById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-            String.format("No Enregistrement exists with this ID : %d", id)));
+        // ✅ Récupérer l'entité existante avec toutes ses relations
+        Enregistrement existingEnregistrement = enregistrementRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("No Enregistrement exists with this ID : %d", id)));
 
-    if (Objects.isNull(dto.getId())) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Already created Enregistrement cannot have null ID.");
+        if (Objects.isNull(dto.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Already created Enregistrement cannot have null ID.");
+        }
+
+        try {
+            // ===== Mise à jour des champs directs de Enregistrement =====
+            if (dto.getStatut() != null) {
+                existingEnregistrement.setStatut(dto.getStatut());
+            }
+            if (dto.getTelephoneEtranger() != null) {
+                existingEnregistrement.setTelephoneEtranger(dto.getTelephoneEtranger());
+            }
+            if (dto.getAdresseEtranger() != null) {
+                existingEnregistrement.setAdresseEtranger(dto.getAdresseEtranger());
+            }
+
+            // ===== Mise à jour de InformationPersonnelle =====
+            if (existingEnregistrement.getInformationPersonnel() != null) {
+                InformationPersonnelle info = existingEnregistrement.getInformationPersonnel();
+
+                if (dto.getTypeDocument() != null) {
+                    info.setTypeDocument(dto.getTypeDocument());
+                }
+                if (dto.getNumeroDocument() != null) {
+                    info.setNumeroDocument(dto.getNumeroDocument());
+                }
+                if (dto.getNumeroNip() != null) {
+                    info.setNumeroNip(dto.getNumeroNip());
+                }
+                if (dto.getDateDelivrance() != null) {
+                    info.setDateDelivrance(dto.getDateDelivrance());
+                }
+                if (dto.getLieuDelivrance() != null) {
+                    info.setLieuDelivrance(dto.getLieuDelivrance());
+                }
+                if (dto.getNomFamille() != null) {
+                    info.setNomFamille(dto.getNomFamille());
+                }
+                if (dto.getPrenom() != null) {
+                    info.setPrenom(dto.getPrenom());
+                }
+                if (dto.getDateNaissance() != null) {
+                    info.setDateNaissance(dto.getDateNaissance());
+                }
+                if (dto.getLieuNaissance() != null) {
+                    info.setLieuNaissance(dto.getLieuNaissance());
+                }
+                if (dto.getNationalite() != null) {
+                    info.setNationalite(dto.getNationalite());
+                }
+                if (dto.getProfession() != null) {
+                    info.setProfession(dto.getProfession());
+                }
+                if (dto.getPaysResidence() != null) {
+                    info.setPaysResidence(dto.getPaysResidence());
+                }
+                if (dto.getEmailContact() != null) {
+                    info.setEmailContact(dto.getEmailContact());
+                }
+                if (dto.getTelephoneBurkina() != null) {
+                    info.setTelephoneBurkina(dto.getTelephoneBurkina());
+                }
+                if (dto.getAdresseBurkina() != null) {
+                    info.setAdresseBurkina(dto.getAdresseBurkina());
+                }
+            }
+
+            // ===== Mise à jour de Voyage =====
+            if (existingEnregistrement.getVoyage() != null) {
+                Voyage voyage = existingEnregistrement.getVoyage();
+
+                if (dto.getDateVoyage() != null) {
+                    voyage.setDateVoyage(dto.getDateVoyage());
+                }
+                if (dto.getHeureVoyage() != null) {
+                    voyage.setHeureVoyage(dto.getHeureVoyage());
+                }
+                if (dto.getMotifVoyage() != null) {
+                    voyage.setMotifVoyage(dto.getMotifVoyage());
+                }
+                if (dto.getEtatVoyage() != null) {
+                    voyage.setEtatVoyage(dto.getEtatVoyage());
+                }
+                if (dto.getDureeSejour() != null) {
+                    voyage.setDureeSejour(dto.getDureeSejour());
+                }
+
+                // Note: aeroportDepart et aeroportDestination sont calculés,
+                // pas directement stockés dans Voyage
+            }
+
+            System.out.println("--------Avant sauvegarde");
+            Enregistrement saved = enregistrementRepository.save(existingEnregistrement);
+            System.out.println("--------Après sauvegarde");
+
+            return enregistrementMapper.toDto(saved);
+
+        } catch (Exception e) {
+            System.err.println("========================================");
+            System.err.println("ERREUR LORS DE LA MISE À JOUR");
+            System.err.println("Message: " + e.getMessage());
+            System.err.println("Type: " + e.getClass().getName());
+            e.printStackTrace();
+            System.err.println("========================================");
+
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erreur lors de la mise à jour: " + e.getMessage(), e);
+        }
     }
 
-    try {
-        // ===== Mise à jour des champs directs de Enregistrement =====
-        if (dto.getStatut() != null) {
-            existingEnregistrement.setStatut(dto.getStatut());
-        }
-        if (dto.getTelephoneEtranger() != null) {
-            existingEnregistrement.setTelephoneEtranger(dto.getTelephoneEtranger());
-        }
-        if (dto.getAdresseEtranger() != null) {
-            existingEnregistrement.setAdresseEtranger(dto.getAdresseEtranger());
-        }
-
-        // ===== Mise à jour de InformationPersonnelle =====
-        if (existingEnregistrement.getInformationPersonnel() != null) {
-            InformationPersonnelle info = existingEnregistrement.getInformationPersonnel();
-            
-            if (dto.getTypeDocument() != null) {
-                info.setTypeDocument(dto.getTypeDocument());
-            }
-            if (dto.getNumeroDocument() != null) {
-                info.setNumeroDocument(dto.getNumeroDocument());
-            }
-            if (dto.getNumeroNip() != null) {
-                info.setNumeroNip(dto.getNumeroNip());
-            }
-            if (dto.getDateDelivrance() != null) {
-                info.setDateDelivrance(dto.getDateDelivrance());
-            }
-            if (dto.getLieuDelivrance() != null) {
-                info.setLieuDelivrance(dto.getLieuDelivrance());
-            }
-            if (dto.getNomFamille() != null) {
-                info.setNomFamille(dto.getNomFamille());
-            }
-            if (dto.getPrenom() != null) {
-                info.setPrenom(dto.getPrenom());
-            }
-            if (dto.getDateNaissance() != null) {
-                info.setDateNaissance(dto.getDateNaissance());
-            }
-            if (dto.getLieuNaissance() != null) {
-                info.setLieuNaissance(dto.getLieuNaissance());
-            }
-            if (dto.getNationalite() != null) {
-                info.setNationalite(dto.getNationalite());
-            }
-            if (dto.getProfession() != null) {
-                info.setProfession(dto.getProfession());
-            }
-            if (dto.getPaysResidence() != null) {
-                info.setPaysResidence(dto.getPaysResidence());
-            }
-            if (dto.getEmailContact() != null) {
-                info.setEmailContact(dto.getEmailContact());
-            }
-            if (dto.getTelephoneBurkina() != null) {
-                info.setTelephoneBurkina(dto.getTelephoneBurkina());
-            }
-            if (dto.getAdresseBurkina() != null) {
-                info.setAdresseBurkina(dto.getAdresseBurkina());
-            }
-        }
-
-        // ===== Mise à jour de Voyage =====
-        if (existingEnregistrement.getVoyage() != null) {
-            Voyage voyage = existingEnregistrement.getVoyage();
-            
-            if (dto.getDateVoyage() != null) {
-                voyage.setDateVoyage(dto.getDateVoyage());
-            }
-            if (dto.getHeureVoyage() != null) {
-                voyage.setHeureVoyage(dto.getHeureVoyage());
-            }
-            if (dto.getMotifVoyage() != null) {
-                voyage.setMotifVoyage(dto.getMotifVoyage());
-            }
-            if (dto.getEtatVoyage() != null) {
-                voyage.setEtatVoyage(dto.getEtatVoyage());
-            }
-            if (dto.getDureeSejour() != null) {
-                voyage.setDureeSejour(dto.getDureeSejour());
-            }
-            
-            // Note: aeroportDepart et aeroportDestination sont calculés, 
-            // pas directement stockés dans Voyage
-        }
-
-        System.out.println("--------Avant sauvegarde");
-        Enregistrement saved = enregistrementRepository.save(existingEnregistrement);
-        System.out.println("--------Après sauvegarde");
-        
-        return enregistrementMapper.toDto(saved);
-        
-    } catch (Exception e) {
-        System.err.println("========================================");
-        System.err.println("ERREUR LORS DE LA MISE À JOUR");
-        System.err.println("Message: " + e.getMessage());
-        System.err.println("Type: " + e.getClass().getName());
-        e.printStackTrace();
-        System.err.println("========================================");
-        
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-            "Erreur lors de la mise à jour: " + e.getMessage(), e);
-    }
-}
     /**
      * Get Enregistrement by id.
      *
@@ -347,44 +348,37 @@ public class EnregistrementService {
 
     }
 
-
-      public Page<EnregistrementDto> findAllPeriodeAndVoyageurAndStatut(LocalDate startDate, LocalDate endDate,
+    public Page<EnregistrementDto> findAllPeriodeAndVoyageurAndStatut(LocalDate startDate, LocalDate endDate,
             Long aeroportId,
             Pageable pageable) {
 
-    // Suite de ton code existant
-    List<StatutVoyageur> statuts = Arrays.asList(StatutVoyageur.EN_ATTENTE);
-    Page<Enregistrement> enregistrements = enregistrementRepository.findByFilters(
-            startDate.atStartOfDay(),
-            endDate.atTime(23, 59, 59),
-            aeroportId != null ? aeroportId : CurrentUserAeropert.retrieveAeropert().getId(),
-            statuts,
-            pageable
-    );
+        // Suite de ton code existant
+        List<StatutVoyageur> statuts = Arrays.asList(StatutVoyageur.EN_ATTENTE);
+        Page<Enregistrement> enregistrements = enregistrementRepository.findByFilters(
+                startDate.atStartOfDay(),
+                endDate.atTime(23, 59, 59),
+                aeroportId != null ? aeroportId : CurrentUserAeropert.retrieveAeropert().getId(),
+                statuts,
+                pageable);
 
-    // Mapper en DTO
-    List<EnregistrementDto> uniqueEnregistrements = enregistrements.getContent()
-            .stream()
-            .map(enregistrement -> enregistrementMapper.toDto(enregistrement))
-            .collect(Collectors.toList());
+        // Mapper en DTO
+        List<EnregistrementDto> uniqueEnregistrements = enregistrements.getContent()
+                .stream()
+                .map(enregistrement -> enregistrementMapper.toDto(enregistrement))
+                .collect(Collectors.toList());
 
-    return new PageImpl<>(uniqueEnregistrements, pageable, uniqueEnregistrements.size());
-}
+        return new PageImpl<>(uniqueEnregistrements, pageable, uniqueEnregistrements.size());
+    }
 
-
- 
-
- 
     public Page<EnregistrementDto> findAllPeriodeAndStatut(LocalDate startDate, LocalDate endDate, Long aeroportId,
             List<StatutVoyageur> statuts, Pageable pageable) {
         Page<Enregistrement> enregistrements = enregistrementRepository.findByFilters(
                 startDate.atStartOfDay(),
                 endDate.atTime(23, 59, 59),
-                aeroportId !=null ? aeroportId :  CurrentUserAeropert.retrieveAeropert().getId(),
+                aeroportId != null ? aeroportId : CurrentUserAeropert.retrieveAeropert().getId(),
                 statuts,
                 pageable);
 
-       
         // Grouper par numeroDocument et compter les occurrences
         Map<String, List<EnregistrementDto>> groupedByDocument = enregistrements.getContent()
                 .stream()
@@ -490,8 +484,6 @@ public class EnregistrementService {
         }
     }
 
-
-
     public List<EnregistrementDto> ListVol(String numeroDocument) {
 
         List<EnregistrementDto> resultats = new ArrayList<>();
@@ -499,49 +491,48 @@ public class EnregistrementService {
         List<Enregistrement> enregistrements = enregistrementRepository.findAll();
 
         for (Enregistrement enregistrement : enregistrements) {
-        // Vérifier si le numéro de document correspond
-        if (enregistrement.getInformationPersonnel().getNumeroDocument() != null && 
-            enregistrement.getInformationPersonnel().getNumeroDocument().equals(numeroDocument)) {
-            
-            // Convertir en DTO
-            EnregistrementDto dto = enregistrementMapper.toDto(enregistrement);
-            resultats.add(dto);
-            System.out.println("---------Afficher numero"+numeroDocument);
-            System.out.println("---------Afficher numero"+resultats);
+            // Vérifier si le numéro de document correspond
+            if (enregistrement.getInformationPersonnel().getNumeroDocument() != null &&
+                    enregistrement.getInformationPersonnel().getNumeroDocument().equals(numeroDocument)) {
+
+                // Convertir en DTO
+                EnregistrementDto dto = enregistrementMapper.toDto(enregistrement);
+                resultats.add(dto);
+                System.out.println("---------Afficher numero" + numeroDocument);
+                System.out.println("---------Afficher numero" + resultats);
+            }
+
         }
-       
-      }
-        return resultats; 
+        return resultats;
 
     }
 
-
-     public Page<EnregistrementDto> findByPreenregistrement(LocalDate startDate, LocalDate endDate,
+    public Page<EnregistrementDto> findByPreenregistrement(LocalDate startDate, LocalDate endDate,
             Pageable pageable) {
 
-    // Suite de ton code existant
-    List<StatutVoyageur> statuts = Arrays.asList(StatutVoyageur.EN_ATTENTE, StatutVoyageur.ANNULE, StatutVoyageur.REJETE, StatutVoyageur.VALIDE);
-    Page<Enregistrement> enregistrements = enregistrementRepository.findByPreenregistrement(
-            startDate.atStartOfDay(),
-            endDate.atTime(23, 59, 59),
-            SecurityUtils.getCurrentUserLogin()
-                    .flatMap(userRepository::findOneByDeletedFalseAndUsername)
-                    .map(User::getId)
-                    .orElse(0L),
-            statuts,
-            pageable
-    );
+        System.out.println("---------Afficher date debut" + startDate);
+        System.out.println("---------Afficher date fin" + endDate);
 
-    // Mapper en DTO
-    List<EnregistrementDto> uniqueEnregistrements = enregistrements.getContent()
-            .stream()
-            .map(enregistrement -> enregistrementMapper.toDto(enregistrement))
-            .collect(Collectors.toList());
+        // Suite de ton code existant
+        List<StatutVoyageur> statuts = Arrays.asList(StatutVoyageur.EN_ATTENTE, StatutVoyageur.ANNULE,
+                StatutVoyageur.REJETE, StatutVoyageur.VALIDE);
+        Page<Enregistrement> enregistrements = enregistrementRepository.findByPreenregistrement(
+                startDate.atStartOfDay(),
+                endDate.atTime(23, 59, 59),
+                SecurityUtils.getCurrentUserLogin()
+                        .flatMap(userRepository::findOneByDeletedFalseAndUsername)
+                        .map(User::getId)
+                        .orElse(0L),
+                statuts,
+                pageable);
 
-    return new PageImpl<>(uniqueEnregistrements, pageable, uniqueEnregistrements.size());
-}
+        // Mapper en DTO
+        List<EnregistrementDto> uniqueEnregistrements = enregistrements.getContent()
+                .stream()
+                .map(enregistrement -> enregistrementMapper.toDto(enregistrement))
+                .collect(Collectors.toList());
 
-
-
+        return new PageImpl<>(uniqueEnregistrements, pageable, uniqueEnregistrements.size());
+    }
 
 }
