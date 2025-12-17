@@ -30,7 +30,8 @@ public interface EnregistrementRepository extends AbstractRepository<Enregistrem
                         "WHERE e.deleted = false " +
                         "AND e.voyage.vol.dateDepart BETWEEN :startDate AND :endDate " +
                         "AND (:aeroportId = 0L OR e.voyage.vol.aeroport.id = :aeroportId) " +
-                        "AND (:statuts IS NULL OR e.statut IN :statuts)")
+                        "AND (:statuts IS NULL OR e.statut IN :statuts)" +
+                       "ORDER BY e.voyage.vol.dateDepart DESC, e.id DESC")
         Page<Enregistrement> findByFilters(
                         @Param("startDate") LocalDateTime startDate,
                         @Param("endDate") LocalDateTime endDate,

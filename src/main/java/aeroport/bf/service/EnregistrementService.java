@@ -131,7 +131,7 @@ public class EnregistrementService {
         voyage.setEtatVoyage(dto.getEtatVoyage());
         voyage.setDureeSejour(dto.getDureeSejour());
         voyage.setMotifVoyage(dto.getMotifVoyage());
-       // voyage.setStatut(StatutVoyage.ACTIF);
+        voyage.setStatut(StatutVoyage.ACTIF);
         voyage.setNomVoyageur(savedInfoPerso.getNomFamille());
         voyage.setPrenomVoyageur(savedInfoPerso.getPrenom());
         System.out.println("DTO Nom voyage: " + voyage);

@@ -3,6 +3,7 @@ package aeroport.bf.controller;
 import aeroport.bf.config.util.PageableUtil;
 import aeroport.bf.domain.enums.EtatVoyage;
 import aeroport.bf.domain.enums.MotifVoyage;
+import aeroport.bf.domain.enums.StatutVoyageur;
 import aeroport.bf.domain.enums.TypeDocument;
 import aeroport.bf.dto.SearchDto;
 import aeroport.bf.dto.UserDto;
@@ -91,6 +92,7 @@ public class EnregistrementController {
             @RequestParam(value = "dureeSejour", required = false) int dureeSejour,
             @RequestParam(value = "etatVoyage", required = false) EtatVoyage etatVoyage,
             @RequestParam(value = "motifVoyage", required = false) MotifVoyage motifVoyage,
+            @RequestParam(value = "statut", required = false) StatutVoyageur statut,
 
             // Voyage
             @RequestParam(value = "volId", required = false) Long volId
@@ -124,6 +126,8 @@ public class EnregistrementController {
                 .dureeSejour(dureeSejour)
                 .etatVoyage(etatVoyage)
                 .motifVoyage(motifVoyage)
+                .statut(statut)
+
                 .build();
         System.out.println("Creating EnregistrementDto for: " + dto);
         EnregistrementDto saved = enregistrementService.create(dto);
