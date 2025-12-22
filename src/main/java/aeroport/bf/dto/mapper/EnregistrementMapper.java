@@ -1,6 +1,8 @@
 package aeroport.bf.dto.mapper;
 
+import aeroport.bf.domain.Aeroport;
 import aeroport.bf.domain.Enregistrement;
+import aeroport.bf.domain.Vol;
 import aeroport.bf.domain.enums.TypeVol;
 import aeroport.bf.dto.EnregistrementDto;
 
@@ -71,16 +73,51 @@ public interface EnregistrementMapper extends EntityMapper<EnregistrementDto, En
     EnregistrementDto toDto(Enregistrement entity);
 
      default String determineAeroportDepart(Enregistrement entity) {
-        if(entity.getVoyage() == null || entity.getVoyage().getVol() == null) return null;
-        return entity.getVoyage().getVol().getTypeVol() == TypeVol.ARRIVEE
-                ? entity.getVoyage().getVol().getAeroport().getNomAeroport()
-                : entity.getVoyage().getAeroportForUser().getNomAeroport();
+    if (entity.getVoyage() == null || entity.getVoyage().getVol() == null) {
+        return null;
     }
+    
+    Vol vol = entity.getVoyage().getVol();
+    
+    if (vol.getTypeVol() == TypeVol.ARRIVEE) {
+        // Pour un vol d'arrivée, le départ est l'aéroport du vol
+        return vol.getAeroport() != null ? vol.getAeroport().getNomAeroport() : null;
+    } else {
+        // Pour un vol de départ, vérifier d'abord getAeroportForUser()
+        Aeroport aeroportUser = entity.getVoyage().getAeroportForUser();
+        if(aeroportUser == null && entity.getVoyage().getVol() != null) {
+            aeroportUser = entity.getVoyage().getVol().getAeroportForUser();
+        }
+        if (aeroportUser != null) {
+            System.out.println("Aéroport de départ déterminé depuis getAeroportForUser() ====================== " + aeroportUser.getNomAeroport());
+            return aeroportUser.getNomAeroport();
+        } 
+        // Fallback : utiliser l'aéroport du vol si getAeroportForUser() est null
+        return vol.getAeroport() != null ? vol.getAeroport().getNomAeroport() : null;
+    }
+}
 
-    default String determineAeroportDestination(Enregistrement entity) {
-        if(entity.getVoyage() == null || entity.getVoyage().getVol() == null) return null;
-        return entity.getVoyage().getVol().getTypeVol() == TypeVol.ARRIVEE
-                ? entity.getVoyage().getAeroportForUser().getNomAeroport()
-                : entity.getVoyage().getVol().getAeroport().getNomAeroport();
+default String determineAeroportDestination(Enregistrement entity) {
+    if (entity.getVoyage() == null || entity.getVoyage().getVol() == null) {
+        return null;
     }
+    
+    Vol vol = entity.getVoyage().getVol();
+    
+    if (vol.getTypeVol() == TypeVol.ARRIVEE) {
+        // Pour un vol d'arrivée, la destination est getAeroportForUser()
+        Aeroport aeroportUser = entity.getVoyage().getAeroportForUser();
+        if(aeroportUser == null && entity.getVoyage().getVol() != null) {
+            aeroportUser = entity.getVoyage().getVol().getAeroportForUser();
+        }
+        if (aeroportUser != null) {
+            return aeroportUser.getNomAeroport();
+        }
+        // Fallback : utiliser l'aéroport du vol si getAeroportForUser() est null
+        return vol.getAeroport() != null ? vol.getAeroport().getNomAeroport() : null;
+    } else {
+        // Pour un vol de départ, la destination est l'aéroport du vol
+        return vol.getAeroport() != null ? vol.getAeroport().getNomAeroport() : null;
+    }
+}
 }

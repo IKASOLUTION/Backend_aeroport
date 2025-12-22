@@ -512,6 +512,10 @@ public class EnregistrementService {
 
         System.out.println("---------Afficher date debut" + startDate);
         System.out.println("---------Afficher date fin" + endDate);
+        System.out.println("---------Afficher pageable" + SecurityUtils.getCurrentUserLogin()
+                        .flatMap(userRepository::findOneByDeletedFalseAndUsername)
+                        .map(User::getId)
+                        .orElse(0L));
 
         // Suite de ton code existant
         List<StatutVoyageur> statuts = Arrays.asList(StatutVoyageur.EN_ATTENTE, StatutVoyageur.ANNULE,
@@ -525,7 +529,7 @@ public class EnregistrementService {
                         .orElse(0L),
                 statuts,
                 pageable);
-
+System.out.println("---------Afficher enregistrements" + enregistrements);
         // Mapper en DTO
         List<EnregistrementDto> uniqueEnregistrements = enregistrements.getContent()
                 .stream()

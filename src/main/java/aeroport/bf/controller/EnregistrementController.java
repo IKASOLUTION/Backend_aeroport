@@ -281,6 +281,7 @@ public class EnregistrementController {
         }
 
         search.setSortBy("dateSaisie");
+        System.out.println("Search DTO: " + search);
         // Création du Pageable et récupération des données
         Pageable pageable = PageableUtil.fromSearchDto(search);
         Page<EnregistrementDto> taches = enregistrementService.findByPreenregistrement(
