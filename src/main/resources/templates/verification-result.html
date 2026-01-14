@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification du compte</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 400px;
+        }
+        .success {
+            color: #4CAF50;
+        }
+        .error {
+            color: #f44336;
+        }
+        .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            margin-top: 10px;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div th:if="${status == 'success'}" class="success">
+            <div class="icon">✓</div>
+            <h2 th:text="${message}">Compte activé avec succès</h2>
+        </div>
+        
+        <div th:if="${status == 'expired' || status == 'invalid'}" class="error">
+            <div class="icon">✗</div>
+            <h2 th:text="${message}">Erreur</h2>
+        </div>
+        
+        <div class="spinner"></div>
+        <p>Redirection vers l'application...</p>
+    </div>
+
+    <script th:inline="javascript">
+        const status = [[${status}]],
+        const message = [[${message}]];
+        
+        // Redirection après 2 secondes
+        setTimeout(function() {
+            // Changez cette URL selon votre application
+            if (status === 'success') {
+                // Pour une app web
+                window.location.href = 'http://localhost:4200/login?verified=true';
+                
+                // Pour une app mobile (décommentez et adaptez)
+                // window.location.href = 'monapp://login?verified=true';
+            } else {
+                // Redirection en cas d'erreur
+                window.location.href = 'http://localhost:4200/login?error=' + encodeURIComponent(message);
+                
+                // Pour une app mobile
+                // window.location.href = 'monapp://login?error=' + encodeURIComponent(message);
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

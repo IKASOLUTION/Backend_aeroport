@@ -8,6 +8,7 @@ spring:
 
   profiles:
     active: dev
+    
   security:
     authentication:
       jwt:
@@ -17,6 +18,14 @@ spring:
         token-validity-in-seconds: 2592000
         token-validity-in-seconds-for-remember-me: 2592000
         refresh-token-validity-in-seconds: 7776000
+  
+  # Configuration Thymeleaf - AJOUTÉ ICI
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+    mode: HTML
+    encoding: UTF-8
 
 springdoc:
   packages-to-scan: aeroport.bf.controller

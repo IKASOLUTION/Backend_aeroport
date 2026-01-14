@@ -99,6 +99,7 @@ public class UserService {
         }
         user.setDeleted(Boolean.FALSE);
         if (userDto.getId() == null) {
+             String pass = userDto.getLogin();
             if (userDto.getPassword() == null) {
                 String encryptedPassword = passwordEncoder.encode(userDto.getLogin());
                 user.setPassword(encryptedPassword);
@@ -107,7 +108,7 @@ public class UserService {
                 user.setPassword(encryptedPassword);
             }
 
-            user.setActivated(true);
+           user.setActivated(false);
             user.setPassChange(false);
             user.setActivationKey(RandomUtil.generateActivationKey());
 
@@ -116,22 +117,20 @@ public class UserService {
             user.setUsername(userDto.getLogin());
             user.setPrenom(userDto.getPrenom());
             user.setEmail(userDto.getEmail().toLowerCase());
-            user.setStatut(Statut.ACTIF);
+            user.setStatut(Statut.INACTIF);
             String token = UUID.randomUUID().toString();
             user.setVerificationToken(token);
             user.setExpiryDate(calculateExpiryDate());
-            // ParametreMail parametreMail = mailRepository.findByCode(200L);
-            /*
-             * String confirmationUrl =
-             * "http://localhost:8092/api/users/verify-email?token=" + token;
-             * emailService.sendNewMail(userDto.getEmail(), parametreMail.getObjet(),
-             * "Bonjour Mr/Mme "+userDto.getNom()+" "+userDto.getPrenom()
-             * +", <br/><br/>\r\nCi-dessous vos param&egrave;tres de connexion &agrave; l\'application ERELEVE :<br/><br/>\r\nIdentifiant = "
-             * +user.getUsername()+" <br/>\r\nMot de passe = "
-             * +pass+" <br/><br/>\r\nNB : Une modification de votre mot de passe &agrave; la premi&egrave;re connexion est recommand&eacute;e<br/><br/>\r\nCliquez sur le lieu ci-dessous pour acc&eacute;der l&rsquo;application :<br/><br/>\r\n<a href=\""
-             * +confirmationUrl+"\">RELEVE</a><br/><br/>\r\n<h2 style=\"color:red;\">Nous vous recommandons l\'utilisation du navigateur Google Chrome</h2><br/><br/>\r\nCordialement.<br/><br/>\r\nCE MAIL EST ISSU D&rsquo;UN AUTOMATE. NE PAS REPONDRE.', 'MAIL POUR ACTIVATION DE COMPTE UTILISATEUR."
-             * );
-             */
+            
+              String confirmationUrl = "http://localhost:8092/api/users/verify-email?token=" + token;
+              emailService.sendNewMail(userDto.getEmail(), "Activation du compte",
+              "Bonjour Mr/Mme "+userDto.getNom()+" "+userDto.getPrenom()
+              +", <br/><br/>\r\nCi-dessous vos param&egrave;tres de connexion &agrave; l\'application ERELEVE :<br/><br/>\r\nIdentifiant = "
+              +user.getUsername()+" <br/>\r\nMot de passe = "
+              +pass+" <br/><br/>\r\nNB : Une modification de votre mot de passe &agrave; la premi&egrave;re connexion est recommand&eacute;e<br/><br/>\r\nCliquez sur le lieu ci-dessous pour acc&eacute;der l&rsquo;application :<br/><br/>\r\n<a href=\""
+              +confirmationUrl+"\">AEROPORT</a><br/><br/>\r\n<h2 style=\"color:red;\">Nous vous recommandons l\'utilisation du navigateur Google Chrome</h2><br/><br/>\r\nCordialement.<br/><br/>\r\nCE MAIL EST ISSU D&rsquo;UN AUTOMATE. NE PAS REPONDRE.', 'MAIL POUR ACTIVATION DE COMPTE UTILISATEUR."
+              );
+             
         } else {
 
             user = userRepository.findOneByDeletedFalseAndId(userDto.getId());
@@ -171,6 +170,7 @@ public class UserService {
         }
 
         user.setActivated(true);
+        user.setStatut(Statut.ACTIF);
 
         userRepository.save(user);
 

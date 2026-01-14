@@ -221,18 +221,23 @@ System.out.println("=============================================="+request.getR
       return new ResponseEntity<>( userService.deletUser(id), HttpStatus.OK) ;
     }
 
-      @GetMapping("/verify-email")
-    public String verifyEmail(@RequestParam("token") String token, Model model) {
-        String result = userService.validateVerificationToken(token);
-       /*  if (result.equals("valid")) {
-            model.addAttribute("message", "Your account has been verified successfully.");
-            return "verified";
-        } else {
-            model.addAttribute("message", "Invalid verification token.");
-            return "verify-email";
-        }*/
-            return result;
+   /*   @GetMapping("/verify-email")
+public String verifyEmail(@RequestParam("token") String token, Model model) {
+    String result = userService.validateVerificationToken(token);
+    System.out.println("Résultat de la vérification du token : " + result);
+    model.addAttribute("message", result);
+    System.out.println("Résultat de la vérification du token 1111: " + result.equals("Compte activé avec succès"));
+    // Déterminer le statut pour la redirection
+    if (result.equals("Compte activé avec succès")) {
+        model.addAttribute("status", "success");
+    } else if (result.equals("Lien expiré")) {
+        model.addAttribute("status", "expired");
+    } else {
+        model.addAttribute("status", "invalid");
     }
+    
+    return "verification-result"; // Retourne la vue HTML
+} */
     
 
 }
