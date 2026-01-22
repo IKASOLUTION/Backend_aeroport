@@ -1,6 +1,7 @@
 package aeroport.bf.dto.mapper;
 import java.util.List;
 
+import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 
 import aeroport.bf.domain.ModuleParam;
@@ -9,7 +10,10 @@ import aeroport.bf.dto.ModuleParamDto;
 /**
  * Mapper for the entity  ModuleParam and its DTO.
  */
-@Component
+@Mapper(componentModel = "spring")
+public interface ModuleParamMapper extends EntityMapper<ModuleParamDto, ModuleParam> {}
+
+/* @Component
 public class ModuleParamMapper {
 
     public ModuleParamDto toDto(ModuleParam moduleParam) {
@@ -39,3 +43,4 @@ public List<ModuleParam> toEntities(List<ModuleParamDto> moduleParamDtos) {
 }
 
 }
+ */

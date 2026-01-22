@@ -29,15 +29,14 @@ public class MenuActionService {
 
     private final MenuActionRepository menuActionRepository;
     private final MenuActionMapper menuActionMapper;
-    private final TraceRepository traceRepository;
+ 
     private final UserRepository userRepository;
-    private final TraceService traceService;
 
 
 /**
  * Save menuAction.
  *
- * @param menuActionDto {@link aeroport.bf.dto.MenuActionDto}
+ * @param menuActionDto {@link bf.dgi.ast.dto.MenuActionDto}
  * @return saved menuAction object
  */
 private MenuActionDto saveMenuAction(final MenuActionDto menuActionDto) {
@@ -58,7 +57,7 @@ private MenuActionDto saveMenuAction(final MenuActionDto menuActionDto) {
 /**
  * Create new menuAction.
  *
- * @param menuActionDto {@link aeroport.bf.dto.MenuActionDto}
+ * @param menuActionDto {@link bf.dgi.ast.dto.MenuActionDto}
  * @return created menuAction object
  */
 public MenuActionDto createMenuAction(final MenuActionDto menuActionDto) {
@@ -72,7 +71,7 @@ public MenuActionDto createMenuAction(final MenuActionDto menuActionDto) {
 /**
  * Update existing menuAction.
  *
- * @param menuActionDto {@link aeroport.bf.dto.MenuActionDto}
+ * @param menuActionDto {@link bf.dgi.ast.dto.MenuActionDto}
  * @return updated menuAction object
  */
 public MenuActionDto updateMenuAction(final MenuActionDto menuActionDto, final long id) {
@@ -108,14 +107,14 @@ public MenuActionDto findMenuAction(final long id) {
 /**
  * Fetch all menuAction stored in DB.
  *
- * @return list of {@link aeroport.bf.dto.MenuActionDto}
+ * @return list of {@link bf.dgi.ast.dto.MenuActionDto}
  */
 public List<MenuActionDto> findAllMenuAction() {
     List<MenuAction> menuActions = menuActionRepository.findAllByDeletedFalse();
     if (menuActions.isEmpty()) {
         throw new ResponseStatusException(HttpStatus.NO_CONTENT, "No data found, Please create at least one menuAction before.");
     }
-    return menuActionMapper.toDtos(menuActions);
+    return menuActions.stream().map(menu->menuActionMapper.toDto(menu)).collect(Collectors.toList());
 }
 
 /**
@@ -140,16 +139,11 @@ public void deleteMenuAction(final long id) {
  * @param dtos removed menuAction.
  */
 public List<MenuActionDto> deleteAll(List<MenuActionDto> dtos) {
-    menuActionMapper.toEntities(dtos).stream().peek(menuAction -> {
+    dtos.stream().map(menu->menuActionMapper.toEntity(menu)).peek(menuAction -> {
         menuAction.setDeleted(Boolean.TRUE);
         menuActionRepository.save(menuAction);
-        Trace trace = new Trace();
-       
-        userRepository.findByDeletedFalseAndUsername(SecurityUtils.getCurrentUsername()).ifPresent(user->{
-           // trace.setUser(user);
-           });
-        trace.setAction(EntityAuditAction.DELETE.toString());
-       traceRepository.save(trace);
+    
+
     }).collect(Collectors.toList());
     return dtos;
 }

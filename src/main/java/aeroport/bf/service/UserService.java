@@ -27,6 +27,7 @@ import aeroport.bf.config.security.jwt.TokenProvider;
 import aeroport.bf.domain.Aeroport;
 import aeroport.bf.domain.Authority;
 import aeroport.bf.domain.MenuAction;
+import aeroport.bf.domain.ModuleParam;
 import aeroport.bf.domain.Trace;
 import aeroport.bf.domain.User;
 import aeroport.bf.domain.enums.Statut;
@@ -337,10 +338,11 @@ public class UserService {
         return new JWTToken(jwt);
     }
 
+
     public UserDto getUserWithRoles() {
         String username = SecurityUtils.getCurrentUsername();
         Optional<User> user = userRepository.findByDeletedFalseAndUsername(username);
-        // System.out.println("========================user======"+user);
+        System.out.println("========================user======" + user);
         UserDto userDto = mapper.toDto(user.get());
         if (userDto.getAuthorities() == null || userDto.getAuthorities().isEmpty()) {
             userDto.setAuthorities(findAuthoritiesByUser(user.get()));
@@ -349,8 +351,7 @@ public class UserService {
             list.addAll(findAuthoritiesByUser(user.get()));
             userDto.setAuthorities(list);
         }
-        // Optional<User> user=
-        // userRepository.findByDeletedFalseAndUsername(accountDto.getLogin());
+        
 
         return userDto;
     }
@@ -359,14 +360,22 @@ public class UserService {
         Set<String> authorities = new HashSet<>();
 
         if (user.getProfil().getId() != null) {
-            for (MenuAction menu : user.getProfil().getMenus()) {
-                String authority = menu.getMenuActionCode();
-                authorities.add(authority);
-            }
+            user.getProfil().getMenus().stream()
+                    .map(MenuAction::getMenuActionCode)
+                    .forEach(authorities::add);
+
+            // Ajouter tous les codes de modules (sans doublons)
+            user.getProfil().getMenus().stream()
+                    .map(MenuAction::getModuleParam)
+                    .filter(Objects::nonNull)
+                    .map(ModuleParam::getModuleParamCode)
+                    .forEach(authorities::add);
             // authorities.add(i);
         }
+        System.out.println("====================authorities===================" + authorities);
         return authorities;
     }
+
 
     public void changePassword(String currentClearTextPassword, String newPassword) {
         SecurityUtils.getCurrentUserLogin()

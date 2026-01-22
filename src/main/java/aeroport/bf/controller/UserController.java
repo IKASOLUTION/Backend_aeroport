@@ -176,6 +176,8 @@ public class UserController {
                     @ApiResponse(responseCode = "404", description = "Au cas ou l'utilisateur n'est pas connecté"),
                     @ApiResponse(responseCode = "500", description = "En cas d'erreur inattendue")})
     private ResponseEntity<UserDto> getCurrentUser() {
+
+        System.out.println("========================user===22222222222222222===");
         return new ResponseEntity<>(userService.getUserWithRoles(), HttpStatus.OK);
     }
 

@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,10 @@ import aeroport.bf.dto.MenuActionDto;
  * Mapper for the entity  MenuAction and its DTO.
  */
 
-@Component
+@Mapper(componentModel = "spring")
+public interface MenuActionMapper extends EntityMapper<MenuActionDto, MenuAction> {}
+
+/* @Component
 public class MenuActionMapper {
     @Autowired
     ModuleParamMapper moduleParamMapper;
@@ -61,4 +65,4 @@ public List<MenuAction> toEntities(List<MenuActionDto> menuActionDtos) {
 }
 
 }
- 
+  */

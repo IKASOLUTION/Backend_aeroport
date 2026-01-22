@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -53,11 +54,11 @@ public class MenuAction extends AbstractAuditEntity {
    /*  @Column(name = "deleted")
     private Boolean deleted; */
 
-    @NotNull
-     @ManyToOne
+   @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "moduleParam_id", referencedColumnName = "id")
-    @JsonIgnoreProperties(value = "menuActions", allowSetters = true)
-    private ModuleParam moduleParam; 
+    @JsonIgnoreProperties(value = {"menuActions", "hibernateLazyInitializer"}, allowSetters = true)
+    private ModuleParam moduleParam;
 
     
 }
